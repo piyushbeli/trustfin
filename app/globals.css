@@ -1,0 +1,532 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-poppins), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-poppins-family: var(--font-poppins);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+
+  /* Brand scale — synced from lib/constants/colors.ts (SSOT) */
+  --color-brand-primary: #6859F2;
+  --color-brand-50: #F4F3FE;
+  --color-brand-100: #E8E6FD;
+  --color-brand-200: #D1CCFB;
+  --color-brand-300: #B4ADF8;
+  --color-brand-400: #9288F5;
+  --color-brand-500: #6859F2;
+  --color-brand-600: #5748E0;
+  --color-brand-700: #4839C9;
+  --color-brand-800: #3A2DA3;
+  --color-brand-900: #2E247F;
+  --color-brand-light-from: #E8E6FD;
+  --color-brand-light-to: #6859F2;
+  --color-brand-lightest-from: #F0EEFF;
+  --color-brand-lightest-to: #FAFCFF;
+
+  /* Legacy aliases → brand scale */
+  --color-blue-primary: var(--color-brand-primary);
+  --color-wc-blue-50: var(--color-brand-50);
+  --color-wc-blue-100: var(--color-brand-100);
+  --color-wc-blue-200: var(--color-brand-200);
+  --color-wc-blue-300: var(--color-brand-300);
+  --color-wc-blue-400: var(--color-brand-400);
+  --color-wc-blue-500: var(--color-brand-500);
+  --color-wc-blue-600: var(--color-brand-600);
+  --color-wc-blue-700: var(--color-brand-700);
+  --color-wc-blue-800: var(--color-brand-800);
+  --color-wc-blue-900: var(--color-brand-900);
+  --color-wc-blue-heading: var(--color-brand-600);
+  --color-wc-dark: var(--color-brand-900);
+  --color-wc-accent: var(--color-brand-400);
+  --color-wc-green: #22C55E;
+
+  /* Tailwind default blue scale → brand (project-wide without per-file edits) */
+  --color-blue-50: var(--color-brand-50);
+  --color-blue-100: var(--color-brand-100);
+  --color-blue-200: var(--color-brand-200);
+  --color-blue-300: var(--color-brand-300);
+  --color-blue-400: var(--color-brand-400);
+  --color-blue-500: var(--color-brand-500);
+  --color-blue-600: var(--color-brand-primary);
+  --color-blue-700: var(--color-brand-700);
+  --color-blue-800: var(--color-brand-800);
+  --color-blue-900: var(--color-brand-900);
+
+  /* Grayscale */
+  --color-gray-900: #121111;
+  --color-gray-700: #303030;
+  --color-gray-500: #7F7F7F;
+  --color-gray-100: #D9D9D9;
+  --color-white: #FFFFFF;
+
+  /* Background Gradients */
+  --background-image-brand-lightest: linear-gradient(135deg, #F0EEFF 0%, #FAFCFF 100%);
+  --background-image-brand-light: linear-gradient(135deg, #E8E6FD 0%, #6859F2 100%);
+}
+
+/* =============================================================================
+ * Markdown Content Styles
+ * Comprehensive styling for all markdown/HTML elements from Strapi
+ * ============================================================================= */
+
+/* Base container */
+/* .markdown-content-strapi {
+  @apply max-w-none text-gray-700;
+} */
+
+/* Headings */
+.markdown-content-strapi h1 {
+  @apply text-4xl font-bold mb-6 mt-8 leading-tight text-gray-900;
+}
+
+.markdown-content-strapi h2 {
+  @apply text-3xl font-bold mb-5 mt-8 leading-tight text-gray-900;
+}
+
+.markdown-content-strapi h3 {
+  @apply text-2xl font-semibold mb-4 mt-6 leading-snug text-gray-900;
+}
+
+.markdown-content-strapi .input-group {
+  @apply text-blue-400 hover:text-blue-300;
+}
+
+.markdown-content-strapi>button {
+  @apply bg-brand-primary text-white px-4 py-2 rounded-md font-medium hover:bg-brand-700 transition-colors text-sm;
+}
+
+.markdown-content-strapi>table {
+  @apply w-full border-collapse border border-gray-300 my-4;
+}
+
+.markdown-content-strapi>table th {
+  @apply bg-gray-100 px-4 py-2 text-left;
+}
+
+.markdown-content-strapi>table td {
+  @apply border border-gray-300 px-4 py-2;
+}
+
+.markdown-content-strapi>table tr:nth-child(even) {
+  @apply bg-gray-50;
+}
+
+.markdown-content-strapi>table tr:hover {
+  @apply bg-gray-100;
+}
+
+.markdown-content-strapi>table th:first-child,
+.markdown-content-strapi>table td:first-child {
+  @apply pl-4;
+}
+
+.markdown-content-strapi>table th:last-child,
+.markdown-content-strapi>table td:last-child {
+  @apply pr-4;
+}
+
+/* Anchor/Link Styling */
+.markdown-content-strapi a {
+  @apply text-brand-primary underline hover:text-brand-700 transition-colors;
+}
+
+/* Responsive Table - Card Layout on Mobile */
+@media (max-width: 767px) {
+  .markdown-content-strapi>table {
+    @apply border-0;
+  }
+
+  .markdown-content-strapi>table thead {
+    @apply hidden;
+  }
+
+  .markdown-content-strapi>table tbody tr {
+    @apply block mb-4 border border-gray-200 rounded-lg shadow-sm bg-white;
+  }
+
+  .markdown-content-strapi>table td {
+    @apply block border-0 border-b border-gray-100 last:border-b-0;
+  }
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.58 0.22 277);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(0.985 0 0);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.58 0.22 277);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.65 0.2 277);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.65 0.2 277);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-ring: oklch(0.556 0 0);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+}
+
+/* =============================================================================
+ * WeCredit Home Screen Styles
+ * ============================================================================= */
+
+/* Hero + Stats Gradient Wrapper - purple-tinted gradient (brand scale) */
+.wc-hero-gradient-wrapper {
+  background: linear-gradient(
+      180deg,
+      var(--color-brand-200) 30%,
+      var(--color-brand-50) 65%,
+      #FFFFFF 100%);
+}
+
+/* Hero Section - Transparent to show wrapper gradient */
+.wc-hero-bg {
+  background: transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Concentric Circle Rings */
+.wc-circle-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.wc-circle-ring-1 {
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.wc-circle-ring-2 {
+  width: 280px;
+  height: 280px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.wc-circle-ring-3 {
+  width: 360px;
+  height: 360px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Radial Glow Effect */
+.wc-radial-glow {
+  position: absolute;
+  width: 300px;
+  height: 300px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, color-mix(in srgb, var(--color-brand-primary) 30%, transparent) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Gradient Text for hero accents — brand scale */
+.wc-gradient-text {
+  background: linear-gradient(90deg, var(--color-brand-400) 0%, var(--color-brand-600) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Product Card Hover Effect */
+.wc-product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wc-product-card:active {
+  transform: scale(0.96);
+}
+
+/* Carousel Dot Indicators */
+.wc-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--color-brand-primary) 30%, transparent);
+  transition: all 0.3s ease;
+}
+
+.wc-dot-active {
+  width: 24px;
+  border-radius: 4px;
+  background-color: var(--color-brand-primary);
+}
+
+/* Stats Number Animation */
+.wc-stat-number {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Mobile Menu Overlay */
+.wc-menu-overlay {
+  background: color-mix(in srgb, var(--color-brand-900) 80%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* =============================================================================
+ * Sticky Header Styles - Scroll-aware transitions
+ * ============================================================================= */
+
+/* Base transition for smooth property changes */
+.wc-header-pill-transition {
+  transition: background-color 300ms ease,
+    box-shadow 300ms ease,
+    backdrop-filter 300ms ease;
+}
+
+/* Initial state - whitish frosted pill on blue background */
+.wc-header-pill {
+  background-color: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Scrolled state - solid white pill */
+.wc-header-pill-scrolled {
+  background-color: rgba(255, 255, 255, 1);
+  box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Menu button glass effect */
+.wc-menu-btn-glass {
+  background-color: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Recolor single-hue PNG/SVG icons to brand primary (when Lucide is not used) */
+.icon-brand-image {
+  filter: brightness(0) saturate(100%) invert(40%) sepia(90%) saturate(2000%)
+    hue-rotate(228deg) brightness(95%) contrast(92%);
+}
+
+/* =============================================================================
+ * Utility Classes
+ * ============================================================================= */
+
+/* Hide scrollbar for horizontal scroll containers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* =============================================================================
+ * Partners Section Marquee Animation
+ * ============================================================================= */
+
+/* Marquee animation - scrolls left */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+/* Marquee animation - scrolls right (reverse) */
+@keyframes marquee-reverse {
+  0% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Marquee container */
+.animate-marquee {
+  animation: marquee 40s linear infinite;
+}
+
+.animate-marquee-reverse {
+  animation: marquee-reverse 40s linear infinite;
+}
+
+/* Pause animation on hover for better UX */
+.marquee-container:hover .animate-marquee,
+.marquee-container:hover .animate-marquee-reverse {
+  animation-play-state: paused;
+}
+
+.lead-form-heading {
+  @apply text-lg font-medium text-gray-900;
+}
+
+.lead-form-label {
+  @apply block text-sm mb-2 text-gray-700
+}
+
+/* =============================================================================
+ * EMI Calculator Slider Styles
+ * ============================================================================= */
+
+/* Custom slider thumb styling */
+.slider-thumb::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-brand-primary);
+  cursor: pointer;
+  border: 4px solid #ffffff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-brand-primary) 40%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider-thumb::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-brand-primary) 50%, transparent);
+}
+
+.slider-thumb::-webkit-slider-thumb:active {
+  transform: scale(0.95);
+}
+
+.slider-thumb::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-brand-primary);
+  cursor: pointer;
+  border: 4px solid #ffffff;
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--color-brand-primary) 40%, transparent);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slider-thumb::-moz-range-thumb:hover {
+  transform: scale(1.1);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--color-brand-primary) 50%, transparent);
+}
+
+/* Slider track focus state */
+.slider-thumb:focus {
+  outline: none;
+}
+
+.slider-thumb:focus::-webkit-slider-thumb {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-primary) 20%, transparent),
+    0 2px 8px color-mix(in srgb, var(--color-brand-primary) 40%, transparent);
+}

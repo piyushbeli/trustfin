@@ -1,0 +1,237 @@
+import React from 'react';
+import { BackToHomeButton } from './back-to-home-button';
+
+interface InfoCardProps {
+  image: string;
+  alt: string;
+  title: string;
+  description?: string;
+  mb?: string;
+}
+
+const InfoCard = ({
+  image,
+  alt,
+  title,
+  description,
+  mb = 'mb-4',
+}: InfoCardProps) => (
+  <div
+    className={`w-full bg-white rounded-lg shadow-[1px_1px_4px_0px_#6666661A,-1px_-1px_4px_0px_#6666661A] overflow-hidden ${mb}`}
+  >
+    <div className="w-full aspect-[361/261]">
+      <img src={image} alt={alt} className="w-full h-full object-cover" />
+    </div>
+
+    <div className="p-3 text-center">
+      <h3 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-zinc-800">
+        {title}
+      </h3>
+
+      {description && (
+        <>
+          <div className="h-2" />
+          <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-zinc-500">
+            {description}
+          </p>
+        </>
+      )}
+    </div>
+  </div>
+);
+
+const AboutUsContent = (): React.ReactNode => {
+  const teamMembers = [
+    {
+      image:
+        'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/person_placeholder.png',
+      title: 'Mukul Devpura',
+    },
+    {
+      image:
+        'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/person_placeholder.png',
+      title: 'Brijesh Chokhra',
+    },
+    {
+      image:
+        'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/person_placeholder.png',
+      title: 'Laksh Dua',
+    },
+    {
+      image:
+        'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/person_placeholder.png',
+      title: 'Sumit Chokhra',
+    },
+  ];
+
+  const achievements = [
+    {
+      title: 'ONDC Partnership',
+      description:
+        'We started working with ONDC partners in 2024, expanding our reach and collaboration in the digital commerce ecosystem.',
+        image: 'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/ondccard.png',
+    },
+    {
+      title: 'Jobs Created',
+      description:
+        'WeCredit has provided over 400 jobs, contributing to employment and growth in the financial sector.',
+        image: 'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/jobs_created.png',
+    },
+    {
+      title: 'Strong Lending Network',
+      description:
+        'We work with 25–30 lenders, NBFCs, fintechs, and banks, ensuring a wide range of credit options for our customers.',
+        image: 'https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/strong_lending_networks.png',
+    },
+  ];
+
+  return (
+    <div className="w-full lg:-mt-10">
+
+      <div className="bg-[linear-gradient(96.83deg,_#CCDFFC_35.72%,_#FAFCFF_100%)] px-4 py-6 mb-4">
+        <div className="">
+          <BackToHomeButton />
+        </div>
+
+        <h2 className="font-['Poppins'] font-medium text-2xl leading-[1] tracking-normal text-zinc-800">
+          About WeCredit
+        </h2>
+
+        <div className="h-4" />
+
+        <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-zinc-600">
+          At WeCredit, we believe that managing credit should be easy and transparent without confusion or hidden details.
+        </p>
+      </div>
+
+      <div className="px-4">
+
+         {/* Hero Image */}
+        <div className="w-full overflow-hidden mb-8">
+          <img
+            src="https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/Heroimage.png"
+            alt="About WeCredit"
+            className="w-full h-auto object-cover"
+          />
+        </div>
+
+        <h3 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
+          We make personal finance simple and transparent.
+        </h3>
+
+        <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-8">
+          With the help of data and technology, WeCredit lets you view and compare multiple loan and card offers in one place. We share clear and unbiased information to help you make better decisions and support you throughout your credit journey.
+        </p>
+
+        {/* Team */}
+        <h3 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
+          Meet the Team Behind WeCredit
+        </h3>
+
+        <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-10">
+          Our leadership team brings experience from key areas of the business, including finance, operations, risk, and growth.
+        </p>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {teamMembers.map((member, index) => (
+            <InfoCard
+              key={index}
+              image={member.image}
+              alt={member.title}
+              title={member.title}
+            />
+          ))}
+        </div>
+
+        {/* Timeline */}
+        <div className="mb-6 mt-8">
+          <h2 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-black">
+            Our Journey
+          </h2>
+        </div>
+
+        <div className="relative w-full">
+          <div className="absolute left-[42px] top-0 bottom-0 w-[2px] bg-[#D9D9D9]" />
+
+          <div className="space-y-10">
+            {[
+              {
+                year: '2022',
+                title: 'The Beginning',
+                desc:
+                  'WeCredit started under the name Spiraea Digital Private Limited...',
+                dot: 'var(--color-brand-primary)',
+              },
+              {
+                year: '2025',
+                title: 'Growth & Rebranding',
+                desc:
+                  'The company became QuantumX Global Private Limited...',
+                dot: '#00F076',
+              },
+            ].map((item, index) => (
+              <div key={index} className="relative flex">
+                <div
+                  className="w-6 h-6 rounded-full shrink-0"
+                  style={{ backgroundColor: item.dot }}
+                />
+
+                <div className="ml-8 flex-1">
+                  <div className="font-['Poppins'] font-medium text-sm leading-[1.2] text-brand-primary">
+                    {item.year}
+                  </div>
+
+                  <div className="mt-1 font-['Poppins'] font-medium text-base leading-[1.2] text-brand-primary">
+                    {item.title}
+                  </div>
+
+                  <p className="mt-2 font-['Poppins'] font-normal text-sm leading-[1.2] text-zinc-400">
+                    {item.desc}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            <div className="relative flex">
+              <div className="w-6 h-6 rounded-full bg-[#D9D9D9] shrink-0" />
+
+              <div className="ml-8 flex-1">
+                <div className="font-['Poppins'] font-medium text-sm leading-[1.2] text-brand-primary">
+                  2026
+                </div>
+
+                <div className="mt-3 p-4 rounded-lg border border-dashed border-brand-primary bg-brand-lightest">
+                  <p className="font-['Poppins'] font-normal text-sm leading-[1.2] text-brand-primary">
+                    Since then, WeCredit has been helping people get credit easily and quickly.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Achievements */}
+        <div className="mb-6 mt-8">
+          <h2 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-black">
+            Our Achievements & Partnerships
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {achievements.map((item, index) => (
+            <InfoCard
+              key={index}
+              image={item.image}
+              alt={item.title}
+              title={item.title}
+              description={item.description}
+            />
+          ))}
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default AboutUsContent;
