@@ -1,6 +1,8 @@
 'use client';
 
+import { Fragment } from 'react';
 import { motion, Variants } from 'framer-motion';
+import { Star } from 'lucide-react';
 
 /** Individual stat configuration */
 interface StatItem {
@@ -8,27 +10,33 @@ interface StatItem {
   value: string;
   suffix?: string;
   label: string;
+  showStar?: boolean;
 }
 
 /** Stats data matching the design */
 const stats: StatItem[] = [
   {
-    id: 'users',
-    value: '180K',
+    id: 'customers',
+    value: '2L',
     suffix: '+',
-    label: 'Satisfied Users',
+    label: 'Happy customers',
   },
   {
     id: 'disbursal',
-    value: '1000Cr',
-    suffix: '+',
+    value: '₹500Cr',
     label: 'Total Disbursal',
   },
   {
-    id: 'ratings',
-    value: '4.2',
-    suffix: '',
-    label: 'Total Ratings',
+    id: 'lenders',
+    value: '50',
+    suffix: '+',
+    label: 'Money Lenders',
+  },
+  {
+    id: 'match',
+    value: '4.8',
+    showStar: true,
+    label: 'Average Match',
   },
 ];
 
@@ -57,42 +65,84 @@ const itemVariants: Variants = {
   },
 };
 
+interface StatValueProps {
+  value: string;
+  suffix?: string;
+  showStar?: boolean;
+}
+
+/** Bold primary value with optional suffix and star */
+const StatValue = ({ value, suffix, showStar }: StatValueProps): React.ReactNode => {
+  return (
+    <div className="flex items-center justify-center gap-0.5">
+      <span className="text-sm font-semibold text-brand-primary wc-stat-number sm:text-xl md:text-2xl">
+        {value}
+      </span>
+      {suffix ? (
+        <span className="text-sm font-semibold text-brand-primary sm:text-xl md:text-2xl">
+          {suffix}
+        </span>
+      ) : null}
+      {showStar ? (
+        <Star
+          className="h-4 w-4 fill-brand-primary text-brand-primary sm:h-5 sm:w-5 md:h-6 md:w-6"
+          aria-hidden
+        />
+      ) : null}
+    </div>
+  );
+};
+
+/** Gradient vertical divider between stat columns */
+const StatDivider = (): React.ReactNode => {
+  return <div className="wc-stat-divider shrink-0" aria-hidden />;
+};
+
+interface StatColumnProps {
+  stat: StatItem;
+  variants: Variants;
+}
+
+/** Single stat column: value stack + label */
+const StatColumn = ({ stat, variants }: StatColumnProps): React.ReactNode => {
+  return (
+    <motion.div
+      className="flex min-w-0 flex-1 flex-col items-center px-1 text-center sm:px-2"
+      variants={variants}
+    >
+      <StatValue value={stat.value} suffix={stat.suffix} showStar={stat.showStar} />
+      <span className="mt-1 text-[10px] leading-snug text-gray-600 sm:text-xs md:text-sm">
+        {stat.label}
+      </span>
+    </motion.div>
+  );
+};
+
 /**
- * Stats section displaying key metrics in a 3-column layout
- * Transparent background to show gradient from hero wrapper
+ * Stats section — single row with gradient dividers at all breakpoints
  */
 const StatsSection = (): React.ReactNode => {
   return (
-    <section className="py-2">
+    <section className="min-w-0 bg-white px-4 py-6 sm:py-8">
       <motion.div
-  className="flex justify-around items-start mx-auto max-w-xl lg:max-w-5xl px-4"
-  variants={containerVariants}
-  initial="hidden"
-  whileInView="visible"
-  viewport={{ once: true, margin: '-50px' }}
->
-
-        {stats.map((stat) => (
-          <motion.div
-            key={stat.id}
-            className="flex flex-col items-center text-center"
-            variants={itemVariants}
-          >
-            <div className="flex items-baseline">
-              <span className="text-[20px] font-medium text-brand-600 wc-stat-number">
-                {stat.value}
-              </span>
-              {stat.suffix && (
-                <span className="text-[20px] font-medium text-brand-600">{stat.suffix}</span>
-              )}
-            </div>
-            <span className="text-[13px] text-gray-600 mt-1 leading-tight">{stat.label}</span>
-          </motion.div>
-        ))}
+        className="mx-auto flex max-w-3xl min-w-0 items-stretch lg:max-w-5xl"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: '-50px' }}
+      >
+        {stats.map((stat, index) => {
+          const isLast = index === stats.length - 1;
+          return (
+            <Fragment key={stat.id}>
+              <StatColumn stat={stat} variants={itemVariants} />
+              {!isLast ? <StatDivider /> : null}
+            </Fragment>
+          );
+        })}
       </motion.div>
     </section>
   );
 };
 
 export default StatsSection;
-

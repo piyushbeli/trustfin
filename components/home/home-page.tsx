@@ -24,35 +24,37 @@ import { PersonalLoanContent } from '@/components/personal-loan/personal-loan-co
  */
 const HomePage = (): React.ReactNode => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen min-w-0 overflow-x-clip">
       {/* Gradient wrapper for Hero + Stats for seamless transition */}
-      <div className="wc-hero-gradient-wrapper">
+      <div className="min-w-0 overflow-x-clip">
         {/* Trustfin hero — static layout with boat image and CTAs */}
         <HeroSection />
-        
-        {/* Stats Section - integrated into gradient */}
-        <StatsSection />
+
+
       </div>
-      
+
       {/* Products Section - on white background */}
       <ProductsSection />
 
-      {/* Tools & Calculators Section */}
-      <ToolsCalculatorsSection />
+      {/* Stats Section - integrated into gradient */}
+      <StatsSection />
 
+      {/* Our Partners Section */}
+      <PartnersSection />
+
+      
       {/* Trending Offers Section
           - Fetches generic lenders as fallback (PDF Step 2) - client-side
           - Fetches user-specific lenders when logged in (PDF Step 3) */}
       <TrendingOffersClient />
 
-      {/* Certifications Section */}
-      <CertificationsSection />
-      
+      {/* Tools & Calculators Section */}
+      <ToolsCalculatorsSection />
+
       {/* Testimonials Section */}
       {/* <TestimonialsSection /> */}
 
-      {/* Our Partners Section */}
-      <PartnersSection />
+
 
       {/* FAQ Section */}
       <FaqSection />

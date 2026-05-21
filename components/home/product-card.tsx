@@ -5,6 +5,8 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
+type ProductCardVariant = 'compact' | 'default';
+
 /** Props for ProductCard component */
 interface ProductCardProps {
   id: string;
@@ -13,14 +15,68 @@ interface ProductCardProps {
   icon?: LucideIcon;
   imagePath?: string;
   index: number;
+  /** compact = mobile bordered card; default = desktop circular icon */
+  variant?: ProductCardVariant;
 }
+
+/** Renders label with line breaks (compact) or a single line (default) */
+const ProductCardLabel = ({
+  label,
+  variant,
+}: {
+  label: string;
+  variant: ProductCardVariant;
+}): React.ReactNode => {
+  if (variant === 'default') {
+    const singleLine = label.includes('\n') ? label.replace(/\n/g, ' ') : label;
+    return (
+      <span className="text-xs text-center leading-tight">{singleLine}</span>
+    );
+  }
+
+  const lines = label.split('\n');
+  return (
+    <span className="text-xs text-gray-700 text-center leading-tight">
+      {lines.map((line, idx) => (
+        <span key={idx}>
+          {line}
+          {idx < lines.length - 1 && <br />}
+        </span>
+      ))}
+    </span>
+  );
+};
 
 /**
  * Individual product card with icon/image and label
  */
-const ProductCard = ({ label, href, icon: Icon, imagePath, index }: ProductCardProps): React.ReactNode => {
+const ProductCard = ({
+  label,
+  href,
+  icon: Icon,
+  imagePath,
+  index,
+  variant = 'default',
+}: ProductCardProps): React.ReactNode => {
+  const isCompact = variant === 'compact';
+
+  const linkClassName = isCompact
+    ? 'wc-product-card flex min-w-[88px] flex-col items-center gap-2 rounded-xl border border-gray-100 bg-white p-3'
+    : 'wc-product-card flex flex-col items-center gap-3 p-2';
+
+  const iconContainerClassName = isCompact
+    ? 'flex h-10 w-10 items-center justify-center overflow-hidden rounded-sm bg-brand-100'
+    : 'flex h-16 w-16 items-center justify-center overflow-hidden rounded-full bg-brand-100';
+
+  const iconClassName = isCompact
+    ? 'h-5 w-5 stroke-brand-primary text-brand-primary'
+    : 'h-7 w-7 stroke-brand-primary text-brand-primary';
+
+  const imageSize = isCompact ? 20 : 40;
+
   return (
     <motion.div
+      className={isCompact ? 'shrink-0' : undefined}
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -31,40 +87,32 @@ const ProductCard = ({ label, href, icon: Icon, imagePath, index }: ProductCardP
         delay: index * 0.1,
       }}
     >
-      <Link
-        href={href}
-        className="wc-product-card flex flex-col items-center gap-3 p-2"
-      >
-        {/* Icon/Image Container - Large circular background */}
+      <Link href={href} className={linkClassName}>
         <motion.div
-          className="w-16 h-16 rounded-full bg-brand-100 flex items-center justify-center overflow-hidden"
+          className={iconContainerClassName}
           whileTap={{ scale: 0.95 }}
         >
-          {imagePath ? (
+          {imagePath ? ( 
             <Image
               src={imagePath}
-              alt={label}
-              width={32}
-              height={32}
+              alt={label.replace(/\n/g, ' ')}
+              width={imageSize}
+              height={imageSize}
               className="object-contain icon-brand-image"
             />
           ) : Icon ? (
             <Icon
-              className="w-7 h-7 stroke-brand-primary text-brand-primary"
+              className={iconClassName}
               strokeWidth={2}
               aria-hidden
             />
           ) : null}
         </motion.div>
-        
-        {/* Label */}
-        <span className="text-xs text-center leading-tight">
-          {label}
-        </span>
+
+        <ProductCardLabel label={label} variant={variant} />
       </Link>
     </motion.div>
   );
 };
 
 export default ProductCard;
-

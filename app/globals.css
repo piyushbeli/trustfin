@@ -278,7 +278,9 @@
 .wc-hero-bg {
   background: transparent;
   position: relative;
-  overflow: visible;
+  /* Clip horizontal bleed from mascot (-mx-12); do not use overflow:visible (breaks page width) */
+  overflow-x: clip;
+  overflow-y: visible;
 }
 
 /* Blur-based lavender bloom behind boat — no gradient ring / hard edge */
@@ -426,6 +428,21 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Stats section — vertical divider with fade at top/bottom */
+.wc-stat-divider {
+  width: 1px;
+  align-self: center;
+  flex-shrink: 0;
+  height: 2.5rem;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--color-brand-200) 35%,
+    var(--color-brand-200) 65%,
+    transparent 100%
+  );
+}
+
 /* Mobile Menu Overlay */
 .wc-menu-overlay {
   background: color-mix(in srgb, var(--color-brand-900) 80%, transparent);
@@ -486,6 +503,17 @@
 
 .scrollbar-hide::-webkit-scrollbar {
   display: none;
+}
+
+/* Products row — constrain width so flex children scroll inside, not widen the page */
+.wc-products-scroll {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* =============================================================================

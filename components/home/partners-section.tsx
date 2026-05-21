@@ -1,48 +1,59 @@
+'use client';
 
-import React from 'react';
-import { Partner } from '@/types/wecredit';
 import { PARTNERS } from '@/lib/constants/common';
+import { chunkPartners } from '@/lib/utils/partners-carousel';
+import {
+  Carousel,
+  CarouselContent,
+  CarouselDots,
+  CarouselSlide,
+} from '@/components/ui/carousel';
 import PartnerCard from './partner-card';
 
-/**
- * Grid settings for partners layout.
- */
-const PARTNER_GRID_COLUMNS = 5;
-const PARTNER_GRID_ROWS = 6;
-const PARTNER_GRID_ITEMS = PARTNER_GRID_COLUMNS * PARTNER_GRID_ROWS;
-type PartnerGridItem = Partner | null;
+const partnerSlides = chunkPartners(PARTNERS);
 
 /**
- * Our Partners section with a static 5x5 grid.
+ * Trusted By section — carousel of lender logos with pagination dots
  */
 const PartnersSection = (): React.ReactNode => {
-	const gridPartners = PARTNERS.slice(0, PARTNER_GRID_ITEMS);
-	const placeholderCount = PARTNER_GRID_ITEMS - gridPartners.length;
-	const placeholders = Array.from({ length: Math.max(0, placeholderCount) }, (): PartnerGridItem => null);
-	const partnerGridItems = [...gridPartners, ...placeholders];
-	return (
-		<section className="bg-white py-4 sm:mt-5 md:py-5 overflow-hidden">
-			{/* Container with blue left border accent */}
-			{/* Section Title */}
-			<h2 className="text-xl sm:text-2xl md:text-[18px] font-medium mb-6 sm:mb-6 text-center">
-				Our Partners
-			</h2>
-			<div className="max-w-4xl mx-auto px-4 sm:px-6 md:px-8">
-  <div className="grid grid-cols-5 gap-2 sm:gap-3 md:gap-4 justify-items-center">
-    {partnerGridItems.map((partner, index) => (
-      <div key={`partner-grid-${index}`} className="flex justify-center">
-        {partner ? (
-          <PartnerCard partner={partner} />
-        ) : (
-          <div className="w-14 h-10 sm:w-20 sm:h-12 md:w-28 md:h-16 lg:w-32 lg:h-20" />
-        )}
-      </div>
-    ))}
-  </div>
-</div>
+  return (
+    <section className="min-w-0 overflow-hidden bg-white py-6 sm:py-8">
+      <div className="mx-auto max-w-3xl px-4">
+        <h2 className="mb-6 text-center text-xl font-semibold text-gray-900 sm:mb-8 sm:text-2xl">
+          Trusted By
+          <br />
+          <span className="text-brand-primary">50+ Lenders</span>
+        </h2>
 
-		</section>
-	);
+        <Carousel
+          options={{ loop: false, align: 'start', containScroll: 'trimSnaps' }}
+          className="min-w-0"
+        >
+          <CarouselContent>
+            {partnerSlides.map((slidePartners, slideIndex) => (
+              <CarouselSlide
+                key={slideIndex}
+                index={slideIndex}
+                className="min-w-0 basis-full"
+              >
+                <div className="flex min-w-0 items-center justify-evenly gap-4 px-2 sm:gap-6 sm:px-4">
+                  {slidePartners.map((partner) => (
+                    <PartnerCard key={partner.name} partner={partner} />
+                  ))}
+                </div>
+              </CarouselSlide>
+            ))}
+          </CarouselContent>
+
+          <CarouselDots
+            className="mt-5 sm:mt-6"
+            dotClassName="h-2 w-2 rounded-full bg-brand-200 transition-colors"
+            activeDotClassName="h-2 w-2 rounded-full bg-brand-primary"
+          />
+        </Carousel>
+      </div>
+    </section>
+  );
 };
 
 export default PartnersSection;

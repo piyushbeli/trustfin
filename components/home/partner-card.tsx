@@ -1,22 +1,26 @@
-import { Partner } from "@/types/wecredit";
-import Image from "next/image";
+import { Partner } from '@/types/wecredit';
+import Image from 'next/image';
+
+interface PartnerCardProps {
+  partner: Partner;
+}
 
 /**
- * Partner logo card component
+ * Partner logo — flat presentation for carousel row (no background box)
  */
-const PartnerCard = ({ partner }: { partner: Partner }): React.ReactNode => {
-	return (
-		<div className="shrink-0 w-full h-10 sm:h-20  bg-[#00000005]  rounded-lg flex items-center justify-center p-2 sm:p-3">
-			<Image
-				src={partner.logo}
-				alt={partner.name}
-				width={520}
-				height={260}
-				unoptimized
-				className="object-contain max-h-full max-w-full"
-			/>
-		</div>
-	);
+const PartnerCard = ({ partner }: PartnerCardProps): React.ReactNode => {
+  return (
+    <div className="flex min-w-0 flex-1 items-center justify-center px-1 sm:px-2">
+      <Image
+        src={partner.logo}
+        alt={partner.name}
+        width={120}
+        height={48}
+        unoptimized
+        className="h-7 w-auto max-w-full object-contain sm:h-8 md:h-10"
+      />
+    </div>
+  );
 };
 
 export default PartnerCard;
