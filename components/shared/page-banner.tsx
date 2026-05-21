@@ -86,7 +86,7 @@ const PageBanner = ({
     style={gradientStyle}
   >
     {/* Title */}
-    <div className="text-center text-white text-xl font-semibold font-['Poppins'] leading-6">
+    <div className="text-center text-white text-xl font-semibold leading-6">
       {title}
     </div>
 

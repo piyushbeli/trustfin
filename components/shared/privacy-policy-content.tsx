@@ -75,7 +75,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 1 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">1. Information we collect</h2>
+        <h2 className="text-black/80 text-base font-medium">1. Information we collect</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -94,7 +94,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 2 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">2. How we use and share the information</h2>
+        <h2 className="text-black/80 text-base font-medium">2. How we use and share the information</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -193,7 +193,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 3 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">3. Cookie Policy, Log Data and Usage Information</h2>
+        <h2 className="text-black/80 text-base font-medium">3. Cookie Policy, Log Data and Usage Information</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -212,7 +212,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 4 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">4. Identity Theft / Phishing</h2>
+        <h2 className="text-black/80 text-base font-medium">4. Identity Theft / Phishing</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -227,7 +227,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 5 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">5. Links to Other Sites</h2>
+        <h2 className="text-black/80 text-base font-medium">5. Links to Other Sites</h2>
         
         <p className="">
           Our Platform provides links to other websites and third-party platforms (&quot;Third-Party Platforms&quot;). Such Third-Party Platforms may collect information about you in case you decide to visit the same. We are not responsible for the privacy practices or the content of those linked websites and Third-Party Platforms. We recommend you review the privacy policies of such Third-Party Platforms. In case you choose to log-in through your Google account, we will access information from your Google accounts once they give us permission to do so whilst using the Google-related functionality (as the case may be) of the Platform. Once permission is granted, the Platform accesses a user&apos;s account details, mobile number, email address, contact list, and location (as applicable). The respective privacy policies of Google will also be applicable.
@@ -236,7 +236,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 6 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">6. Data Retention by Us</h2>
+        <h2 className="text-black/80 text-base font-medium">6. Data Retention by Us</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -251,7 +251,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 7 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">7. Information Security</h2>
+        <h2 className="text-black/80 text-base font-medium">7. Information Security</h2>
         
         <p className="">
           We work to protect your information from loss, misuse, or unauthorized alteration by using industry-recognized security safeguards, coupled with carefully developed security procedures and practices. We maintain electronic and procedural safeguards of all information. We use both internal and external resources to review our security procedures.
@@ -260,7 +260,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 8 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">8. Disclaimer</h2>
+        <h2 className="text-black/80 text-base font-medium">8. Disclaimer</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -283,7 +283,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 9 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">9. Changes to the Platform and this Policy</h2>
+        <h2 className="text-black/80 text-base font-medium">9. Changes to the Platform and this Policy</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -298,7 +298,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 10 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">10. Withdrawal of Consent by You</h2>
+        <h2 className="text-black/80 text-base font-medium">10. Withdrawal of Consent by You</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -326,7 +326,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 11 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">11. Grievance Redressal Officer</h2>
+        <h2 className="text-black/80 text-base font-medium">11. Grievance Redressal Officer</h2>
         
         <div className="space-y-4 ">
           <p>
@@ -356,7 +356,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 12 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">12. How to Contact Us</h2>
+        <h2 className="text-black/80 text-base font-medium">12. How to Contact Us</h2>
         
         <p className="">
           If You have questions or concerns about this Policy, please contact us at the following email address: care@wecredit.co.in.
@@ -365,14 +365,14 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Section 13 */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">13. Statement on Loan Listing and Matching Logic</h2>
+        <h2 className="text-black/80 text-base font-medium">13. Statement on Loan Listing and Matching Logic</h2>
         
         <div className="space-y-4 ">
           <p>
             In accordance with the Reserve Bank of India – Digital Lending Directions, 2025, this section outlines the listing and matching logic followed by WeCredit for presenting loan offers from multiple Regulated Entities (&quot;REs&quot;) on our Platform.
           </p>
 
-          <h3 className="text-black/80 text-base font-medium font-['Poppins'] text-left">Overview</h3>
+          <h3 className="text-black/80 text-base font-medium text-left">Overview</h3>
 
           <p>
             In compliance with the RBI&apos;s Digital Lending Directions, 2025, our Platform follows a transparent, fair, and non-discriminatory process for evaluating and submitting loan applications to multiple Regulated Entities. We do not prioritise or rank lenders in any biased manner.
@@ -397,7 +397,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
             <p>Conversion ratio (Application to Disbursed)</p>
           </div>
 
-          <h3 className="text-black/80 text-base font-medium font-['Poppins'] text-left">Declaration</h3>
+          <h3 className="text-black/80 text-base font-medium text-left">Declaration</h3>
 
           <p>
             We affirm that our listing and matching logic adheres to the RBI&apos;s intent of transparency, borrower awareness, and non-discriminatory access to credit.

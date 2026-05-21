@@ -52,14 +52,14 @@ const tools: Tool[] = [
  */
 const ToolsCalculatorsSection = (): React.ReactNode => {
   return (
-    <section className="min-w-0 overflow-hidden bg-white py-6">
-      <div className="mb-4 flex items-center justify-between gap-3 px-4">
+    <section className="min-w-0 overflow-hidden bg-white py-6 common-section-wrapper">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="text-lg font-semibold text-gray-900">Tools & Calculators</h2>
         <span className="shrink-0 text-sm text-gray-500">Swipe to explore</span>
       </div>
 
       <div className="min-w-0 overflow-hidden">
-        <div className="wc-products-scroll scrollbar-hide flex items-stretch gap-4 overflow-x-auto overscroll-x-contain px-4 pb-1">
+        <div className="wc-products-scroll scrollbar-hide flex items-stretch gap-4 overflow-x-auto overscroll-x-contain pb-1">
           {tools.map((tool, index) => (
             <ToolCard
               key={tool.id}

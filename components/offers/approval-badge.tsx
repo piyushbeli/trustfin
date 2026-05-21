@@ -84,7 +84,6 @@ export const ApprovalBadge = ({ percentage, size = 'md' }: ApprovalBadgeProps) =
           <span
             className="text-brand-primary"
             style={{
-              fontFamily: 'Poppins, sans-serif',
               fontWeight: 500,
               fontSize: '16px',
               lineHeight: '100%',
@@ -96,7 +95,6 @@ export const ApprovalBadge = ({ percentage, size = 'md' }: ApprovalBadgeProps) =
 
           <span
             style={{
-              fontFamily: 'Poppins, sans-serif',
               fontWeight: 300,
               fontSize: '8px',
               lineHeight: '8px',

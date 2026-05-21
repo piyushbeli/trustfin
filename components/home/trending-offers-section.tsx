@@ -38,8 +38,8 @@ const TrendingOffersSection = ({
   }
 
   return (
-    <section className="min-w-0 overflow-hidden bg-white py-6">
-      <div className="mb-4 flex items-center justify-between gap-3 px-4">
+    <section className="min-w-0 overflow-hidden bg-white py-6 common-section-wrapper mx-auto">
+      <div className="mb-4 flex items-center justify-between gap-3">
         <h2 className="min-w-0 text-lg font-semibold text-gray-900">{resolvedHeading}</h2>
         {shouldShowSwipeHint ? (
           <span className="shrink-0 text-sm text-gray-500">Swipe to explore</span>
@@ -47,7 +47,7 @@ const TrendingOffersSection = ({
       </div>
 
       <div className="min-w-0 overflow-hidden">
-        <div className="wc-products-scroll scrollbar-hide overflow-x-auto overscroll-x-contain px-4 pb-1">
+        <div className="wc-products-scroll scrollbar-hide flex items-stretch gap-4 overflow-x-auto overscroll-x-contain pb-1">
           {/* increase the width of the grid more so that the cards are not too close to each other*/}
           <div className="grid w-max grid-flow-col grid-rows-2 gap-3 auto-cols-[minmax(180px,200px)] sm:auto-cols-[minmax(180px,200px)]">
             {activeLenders.map(({ id, lender }, index) => (

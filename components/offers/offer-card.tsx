@@ -109,7 +109,6 @@ export function OfferCard({ offer, onClick, variant = 'explore' }: OfferCardProp
       <h3
         className="ml-[12px]"
         style={{
-          fontFamily: 'Poppins, sans-serif',
           fontWeight: 500,
           fontSize: '14px',
           lineHeight: '120%',

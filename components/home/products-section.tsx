@@ -65,7 +65,7 @@ const products: Product[] = [
  */
 const ProductsSection = (): React.ReactNode => {
   return (
-    <section className="min-w-0 bg-white py-4 md:mt-5 md:py-0">
+    <section className="min-w-0 bg-white py-4 md:mt-5 md:py-0 mb-2">
       {/* Mobile header */}
       <motion.div
         className="mb-4 flex items-center justify-between px-4 md:hidden"
@@ -112,7 +112,7 @@ const ProductsSection = (): React.ReactNode => {
       </div>
 
       {/* Desktop: grid */}
-      <div className="mx-auto hidden max-w-3xl grid-cols-3 gap-2 px-4 md:grid lg:grid-cols-6">
+      <div className="mx-auto hidden common-section-wrapper grid-cols-3 gap-2 px-4 md:grid lg:grid-cols-6">
         {products.map((product, index) => (
           <ProductCard
             key={product.id}

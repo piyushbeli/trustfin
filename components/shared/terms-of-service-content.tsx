@@ -7,7 +7,7 @@ import React from 'react';
  */
 const TermsOfServiceContent = (): React.ReactNode => {
   return (
-    <div className="w-full space-y-6 text-zinc-500 text-sm font-normal font-['Poppins'] leading-4">
+    <div className="w-full space-y-6 text-zinc-500 text-sm font-normal leading-4">
       {/* Last Updated */}
       <p className="text-left">
         Last Updated on: 01-07-2025
@@ -15,7 +15,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 1: INTRODUCTION */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">1. INTRODUCTION</h2>
+        <h2 className="text-black/80 text-base font-medium">1. INTRODUCTION</h2>
         
         <div className="space-y-4">
           <p>
@@ -50,7 +50,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 2: ELECTRONIC RECORDS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">2. ELECTRONIC RECORDS</h2>
+        <h2 className="text-black/80 text-base font-medium">2. ELECTRONIC RECORDS</h2>
         
         <div className="space-y-4">
           <p>
@@ -65,7 +65,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 3: GENERAL TERMS OF OUR OFFERINGS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">3. GENERAL TERMS OF OUR OFFERINGS</h2>
+        <h2 className="text-black/80 text-base font-medium">3. GENERAL TERMS OF OUR OFFERINGS</h2>
         
         <div className="space-y-4">
           <p>
@@ -92,7 +92,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 4: MEMBERSHIP ELIGIBILITY */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">4. MEMBERSHIP ELIGIBILITY</h2>
+        <h2 className="text-black/80 text-base font-medium">4. MEMBERSHIP ELIGIBILITY</h2>
         
         <div className="space-y-4">
           <p>
@@ -103,7 +103,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 5: OPENING OF ACCOUNT ON PLATFORM */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">5. OPENING OF ACCOUNT ON PLATFORM</h2>
+        <h2 className="text-black/80 text-base font-medium">5. OPENING OF ACCOUNT ON PLATFORM</h2>
         
         <div className="space-y-4">
           <p>
@@ -145,7 +145,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 6: LICENSE AND ACCESS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">6. LICENSE AND ACCESS</h2>
+        <h2 className="text-black/80 text-base font-medium">6. LICENSE AND ACCESS</h2>
         
         <div className="space-y-4">
           <p>
@@ -164,7 +164,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 7: PROHIBITED USES */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">7. PROHIBITED USES</h2>
+        <h2 className="text-black/80 text-base font-medium">7. PROHIBITED USES</h2>
         
         <div className="space-y-4">
           <p>
@@ -235,7 +235,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 8: RIGHTS AND RESERVATIONS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">8. RIGHTS AND RESERVATIONS</h2>
+        <h2 className="text-black/80 text-base font-medium">8. RIGHTS AND RESERVATIONS</h2>
         
         <div className="space-y-4">
           <p>
@@ -262,7 +262,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 9: PROMOTIONAL OFFERS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">9. PROMOTIONAL OFFERS</h2>
+        <h2 className="text-black/80 text-base font-medium">9. PROMOTIONAL OFFERS</h2>
         
         <div className="space-y-4">
           <p>
@@ -273,7 +273,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 10: USERS' POSTS AND REVIEWS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">10. USERS&apos; POSTS AND REVIEWS</h2>
+        <h2 className="text-black/80 text-base font-medium">10. USERS&apos; POSTS AND REVIEWS</h2>
         
         <div className="space-y-4">
           <p>
@@ -292,7 +292,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 11: LINKS TO THIRD PARTY WEBSITES */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">11. LINKS TO THIRD PARTY WEBSITES</h2>
+        <h2 className="text-black/80 text-base font-medium">11. LINKS TO THIRD PARTY WEBSITES</h2>
         
         <div className="space-y-4">
           <p>
@@ -303,7 +303,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 12: MODIFICATION TO SERVICES */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">12. MODIFICATION TO SERVICES</h2>
+        <h2 className="text-black/80 text-base font-medium">12. MODIFICATION TO SERVICES</h2>
         
         <div className="space-y-4">
           <p>
@@ -322,7 +322,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 13: DISCLAIMER OF WARRANTIES */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">13. DISCLAIMER OF WARRANTIES</h2>
+        <h2 className="text-black/80 text-base font-medium">13. DISCLAIMER OF WARRANTIES</h2>
         
         <div className="space-y-4">
           <p>
@@ -333,7 +333,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 14: LIMITATION OF LIABILITY */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">14. LIMITATION OF LIABILITY</h2>
+        <h2 className="text-black/80 text-base font-medium">14. LIMITATION OF LIABILITY</h2>
         
         <div className="space-y-4">
           <p>
@@ -344,7 +344,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 15: INDEMNIFICATION */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">15. INDEMNIFICATION</h2>
+        <h2 className="text-black/80 text-base font-medium">15. INDEMNIFICATION</h2>
         
         <div className="space-y-4">
           <p>
@@ -355,7 +355,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 16: TERMINATION OF ACCESS TO THE PLATFORM */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">16. TERMINATION OF ACCESS TO THE PLATFORM</h2>
+        <h2 className="text-black/80 text-base font-medium">16. TERMINATION OF ACCESS TO THE PLATFORM</h2>
         
         <div className="space-y-4">
           <p>
@@ -373,7 +373,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 17: TAKEDOWN POLICY */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">17. TAKEDOWN POLICY</h2>
+        <h2 className="text-black/80 text-base font-medium">17. TAKEDOWN POLICY</h2>
         
         <div className="space-y-4">
           <p>
@@ -400,7 +400,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 18: MISCELLANEOUS */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">18. MISCELLANEOUS</h2>
+        <h2 className="text-black/80 text-base font-medium">18. MISCELLANEOUS</h2>
         
         <div className="space-y-4">
           <p>
@@ -419,7 +419,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 19: GRIEVANCE REDRESSAL MECHANISM */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">19. GRIEVANCE REDRESSAL MECHANISM</h2>
+        <h2 className="text-black/80 text-base font-medium">19. GRIEVANCE REDRESSAL MECHANISM</h2>
         
         <div className="space-y-4">
           <p>
@@ -457,7 +457,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 20: HOW TO CONTACT WECREDIT */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">20. HOW TO CONTACT WECREDIT</h2>
+        <h2 className="text-black/80 text-base font-medium">20. HOW TO CONTACT WECREDIT</h2>
         
         <div className="space-y-4">
           <p>
@@ -468,7 +468,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
       {/* Section 21: Our Brands */}
       <div className="space-y-4">
-        <h2 className="text-black/80 text-base font-medium font-['Poppins']">21. Our Brands</h2>
+        <h2 className="text-black/80 text-base font-medium">21. Our Brands</h2>
         
         <div className="space-y-4">
           <p>

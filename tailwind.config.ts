@@ -132,9 +132,9 @@ const config = {
       },
 
       fontFamily: {
-        sans: ['var(--font-poppins)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-satoshi)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         mono: ['var(--font-geist-mono)', 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', '"Liberation Mono"', '"Courier New"', 'monospace'],
-        poppins: ['var(--font-poppins)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        satoshi: ['var(--font-satoshi)', 'ui-sans-serif', 'system-ui', 'sans-serif'],
       },
 
       backgroundImage: {

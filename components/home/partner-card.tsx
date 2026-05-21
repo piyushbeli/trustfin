@@ -17,7 +17,8 @@ const PartnerCard = ({ partner }: PartnerCardProps): React.ReactNode => {
         width={120}
         height={48}
         unoptimized
-        className="h-7 w-auto max-w-full object-contain sm:h-8 md:h-10"
+        draggable={false}
+        className="h-7 w-auto max-w-full select-none object-contain sm:h-8 md:h-10"
       />
     </div>
   );

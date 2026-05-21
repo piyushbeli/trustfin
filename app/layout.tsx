@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import { Suspense } from 'react';
-import { Geist, Geist_Mono, Poppins } from 'next/font/google';
+import { Geist_Mono } from 'next/font/google';
 import './globals.css';
+import { satoshi } from '@/lib/fonts';
 import ConditionalMobileHeader from '@/components/layout/conditional-mobile-header';
 import ConditionalFooter from '@/components/layout/conditional-footer';
 import { AuthModal } from '@/components/auth';
@@ -12,20 +13,9 @@ import { LoadingScreen } from '@/components/shared/loading-screen';
 import { getGlobal } from '@/lib/strapi';
 import Script from 'next/script';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
-});
-
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
   subsets: ['latin'],
-});
-
-const poppins = Poppins({
-  variable: '--font-poppins',
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
 });
 
 /**
@@ -67,7 +57,7 @@ export default async function RootLayout({
         </Script>
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${poppins.className} antialiased min-h-screen flex flex-col`}
+        className={`${satoshi.variable} ${geistMono.variable} ${satoshi.className} antialiased min-h-screen flex flex-col`}
       >
         {/* <noscript>
           <iframe

@@ -24,14 +24,14 @@ const InfoCard = ({
     </div>
 
     <div className="p-3 text-center">
-      <h3 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-zinc-800">
+      <h3 className="font-medium text-base leading-[1] tracking-normal text-zinc-800">
         {title}
       </h3>
 
       {description && (
         <>
           <div className="h-2" />
-          <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-zinc-500">
+          <p className="font-normal text-sm leading-[1.2] tracking-normal text-zinc-500">
             {description}
           </p>
         </>
@@ -93,13 +93,13 @@ const AboutUsContent = (): React.ReactNode => {
           <BackToHomeButton />
         </div>
 
-        <h2 className="font-['Poppins'] font-medium text-2xl leading-[1] tracking-normal text-zinc-800">
+        <h2 className="font-medium text-2xl leading-[1] tracking-normal text-zinc-800">
           About WeCredit
         </h2>
 
         <div className="h-4" />
 
-        <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-zinc-600">
+        <p className="font-normal text-sm leading-[1.2] tracking-normal text-zinc-600">
           At WeCredit, we believe that managing credit should be easy and transparent without confusion or hidden details.
         </p>
       </div>
@@ -115,20 +115,20 @@ const AboutUsContent = (): React.ReactNode => {
           />
         </div>
 
-        <h3 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
+        <h3 className="font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
           We make personal finance simple and transparent.
         </h3>
 
-        <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-8">
+        <p className="font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-8">
           With the help of data and technology, WeCredit lets you view and compare multiple loan and card offers in one place. We share clear and unbiased information to help you make better decisions and support you throughout your credit journey.
         </p>
 
         {/* Team */}
-        <h3 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
+        <h3 className="font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
           Meet the Team Behind WeCredit
         </h3>
 
-        <p className="font-['Poppins'] font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-10">
+        <p className="font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-10">
           Our leadership team brings experience from key areas of the business, including finance, operations, risk, and growth.
         </p>
 
@@ -145,7 +145,7 @@ const AboutUsContent = (): React.ReactNode => {
 
         {/* Timeline */}
         <div className="mb-6 mt-8">
-          <h2 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-black">
+          <h2 className="font-medium text-base leading-[1] tracking-normal text-black">
             Our Journey
           </h2>
         </div>
@@ -177,15 +177,15 @@ const AboutUsContent = (): React.ReactNode => {
                 />
 
                 <div className="ml-8 flex-1">
-                  <div className="font-['Poppins'] font-medium text-sm leading-[1.2] text-brand-primary">
+                  <div className="font-medium text-sm leading-[1.2] text-brand-primary">
                     {item.year}
                   </div>
 
-                  <div className="mt-1 font-['Poppins'] font-medium text-base leading-[1.2] text-brand-primary">
+                  <div className="mt-1 font-medium text-base leading-[1.2] text-brand-primary">
                     {item.title}
                   </div>
 
-                  <p className="mt-2 font-['Poppins'] font-normal text-sm leading-[1.2] text-zinc-400">
+                  <p className="mt-2 font-normal text-sm leading-[1.2] text-zinc-400">
                     {item.desc}
                   </p>
                 </div>
@@ -196,12 +196,12 @@ const AboutUsContent = (): React.ReactNode => {
               <div className="w-6 h-6 rounded-full bg-[#D9D9D9] shrink-0" />
 
               <div className="ml-8 flex-1">
-                <div className="font-['Poppins'] font-medium text-sm leading-[1.2] text-brand-primary">
+                <div className="font-medium text-sm leading-[1.2] text-brand-primary">
                   2026
                 </div>
 
                 <div className="mt-3 p-4 rounded-lg border border-dashed border-brand-primary bg-brand-lightest">
-                  <p className="font-['Poppins'] font-normal text-sm leading-[1.2] text-brand-primary">
+                  <p className="font-normal text-sm leading-[1.2] text-brand-primary">
                     Since then, WeCredit has been helping people get credit easily and quickly.
                   </p>
                 </div>
@@ -212,7 +212,7 @@ const AboutUsContent = (): React.ReactNode => {
 
         {/* Achievements */}
         <div className="mb-6 mt-8">
-          <h2 className="font-['Poppins'] font-medium text-base leading-[1] tracking-normal text-black">
+          <h2 className="font-medium text-base leading-[1] tracking-normal text-black">
             Our Achievements & Partnerships
           </h2>
         </div>

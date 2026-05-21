@@ -84,7 +84,7 @@ const FaqSection = (): React.ReactNode => {
 	};
 
 	return (
-		<section className="bg-white py-4 sm:py-10 md:py-12 px-4">
+		<section className="bg-white py-4 sm:py-10 md:py-12 common-section-wrapper">
 			{/* Section Title */}
 			<motion.h2
 				className="text-lg md:text-[18px] md:text-2xl font-medium text-center mb-6 sm:mb-8"
@@ -97,7 +97,7 @@ const FaqSection = (): React.ReactNode => {
 			</motion.h2>
 
 			{/* FAQ Accordion */}
-			<div className="max-w-6xl mx-auto space-y-1">
+			<div className="mx-auto space-y-1">
 				{STANDARD_FAQS.map((item, index) => (
 					<FaqAccordionItem
 						key={item.id}

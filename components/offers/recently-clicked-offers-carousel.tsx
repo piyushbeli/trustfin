@@ -68,7 +68,6 @@ function RecentlyClickedOfferCard({
 			<h3
 				className="ml-[0px] mb-[8px] mt-[8px]"
 				style={{
-					fontFamily: 'Poppins, sans-serif',
 					fontWeight: 500,
 					fontSize: '14px',
 					lineHeight: '120%',

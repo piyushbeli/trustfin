@@ -39,8 +39,8 @@ export const UserButton = ({
 			type="button"
 			onClick={openAuthModal}
 			className={cn(
-				'rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-all duration-300',
-				'hover:bg-brand-primary/90'
+				'rounded-md text-brand-primary px-4 py-2 text-sm font-semibold transition-all duration-300',
+				'hover:text-brand-primary/90'
 			)}
 			whileTap={{ scale: 0.95 }}
 		>
