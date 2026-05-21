@@ -1,9 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Calculator, PieChart, Briefcase, Gauge } from 'lucide-react';
 import ToolCard from './tool-card';
-import { IMAGES } from '@/lib/constants/images';
 import type { LucideIcon } from 'lucide-react';
 
 /** Tool configuration interface */
@@ -12,86 +10,72 @@ interface Tool {
   title: string;
   description: string;
   href: string;
-  imagePath?: string;
   fallbackIcon: LucideIcon;
+  ctaLabel?: string;
 }
 
 /** Tools data matching the design */
 const tools: Tool[] = [
   {
     id: 'personal-loan-calculator',
-    title: 'Personal Loan\ncalculator',
-    description: 'Calculate personal loan EMI',
+    title: 'Personal Loan EMI Calculator',
+    description:
+      'Find your EMI instantly. Enter loan, tenure & rate – see results fast.',
     href: '/calculator/personal-loan',
-    imagePath: IMAGES.ILLUSTRATIONS.PERSONAL_LOAN,
     fallbackIcon: Calculator,
   },
   {
     id: 'emi-calculator',
-    title: 'EMI\ncalculator',
-    description: 'Calculate personal loan EMI',
+    title: 'EMI Calculator',
+    description: 'Plan repayments with a quick EMI estimate for any loan amount.',
     href: '/calculator/emi',
-    imagePath: IMAGES.ILLUSTRATIONS.EMI_CALC,
     fallbackIcon: PieChart,
   },
   {
     id: 'business-loan-calculator',
-    title: 'Business Loan\ncalculator',
-    description: 'Calculate business loan EMI',
+    title: 'Business Loan Calculator',
+    description: 'Estimate business loan EMIs before you apply.',
     href: '/calculator/business-loan',
-    imagePath: IMAGES.ILLUSTRATIONS.BUSINESS_LOAN_CALC,
     fallbackIcon: Briefcase,
   },
   {
     id: 'credit-score-check',
-    title: 'Check Credit\nScore',
-    description: 'Check personal loan EMI',
+    title: 'Check Credit Score',
+    description: 'View your bureau score and understand your credit health.',
     href: '/bureau-report/',
-    imagePath: IMAGES.ILLUSTRATIONS.CREDIT_SCORE,
     fallbackIcon: Gauge,
   },
 ];
 
 /**
- * Tools & Calculators section component
- * Displays a 2x2 grid of tool cards with an explore link
+ * Tools & Calculators — horizontal scroll of calculator cards
  */
 const ToolsCalculatorsSection = (): React.ReactNode => {
   return (
-    <section className="bg-white py-4 px-4 md:py-0">
-      <div className="mx-auto max-w-3xl md:my-8 lg:my-12">
-        {/* Section Title */}
-        <motion.h2
-          className="text-lg font-medium md:text-[18px] text-center mb-6"
-          initial={{ opacity: 0, y: 10 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.4 }}
-        >
-          Tools & Calculators
-        </motion.h2>
+    <section className="min-w-0 overflow-hidden bg-white py-6">
+      <div className="mb-4 flex items-center justify-between gap-3 px-4">
+        <h2 className="text-lg font-semibold text-gray-900">Tools & Calculators</h2>
+        <span className="shrink-0 text-sm text-gray-500">Swipe to explore</span>
+      </div>
 
-        {/* Tools Grid - 2x2 layout */}
-        {/* Tools Grid */}
-<div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
-  {tools.map((tool, index) => (
-    <ToolCard
-      key={tool.id}
-      id={tool.id}
-      title={tool.title}
-      description={tool.description}
-      href={tool.href}
-      imagePath={tool.imagePath}
-      fallbackIcon={tool.fallbackIcon}
-      index={index}
-    />
-  ))}
-</div>
-
+      <div className="min-w-0 overflow-hidden">
+        <div className="wc-products-scroll scrollbar-hide flex items-stretch gap-4 overflow-x-auto overscroll-x-contain px-4 pb-1">
+          {tools.map((tool, index) => (
+            <ToolCard
+              key={tool.id}
+              title={tool.title}
+              description={tool.description}
+              href={tool.href}
+              fallbackIcon={tool.fallbackIcon}
+              index={index}
+              ctaLabel={tool.ctaLabel}
+              className="w-[min(280px,85vw)] sm:w-[280px]"
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
 };
 
 export default ToolsCalculatorsSection;
-

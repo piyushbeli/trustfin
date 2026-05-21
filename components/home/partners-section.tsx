@@ -18,7 +18,7 @@ const partnerSlides = chunkPartners(PARTNERS);
 const PartnersSection = (): React.ReactNode => {
   return (
     <section className="min-w-0 overflow-hidden bg-white py-6 sm:py-8">
-      <div className="mx-auto max-w-3xl px-4">
+      <div className="mx-auto !sm:max-w-3xl px-4">
         <h2 className="mb-6 text-center text-xl font-semibold text-gray-900 sm:mb-8 sm:text-2xl">
           Trusted By
           <br />

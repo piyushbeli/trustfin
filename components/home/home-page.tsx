@@ -62,12 +62,6 @@ const HomePage = (): React.ReactNode => {
       {/* Blog Section */}
       <BlogSection />
 
-      {/* App Download Section */}
-      <AppDownloadSection />
-
-      {/* Dreams Section */}
-      <DreamsSection />
-
       {/* Shared apply flow (auth/dedupe + lead form) for home page CTA */}
       <PersonalLoanContent />
     </div>

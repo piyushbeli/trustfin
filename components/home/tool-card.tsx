@@ -1,89 +1,73 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
-import React from 'react';
 
 interface ToolCardProps {
-  id: string;
   title: string;
   description: string;
   href: string;
-  imagePath?: string;
-  fallbackIcon?: LucideIcon;
+  fallbackIcon: LucideIcon;
   index: number;
+  ctaLabel?: string;
+  className?: string;
 }
 
+/** Collapses multi-line titles to a single line for card header */
+const formatToolTitle = (title: string): string =>
+  title.includes('\n') ? title.replace(/\n/g, ' ') : title;
+
+/**
+ * Tool calculator card — lavender border, icon + title, description, CTA button
+ */
 const ToolCard = ({
   title,
   description,
   href,
-  imagePath,
   fallbackIcon: FallbackIcon,
   index,
+  ctaLabel = 'Calculate Now',
+  className = '',
 }: ToolCardProps): React.ReactNode => {
+  const displayTitle = formatToolTitle(title);
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 12 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{
         type: 'spring',
         stiffness: 100,
         damping: 15,
-        delay: index * 0.1,
+        delay: index * 0.08,
       }}
-      className="h-full"
+      className={`flex h-full shrink-0 ${className}`}
     >
-      <Link
-        href={href}
-        className="group block h-full rounded-xl border border-gray-100 bg-white  shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-200"
-      >
-        <div className="flex flex-col h-full">
-  
-  {/* Row: Image + Title */}
-  <div className="flex items-center gap-1 px-1 mt-2">
-    <motion.div
-      className="w-14 h-14 md:w-18 md:h-18 relative flex-shrink-0"
-      whileHover={{ scale: 1.05 }}
-      transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-    >
-      {imagePath ? (
-        <Image
-          src={imagePath}
-          alt={title.replace('\n', ' ')}
-          fill
-          className="object-contain icon-brand-image"
-          sizes="48px"
-        />
-      ) : FallbackIcon ? (
-        <div className="w-full h-full rounded-xl bg-linear-to-br from-brand-50 to-brand-100 flex items-center justify-center">
-          <FallbackIcon className="w-6 h-6 text-brand-primary" strokeWidth={1.5} />
+      <div className="flex h-full min-h-[200px] w-full flex-col rounded-md border border-brand-200 bg-brand-50/80 p-4">
+        <div className="flex flex-1 flex-col">
+          <div className="flex items-start gap-2">
+            <FallbackIcon
+              className="h-8 w-8 shrink-0 text-brand-primary"
+              strokeWidth={1.5}
+              aria-hidden
+            />
+            <h3 className="min-h-11 flex-1 text-base font-medium leading-snug text-brand-primary">
+              {displayTitle}
+            </h3>
+          </div>
+          {/* Full width below icon row — left edge aligns with icon */}
+          <p className="mt-2 flex-1 text-sm leading-snug text-gray-600">{description}</p>
         </div>
-      ) : (
-        <div className="w-full h-full rounded-xl bg-linear-to-br from-brand-50 to-brand-100" />
-      )}
-    </motion.div>
 
-    <h3 className="text-sm font-medium leading-tight">
-      {title.split('\n').map((line, idx) => (
-        <span key={idx}>
-          {line}
-          {idx < title.split('\n').length - 1 && <br />}
-        </span>
-      ))}
-    </h3>
-  </div>
-
-  {/* Description */}
-  <p className="text-xs text-gray-500 leading-snug mt-0 mb-4 mx-2">
-    {description}
-  </p>
-
-</div>
-      </Link>
+        <Link
+          href={href}
+          className="mt-4 block w-full shrink-0 rounded-lg bg-brand-primary py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-brand-600"
+        >
+          {ctaLabel}
+        </Link>
+      </div>
     </motion.div>
   );
 };

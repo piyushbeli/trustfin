@@ -246,7 +246,7 @@ const TrendingOfferCard = ({
         aria-busy={isCheckingEligibility}
         onClick={() => void handleCheckEligibility()}
         onKeyDown={handleKeyDown}
-        className={`flex h-full min-h-[168px] w-full cursor-pointer flex-col items-center rounded-xl border border-brand-primary bg-brand-primary/10 p-3 text-center transition-opacity ${
+        className={`flex h-full  w-full cursor-pointer flex-col items-center rounded-xl border border-brand-primary bg-brand-primary/10 p-3 text-center transition-opacity ${
           isCheckingEligibility ? 'pointer-events-none opacity-70' : 'hover:border-brand-primary/20'
         }`}
       >
@@ -271,7 +271,7 @@ const TrendingOfferCard = ({
         </p>
         <p className="text-base text-gray-600">{tenureDisplay}</p>
 
-        <div className="mt-auto flex w-full flex-col items-center gap-1">
+        <div className="mt-1 flex w-full flex-col items-center gap-1">
           {/* {showLowestRateBadge ? ( */}
             <OfferPill label="Lowest Interest Rate" variant="brand" />
           {/* // ) : null} */}
