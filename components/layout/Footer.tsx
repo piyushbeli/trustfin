@@ -113,8 +113,8 @@ const Footer = () => {
           {/* Logo */}
           <Link href="/" className="inline-block mb-4">
             <Image
-              src={IMAGES.LOGOS.TRANSPARENT}
-              alt="WeCredit"
+              src={IMAGES.LOGOS.TRUSTFIN_LOGO}
+              alt="Trustfin"
               width={106}
               height={24}
               className="h-6 w-auto transition-opacity duration-300"

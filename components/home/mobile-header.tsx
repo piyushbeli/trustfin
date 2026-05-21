@@ -1,19 +1,13 @@
 'use client';
 
 import { useState, useEffect, useCallback, JSX } from 'react';
-import { usePathname } from 'next/navigation';
 import type { GlobalLink, StrapiMedia } from '@/types/strapi';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
-import { useAuthCookies } from '@/hooks/use-auth-cookies';
 import { HeaderLogo } from './mobile-header-components/header-logo';
 import { UserButton } from './mobile-header-components/user-button';
 import { MenuButton } from './mobile-header-components/menu-button';
 import { MobileMenuDrawer } from './mobile-header-components/mobile-menu-drawer';
-import { px } from 'framer-motion';
-
-/** Scroll threshold in pixels to trigger header style change */
-const SCROLL_THRESHOLD = 50;
 
 /** Props for MobileHeader component */
 interface MobileHeaderProps {
@@ -29,43 +23,17 @@ interface MobileHeaderProps {
 const MobileHeader = ({ headerLinks, logo, siteName }: MobileHeaderProps): JSX.Element => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [isLargeScreen, setIsLargeScreen] = useState(false);
-  const pathname = usePathname();
   const { isAuthenticated, user, openAuthModal, logout } = useAuth();
 
-  /** Only show transparent glass pill on home page */
-  const isHomePage = pathname === '/';
-
-  /** Handle scroll events to toggle header style */
+  /** Stronger shadow after scroll for separation from content */
   const handleScroll = useCallback((): void => {
-    const scrollPosition = window.scrollY;
-    setIsScrolled(scrollPosition > SCROLL_THRESHOLD);
+    setIsScrolled(window.scrollY > 50);
   }, []);
- 
-  /** Show solid header variant when scrolled OR when not on home page */
-  const showSolidHeader = isScrolled || !isHomePage || isLargeScreen;
-  useEffect(() => {
-  const mediaQuery = window.matchMedia('(min-width: 1024px)');
-
-  const handleChange = () => {
-    setIsLargeScreen(mediaQuery.matches);
-  };
-
-  handleChange(); // initial check
-  mediaQuery.addEventListener('change', handleChange);
-
-  return () => {
-    mediaQuery.removeEventListener('change', handleChange);
-  };
-}, []);
 
   useEffect(() => {
-    // Check initial scroll position on mount
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [handleScroll]);
 
   const toggleMenu = (): void => {
@@ -82,11 +50,11 @@ const MobileHeader = ({ headerLinks, logo, siteName }: MobileHeaderProps): JSX.E
           <div
           className={cn(
             'flex items-center justify-between px-4 py-2 rounded-md wc-header-pill-transition lg:rounded-[0]',
-            showSolidHeader ? 'wc-header-pill-scrolled' : 'wc-header-pill'
+            isScrolled ? 'wc-header-pill-scrolled' : 'wc-header-pill'
           )}
         >
           {/* Logo - switches between light and dark variants based on header state */}
-          <HeaderLogo siteName={siteName} showSolidHeader={showSolidHeader} />
+          <HeaderLogo siteName={siteName} />
 
           {/* Right side buttons */}
           <div className="flex items-center gap-2">
@@ -94,13 +62,12 @@ const MobileHeader = ({ headerLinks, logo, siteName }: MobileHeaderProps): JSX.E
             <UserButton
               isAuthenticated={isAuthenticated}
               user={user}
-              showSolidHeader={showSolidHeader}
               toggleMenu={toggleMenu}
               openAuthModal={openAuthModal}
             />
 
             {/* Hamburger Menu Button */}
-            <MenuButton toggleMenu={toggleMenu} showSolidHeader={showSolidHeader} />
+            <MenuButton toggleMenu={toggleMenu} />
           </div>
         </div>
       </header>

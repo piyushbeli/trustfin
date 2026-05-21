@@ -7,7 +7,6 @@ import type { User as UserType } from '@/stores/auth-store';
 interface UserButtonProps {
 	isAuthenticated: boolean;
 	user: UserType | null;
-	showSolidHeader: boolean;
 	toggleMenu: () => void;
 	openAuthModal: () => void;
 }
@@ -15,7 +14,6 @@ interface UserButtonProps {
 export const UserButton = ({
 	isAuthenticated,
 	user,
-	showSolidHeader,
 	toggleMenu,
 	openAuthModal,
 }: UserButtonProps) => {
@@ -25,15 +23,13 @@ export const UserButton = ({
 				type="button"
 				onClick={toggleMenu}
 				className={cn(
-					'flex items-center gap-1.5 px-3 py-2 rounded-md transition-all duration-300 text-sm font-medium',
-					showSolidHeader
-						? 'text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20'
-						: 'wc-menu-btn-glass text-white'
+					'flex items-center gap-1.5 rounded-md border border-brand-primary/15 px-3 py-2 text-sm font-medium transition-all duration-300',
+					'bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20'
 				)}
 				whileTap={{ scale: 0.95 }}
+				aria-label={user?.name ? `Account menu for ${user.name}` : 'Account menu'}
 			>
-				<User className="w-4 h-4" />
-			
+				<User className="h-4 w-4 text-brand-primary" aria-hidden />
 			</motion.button>
 		);
 	}
@@ -43,10 +39,8 @@ export const UserButton = ({
 			type="button"
 			onClick={openAuthModal}
 			className={cn(
-				'px-4 py-2 rounded-md transition-all duration-300 text-sm font-semibold',
-				showSolidHeader
-					? 'bg-brand-primary text-white hover:bg-brand-primary/90'
-					: 'bg-white text-brand-primary hover:bg-white/90'
+				'rounded-md bg-brand-primary px-4 py-2 text-sm font-semibold text-white transition-all duration-300',
+				'hover:bg-brand-primary/90'
 			)}
 			whileTap={{ scale: 0.95 }}
 		>

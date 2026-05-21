@@ -89,8 +89,8 @@ export const MobileMenuDrawer = ({
                         <div className="flex items-center justify-between p-4 border-b border-white/10">
                             <Link href="/" onClick={closeMenu} className="flex items-center">
                                 <Image
-                                    src={IMAGES.LOGOS.DEFAULT}
-                                    alt={siteName || 'WeCredit'}
+                                    src={IMAGES.LOGOS.TRUSTFIN_LOGO_TRANSPARENT}
+                                    alt={siteName || 'Trustfin'}
                                     width={100}
                                     height={28}
                                     className="h-7 w-auto"

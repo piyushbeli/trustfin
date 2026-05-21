@@ -32,9 +32,9 @@ const poppins = Poppins({
  * Metadata
  */
 export const metadata: Metadata = {
-  title: 'WeCredit - Quick Personal Loans',
+  title: 'Trustfin - Quick Personal Loans',
   description:
-    'Get instant access to personal loans with WeCredit. Quick approval, minimal documentation, and competitive rates.',
+    'Get instant access to personal loans with Trustfin. Quick approval, minimal documentation, and competitive rates.',
 };
 
 /**
@@ -63,26 +63,21 @@ export default async function RootLayout({
     <html lang="en" className="overscroll-y-none">
       <head>
         <Script id="gtm-script" strategy="afterInteractive">
-          {`
-            (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
-            new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
-            j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
-            'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
-            })(window,document,'script','dataLayer','GTM-TMJBLB7R');
-          `}
+          {/* TODO: GTM script for Trustfin */}
         </Script>
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} ${poppins.className} antialiased min-h-screen flex flex-col`}
       >
-        <noscript>
+        {/* <noscript>
           <iframe
+            // TODO: GTM iframe for Trustfin
             src="https://www.googletagmanager.com/ns.html?id=GTM-TMJBLB7R"
             height="0"
             width="0"
             style={{ display: "none", visibility: "hidden" }}
           />
-        </noscript>
+        </noscript> */}
         {/* FeatureFlagProvider must wrap everything for dev tools */}
         <FeatureFlagProvider>
           {/* AuthProvider validates token on mount (PDF Step 1) */}

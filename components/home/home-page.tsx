@@ -1,5 +1,5 @@
 import React from 'react';
-import HeroCarousel from './hero-carousel';
+import HeroSection from './hero-section';
 import StatsSection from './stats-section';
 import ProductsSection from './products-section';
 import TrendingOffersClient from './trending-offers-client';
@@ -27,8 +27,8 @@ const HomePage = (): React.ReactNode => {
     <div className="min-h-screen">
       {/* Gradient wrapper for Hero + Stats for seamless transition */}
       <div className="wc-hero-gradient-wrapper">
-        {/* Hero Section with Carousel */}
-        <HeroCarousel />
+        {/* Trustfin hero — static layout with boat image and CTAs */}
+        <HeroSection />
         
         {/* Stats Section - integrated into gradient */}
         <StatsSection />

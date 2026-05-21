@@ -4,24 +4,19 @@ import { cn } from '@/lib/utils';
 
 interface MenuButtonProps {
   toggleMenu: () => void;
-  showSolidHeader: boolean;
 }
 
-export const MenuButton = ({ toggleMenu, showSolidHeader }: MenuButtonProps) => (
+export const MenuButton = ({ toggleMenu }: MenuButtonProps) => (
   <motion.button
     type="button"
     onClick={toggleMenu}
     className={cn(
-      'p-2.5 rounded-md transition-all duration-300',
-      showSolidHeader
-        ? 'text-brand-primary bg-brand-primary/10 hover:bg-brand-primary/20'
-        : 'wc-menu-btn-glass text-brand-primary'
+      'rounded-md border border-brand-primary/15 p-2.5 transition-all duration-300',
+      'bg-brand-primary/10 text-brand-primary hover:bg-brand-primary/20'
     )}
     aria-label="Open menu"
     whileTap={{ scale: 0.95 }}
   >
-    <Menu
-      className={cn('w-5 h-5', showSolidHeader ? 'text-brand-primary' : 'text-white')}
-    />
+    <Menu className="h-5 w-5 text-brand-primary" aria-hidden />
   </motion.button>
 );

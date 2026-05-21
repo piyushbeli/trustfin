@@ -11,11 +11,12 @@ export const IMAGES = {
   LOGOS: {
     DEFAULT: `${BUCKET_IMAGE_URL}/logo.png`,
     TRANSPARENT: `${BUCKET_IMAGE_URL}/logo-transparent.jpg`,
+    TRUSTFIN_LOGO: `${BUCKET_IMAGE_URL}/trustfin_logo.png`,
+    TRUSTFIN_LOGO_TRANSPARENT: `${BUCKET_IMAGE_URL}/trustfin_logo_transparent.png`,
   },
-  CAROUSEL: {
-    SLIDE_1: `${BUCKET_IMAGE_URL}/carousel-one.png`,
-    SLIDE_2: `${BUCKET_IMAGE_URL}/carousel-two.png`,
-    SLIDE_3: `${BUCKET_IMAGE_URL}/carousel-three.png`,
+  HERO: {
+    /** Trustfin home hero boat mascot — update filename after S3 upload */
+    BOAT: `${BUCKET_IMAGE_URL}/trustfin-boat-hero.png`,
   },
   CERTIFICATIONS: {
     ISO_BADGE_1: `${BUCKET_IMAGE_URL}/certifications/iso-badge-1.png`,

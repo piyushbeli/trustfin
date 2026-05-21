@@ -1,5 +1,5 @@
 export { default as MobileHeader } from './mobile-header';
-export { default as HeroCarousel } from './hero-carousel';
+export { default as HeroSection } from './hero-section';
 export { default as FloatingElements } from './floating-elements';
 export { default as StatsSection } from './stats-section';
 export { default as ProductCard } from './product-card';

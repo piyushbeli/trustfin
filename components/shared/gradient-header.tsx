@@ -66,8 +66,8 @@ const GradientHeader = ({
           <div className="flex items-center justify-between">
             <Link href="/" className="flex items-center">
               <Image
-                src={IMAGES.LOGOS.DEFAULT}
-                alt="WeCredit"
+                src={IMAGES.LOGOS.TRUSTFIN_LOGO_TRANSPARENT}
+                alt="Trustfin"
                 width={120}
                 height={32}
                 className="h-8 w-auto"
@@ -96,8 +96,8 @@ const GradientHeader = ({
             transition={{ duration: 0.5 }}
           >
             <Image
-              src={IMAGES.LOGOS.DEFAULT}
-              alt="WeCredit"
+              src={IMAGES.LOGOS.TRUSTFIN_LOGO_TRANSPARENT}
+              alt="Trustfin"
               width={200}
               height={56}
               className="h-14 w-auto"

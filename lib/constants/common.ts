@@ -1,4 +1,3 @@
-import { SlideContent } from "@/components/home/hero-carousel";
 import { Partner } from "@/types/wecredit";
 import { IMAGES } from "./images";
 import { Testimonial } from "@/components/home/testimonials-section";
@@ -73,35 +72,6 @@ export const PARTNERS: Partner[] = [
 export const ROW_1_PARTNERS = PARTNERS.slice(0, 7);
 export const ROW_2_PARTNERS = PARTNERS.slice(7, 14);
 export const ROW_3_PARTNERS = PARTNERS.slice(14, 21);
-
-/** Carousel slides data */
-export const HERO_CAROUSEL_SLIDES: SlideContent[] = [
-  {
-    id: "slide-1",
-    image: IMAGES.CAROUSEL.SLIDE_1,
-    titleWhite: "More Savings",
-    titleGradient: "on Every Loan",
-    ctaText: "Apply For Loan",
-    ctaLink: "/personal-loan",
-  },
-  {
-    id: "slide-2",
-    image: IMAGES.CAROUSEL.SLIDE_2,
-    titleWhite: "Find the Card",
-    titleGradient: "That Fits You",
-    ctaText: "Get Your Card",
-    ctaLink: "/credit-cards",
-  },
-  {
-    id: "slide-3",
-    image: IMAGES.CAROUSEL.SLIDE_3,
-    titleWhite: "More Choices",
-    titleGradient: "Better Loan Deals",
-    ctaText: "Check Eligibility",
-    ctaLink: "/bureau-report",
-  },
-];
-  
 
 /** Static testimonials data */
 export const TESTIMONIALS: Testimonial[] = [
