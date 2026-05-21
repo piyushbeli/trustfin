@@ -4,8 +4,10 @@
  */
 
 import { sanitizeNumericInput } from '@/lib/utils/form-helpers';
+import type { FieldCompleteChecker } from '@/lib/utils/application-progress';
 
 export { sanitizeNumericInput };
+
 export type CarLoanGender = 'Male' | 'Female';
 export type CarLoanEmploymentType = 'Salaried' | 'Self-employed';
 
@@ -40,6 +42,49 @@ export const DEFAULT_CAR_LOAN_FORM_STATE: CarLoanFormState = {
   employmentType: 'Salaried',
   carModel: '',
   consent: true,
+};
+
+/** Fields tracked for application progress on the single-page form. */
+export const CAR_LOAN_PROGRESS_FIELDS: (keyof CarLoanFormState)[] = [
+  'firstName',
+  'lastName',
+  'mobile',
+  'email',
+  'gender',
+  'state',
+  'pincode',
+  'employmentType',
+  'carModel',
+  'consent',
+];
+
+const EMAIL_REGEX_PROGRESS = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Lightweight “filled” check for progress bar (not full validation). */
+export const isCarLoanFieldComplete: FieldCompleteChecker<CarLoanFormState> = (
+  key,
+  value
+) => {
+  switch (key) {
+    case 'firstName':
+    case 'lastName':
+    case 'state':
+    case 'carModel':
+      return typeof value === 'string' && value.trim().length > 0;
+    case 'mobile':
+      return typeof value === 'string' && value.replace(/\D/g, '').length === 10;
+    case 'email':
+      return typeof value === 'string' && EMAIL_REGEX_PROGRESS.test(value.trim());
+    case 'gender':
+    case 'employmentType':
+      return Boolean(value);
+    case 'pincode':
+      return typeof value === 'string' && value.replace(/\D/g, '').length === 6;
+    case 'consent':
+      return value === true;
+    default:
+      return false;
+  }
 };
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

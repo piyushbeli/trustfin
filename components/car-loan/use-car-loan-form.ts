@@ -4,9 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { submitCarLoanEnquiry } from '@/lib/api/car-loan-service';
 import { useLoadingStore } from '@/stores/loading-store';
+import { getFieldCompletionProgress } from '@/lib/utils/application-progress';
 import {
+  CAR_LOAN_PROGRESS_FIELDS,
   DEFAULT_CAR_LOAN_FORM_STATE,
   buildCarLoanPayload,
+  isCarLoanFieldComplete,
   validateCarLoanForm,
   type CarLoanEnquiryPayload,
   type CarLoanFormState,
@@ -21,6 +24,7 @@ interface UseCarLoanFormReturn {
   getValidatedPayload: () => CarLoanEnquiryPayload | null;
   isSubmitting: boolean;
   canSubmit: boolean;
+  applicationProgress: number;
 }
 
 interface UseCarLoanFormOptions {
@@ -133,6 +137,16 @@ export const useCarLoanForm = (
     return true;
   }, [formValues.consent, isSubmitting]);
 
+  const applicationProgress = useMemo(
+    () =>
+      getFieldCompletionProgress(
+        formValues,
+        CAR_LOAN_PROGRESS_FIELDS,
+        isCarLoanFieldComplete
+      ),
+    [formValues]
+  );
+
   useEffect(() => {
     if (!isAuthenticated || !user || hasPrefilledRef.current) return;
     hasPrefilledRef.current = true;
@@ -156,5 +170,6 @@ export const useCarLoanForm = (
     getValidatedPayload,
     isSubmitting,
     canSubmit,
+    applicationProgress,
   };
 };

@@ -4,9 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { submitGoldLoanEnquiry } from '@/lib/api/gold-loan-service';
 import { useLoadingStore } from '@/stores/loading-store';
+import { getFieldCompletionProgress } from '@/lib/utils/application-progress';
 import {
   DEFAULT_GOLD_LOAN_FORM_STATE,
+  GOLD_LOAN_PROGRESS_FIELDS,
   buildGoldLoanPayload,
+  isGoldLoanFieldComplete,
   validateGoldLoanForm,
   type GoldLoanEnquiryPayload,
   type GoldLoanFormState,
@@ -21,6 +24,7 @@ interface UseGoldLoanFormReturn {
   getValidatedPayload: () => GoldLoanEnquiryPayload | null;
   isSubmitting: boolean;
   canSubmit: boolean;
+  applicationProgress: number;
 }
 
 interface UseGoldLoanFormOptions {
@@ -131,6 +135,16 @@ export const useGoldLoanForm = (
     return true;
   }, [formValues.consent, isSubmitting]);
 
+  const applicationProgress = useMemo(
+    () =>
+      getFieldCompletionProgress(
+        formValues,
+        GOLD_LOAN_PROGRESS_FIELDS,
+        isGoldLoanFieldComplete
+      ),
+    [formValues]
+  );
+
   useEffect(() => {
     if (!isAuthenticated || !user || hasPrefilledRef.current) return;
     hasPrefilledRef.current = true;
@@ -153,5 +167,6 @@ export const useGoldLoanForm = (
     getValidatedPayload,
     isSubmitting,
     canSubmit,
+    applicationProgress,
   };
 };

@@ -17,13 +17,18 @@ import { useAuth } from '@/hooks/use-auth';
 import { useAppHeight } from '@/hooks/use-app-height';
 import { useUrlParamsStore } from '@/stores/url-params-store';
 import { Button } from '@/components/ui/button';
-import { ActionButton } from '@/components/shared';
+import {
+  ActionButton,
+  ApplicationFormIntro,
+} from '@/components/shared';
+import { getLoanApplicationIntro } from '@/lib/constants/loan-application-copy';
+import { getLeadFormControlClassName } from '@/lib/utils/form-field-styles';
 import { PARTNER_CODE } from '@/lib/constants/api-keys';
 import { fetchUserIp, getCurrentDateTime } from '@/lib/api/lead-service';
 import {
   isMultiLenderCreditCardSectionComplete,
 } from '@/lib/utils/form-helpers';
-import { MULTILENDER_PARTNER_TERMS_HREF, UNITY_CONSENT } from '@/lib/constants/common';
+import { BRAND_NAME, MULTILENDER_PARTNER_TERMS_HREF, UNITY_CONSENT } from '@/lib/constants/common';
 import type { FormField, FormFieldKey, LeadFormData } from '@/types/lead';
 import DynamicField from './dynamic-field';
 import Link from 'next/link';
@@ -298,6 +303,9 @@ const LeadFormModal = ({
     ...appHeightStyle,
     height: 'calc(var(--app-height, 1vh) * 100)',
   };
+
+  const { title: introTitle, description: introDescription } =
+    getLoanApplicationIntro('personal');
 
   // Reset any retained state on close (component stays mounted even when hidden).
   useEffect(() => {
@@ -581,14 +589,14 @@ const LeadFormModal = ({
                 setShowPartnerConsentError(false);
               }
             }}
-            className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
+            className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer shrink-0"
           />
           <label htmlFor={MULTI_LENDER_PARTNER_CONSENT_KEY} className="text-sm text-gray-700 leading-relaxed">
             I agree to the{' '}
-            <Link target="_blank" href={MULTILENDER_PARTNER_TERMS_HREF} className="text-blue-600 underline">
+            <Link target="_blank" href={MULTILENDER_PARTNER_TERMS_HREF} className="text-brand-primary underline">
               Terms & Conditions
             </Link>{' '}
-            of the partners of WeCredit.
+            of the partners of {BRAND_NAME}.
           </label>
         </div>
         {showPartnerConsentError && (
@@ -711,8 +719,7 @@ const LeadFormModal = ({
                 value={lntCompanyName}
                 onChange={(e) => setLntCompanyName(e.target.value)}
                 placeholder="Enter company name"
-                className="w-full px-4 py-3 rounded-lg border text-base border-gray-300 bg-white
-      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className={getLeadFormControlClassName()}
               />
             </div>
           )}
@@ -744,7 +751,7 @@ const LeadFormModal = ({
       href="https://www.ltfinance.com/docs/default-source/default-document-library/pl_application_t-c.pdf?sfvrsn=ebbca65c_3"
       target="_blank"
       rel="noopener noreferrer"
-      className="text-blue-600 underline mr-2"
+      className="text-brand-primary underline mr-2"
     >
       Personal Loan terms & Conditions
     </a>
@@ -753,7 +760,7 @@ const LeadFormModal = ({
       href="https://www.ltfinance.com/privacy-policy"
       target="_blank"
       rel="noopener noreferrer"
-      className="text-blue-600 underline ml-2"
+      className="text-brand-primary underline ml-2"
     >
       Privacy Policy
     </a>
@@ -900,6 +907,10 @@ const LeadFormModal = ({
             <>
               <div className="flex-1 overflow-y-auto">
                 <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                  <ApplicationFormIntro
+                    title={introTitle}
+                    description={introDescription}
+                  />
                   {!isSinglePage && (
                     <h2 className="lead-form-heading">
                       {currentStepConfig.title}

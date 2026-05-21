@@ -4,6 +4,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { getLeadFormSegmentClassName } from '@/lib/utils/form-field-styles';
 
 interface ButtonOption {
   value: string;
@@ -22,10 +23,10 @@ interface ButtonGroupProps {
   ariaLabelledBy?: string;
 }
 
-const ButtonGroup = ({ 
-  options, 
-  value, 
-  onChange, 
+const ButtonGroup = ({
+  options,
+  value,
+  onChange,
   disabled,
   error,
   className,
@@ -41,14 +42,11 @@ const ButtonGroup = ({
             type="button"
             onClick={() => onChange(option.value)}
             disabled={disabled}
-            className={cn(
-              'flex-1 px-4 py-3 rounded-lg border text-sm font-medium transition-colors',
-              value === option.value
-                ? 'bg-blue-50 border-blue-600 text-blue-600'
-                : 'bg-white border-gray-300 text-gray-700 hover:border-gray-400',
-              disabled && 'opacity-50 cursor-not-allowed',
-              buttonClassName
-            )}
+            className={getLeadFormSegmentClassName({
+              selected: value === option.value,
+              disabled,
+              className: buttonClassName,
+            })}
           >
             {option.label}
           </button>

@@ -64,7 +64,7 @@ const BusinessLoanFields = ({
               label="First Name"
               value={formValues.firstName}
               onChange={(value) => handleFieldChange('firstName', value)}
-              placeholder="First Name"
+              placeholder="As per PAN Card"
               error={formErrors.firstName}
               required
               autoComplete="given-name"
@@ -79,7 +79,7 @@ const BusinessLoanFields = ({
               label="Last Name"
               value={formValues.lastName}
               onChange={(value) => handleFieldChange('lastName', value)}
-              placeholder="Last Name"
+              placeholder="As per PAN Card"
               error={formErrors.lastName}
               required
               autoComplete="family-name"
@@ -96,7 +96,7 @@ const BusinessLoanFields = ({
             label="Phone Number"
             value={formValues.mobile}
             onChange={(value) => handleFieldChange('mobile', sanitizeNumericInput(value, 10))}
-            placeholder="Phone Number"
+            placeholder="+91 00000 00000"
             error={formErrors.mobile}
             type="tel"
             inputMode="numeric"
@@ -115,7 +115,7 @@ const BusinessLoanFields = ({
             label="Personal Email ID"
             value={formValues.email}
             onChange={(value) => handleFieldChange('email', value)}
-            placeholder="Personal Email ID"
+            placeholder="name@email.com"
             error={formErrors.email}
             type="email"
             inputMode="email"
@@ -144,7 +144,7 @@ const BusinessLoanFields = ({
             label="Enter Your Pincode"
             value={formValues.pincode}
             onChange={(value) => handleFieldChange('pincode', sanitizeNumericInput(value, 6))}
-            placeholder="Enter Your Pincode"
+            placeholder="000 000"
             error={formErrors.pincode}
             type="text"
             inputMode="numeric"

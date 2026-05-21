@@ -5,6 +5,7 @@
  */
 
 import { cn } from '@/lib/utils';
+import { getLeadFormControlClassName } from '@/lib/utils/form-field-styles';
 import {
   formatDobForDisplay,
   getDobMaxDate,
@@ -16,6 +17,7 @@ import type { FormField, FormFieldKey } from '@/types/lead';
 import ButtonGroup from './button-group';
 import ConsentCheckbox from './consent-checkbox';
 import Link from 'next/link';
+import { BRAND_NAME } from '@/lib/constants/common';
 
 interface DynamicFieldProps {
   /** Field configuration from API */
@@ -84,11 +86,16 @@ function getInputMode(key: FormFieldKey, fieldType: string): 'text' | 'numeric' 
  */
 function getPlaceholder(key: FormFieldKey, title: string): string {
   if (DATE_FIELDS.includes(key)) return '';
-  if (PHONE_FIELDS.includes(key)) return 'Enter 10-digit mobile number';
+  if (key === 'name') return 'As per PAN Card';
+  if (PHONE_FIELDS.includes(key)) return '+91 00000 00000';
+  if (key === 'email') return 'name@email.com';
   if (key === 'pan') return 'Enter PAN (e.g., ABCDE1234F)';
-  if (key === 'pincode' || key === 'companyPincode') return 'Enter 6-digit PIN code';
+  if (key === 'pincode' || key === 'companyPincode') return '000 000';
   return `Enter ${title.toLowerCase()}`;
 }
+
+const LEAD_FORM_CHECKBOX_CLASS =
+  'mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer shrink-0';
 
 /**
  * Gets max length for input fields
@@ -177,7 +184,7 @@ const DynamicField = ({
             disabled={disabled}
             error={error}
             className="gap-3"
-            buttonClassName="py-3 text-base focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+            buttonClassName="py-3 text-base"
           />
         </div>
       </div>
@@ -206,7 +213,8 @@ const DynamicField = ({
               id={key}
               checked={isChecked}
               onChange={(event) => onChange(event.target.checked ? 'true' : 'false')}
-className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"            />
+              className={LEAD_FORM_CHECKBOX_CLASS}
+            />
            <label htmlFor={key} className="text-sm text-gray-700 leading-relaxed">
   {title}
 </label>
@@ -226,16 +234,16 @@ className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-b
             id={key}
             checked={isChecked}
             onChange={(event) => onChange(event.target.checked ? 'true' : 'false')}
-            className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer shrink-0"
+            className={LEAD_FORM_CHECKBOX_CLASS}
           />
           <label htmlFor={key} className="text-sm text-gray-700">
   {key === 'consent' ? (
     <>
     I agree to the{' '}
-    <Link target="_blank" href="/terms-of-service" className="text-blue-600 underline">
+    <Link target="_blank" href="/terms-of-service" className="text-brand-primary underline">
       Terms of Service
     </Link>{' '}
-    of WeCredit.
+      of {BRAND_NAME}.
   </>
   ) : (
     title
@@ -300,12 +308,9 @@ className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-b
             onBlur={onBlur}
             required={isMandatory}
             disabled={disabled}
-          className={cn(
-            'w-full px-4 py-3 rounded-lg border text-base transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            'appearance-none bg-white pr-10 cursor-pointer',
-            error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white',
-              disabled && 'opacity-50 cursor-not-allowed'
+            className={cn(
+              getLeadFormControlClassName({ error, disabled }),
+              'appearance-none pr-10 cursor-pointer'
             )}
           >
             <option value="" disabled>
@@ -349,7 +354,7 @@ className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-b
           name={key}
           type={isIos ? 'text' : 'date'}
           inputMode={isIos ? 'numeric' : undefined}
-          placeholder={isIos ? 'DD-MM-YYYY' : undefined}
+          placeholder={isIos ? 'DD-MM-YYYY' : 'MM/DD/YYYY'}
           maxLength={isIos ? 10 : undefined}
           value={isIos ? textDateValue : nativeDateValue}
           onChange={(e) => {
@@ -363,12 +368,7 @@ className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-b
           max={isIos ? undefined : maxDobDate}
           required={isMandatory}
           disabled={disabled}
-          className={cn(
-            'w-full px-4 py-3 rounded-lg border text-base transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white',
-            disabled && 'opacity-50 cursor-not-allowed'
-          )}
+          className={getLeadFormControlClassName({ error, disabled })}
         />
         {error && (
           <p className="text-xs text-red-600 mt-1">{error}</p>
@@ -401,13 +401,7 @@ className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-b
           disabled={disabled}
           placeholder={getPlaceholder(key, title)}
           maxLength={10}
-          className={cn(
-            'w-full px-4 py-3 rounded-lg border text-base transition-colors',
-            'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-            '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-            error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white',
-            disabled && 'opacity-50 cursor-not-allowed'
-          )}
+          className={getLeadFormControlClassName({ error, disabled })}
         />
         {error && (
           <p className="text-xs text-red-600 mt-1">{error}</p>
@@ -437,13 +431,7 @@ className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-b
         disabled={disabled}
         placeholder={getPlaceholder(key, title)}
         maxLength={getMaxLength(key)}
-        className={cn(
-          'w-full px-4 py-3 rounded-lg border text-base transition-colors',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-          '[appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none',
-          error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white',
-          disabled && 'opacity-50 cursor-not-allowed'
-        )}
+        className={getLeadFormControlClassName({ error, disabled })}
       />
       {error && (
         <p className="text-xs text-red-600 mt-1">{error}</p>

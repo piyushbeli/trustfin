@@ -49,7 +49,7 @@ const HomeLoanFields = ({
             value={formValues.firstName}
             onChange={(value) => handleFieldChange('firstName', value)}
             onBlur={() => handleFieldBlur('firstName')}
-            placeholder="First Name"
+            placeholder="As per PAN Card"
             error={formErrors.firstName}
             required
             autoComplete="given-name"
@@ -65,7 +65,7 @@ const HomeLoanFields = ({
             value={formValues.lastName}
             onChange={(value) => handleFieldChange('lastName', value)}
             onBlur={() => handleFieldBlur('lastName')}
-            placeholder="Last Name"
+            placeholder="As per PAN Card"
             error={formErrors.lastName}
             required
             autoComplete="family-name"
@@ -113,7 +113,7 @@ const HomeLoanFields = ({
           value={formValues.mobile}
           onChange={(value) => handleFieldChange('mobile', sanitizeNumericInput(value, 10))}
           onBlur={() => handleFieldBlur('mobile')}
-          placeholder="Phone Number"
+          placeholder="+91 00000 00000"
           error={formErrors.mobile}
           type="tel"
           inputMode="numeric"
@@ -135,7 +135,7 @@ const HomeLoanFields = ({
             handleFieldChange('permanentPincode', sanitizeNumericInput(value, 6))
           }
           onBlur={() => handleFieldBlur('permanentPincode')}
-          placeholder="Enter Your Pincode"
+          placeholder="000 000"
           error={formErrors.permanentPincode}
           type="text"
           inputMode="numeric"
@@ -155,7 +155,7 @@ const HomeLoanFields = ({
             handleFieldChange('propertyPincode', sanitizeNumericInput(value, 6))
           }
           onBlur={() => handleFieldBlur('propertyPincode')}
-          placeholder="Enter Your Pincode"
+          placeholder="000 000"
           error={formErrors.propertyPincode}
           type="text"
           inputMode="numeric"

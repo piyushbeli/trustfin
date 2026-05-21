@@ -4,6 +4,7 @@
  */
 'use client';
 
+import { BRAND_NAME } from '@/lib/constants/common';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 
@@ -30,14 +31,18 @@ const ConsentCheckbox = ({
           id={id}
           checked={checked}
           onChange={(event) => onChange(event.target.checked)}
-          className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          className="mt-1 h-5 w-5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer shrink-0"
         />
         <label htmlFor={id} className="text-sm text-gray-700">
           I agree to the{' '}
-          <Link target="_blank" href="/terms-of-service" className="text-blue-600 underline">
-            Terms of Service {' '}
+          <Link
+            target="_blank"
+            href="/terms-of-service"
+            className="text-brand-primary underline"
+          >
+            Terms of Service{' '}
           </Link>
-          of WeCredit. {' '}
+          of {BRAND_NAME}.{' '}
         </label>
       </div>
       {error && <p className="text-xs text-red-600 ml-8">{error}</p>}
@@ -46,4 +51,3 @@ const ConsentCheckbox = ({
 };
 
 export default ConsentCheckbox;
-

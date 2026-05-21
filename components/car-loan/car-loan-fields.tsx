@@ -52,7 +52,7 @@ const CarLoanFields = ({
             value={formValues.firstName}
             onChange={(value) => handleFieldChange('firstName', value)}
             onBlur={() => handleFieldBlur('firstName')}
-            placeholder="First Name"
+            placeholder="As per PAN Card"
             error={formErrors.firstName}
             required
             autoComplete="given-name"
@@ -68,7 +68,7 @@ const CarLoanFields = ({
             value={formValues.lastName}
             onChange={(value) => handleFieldChange('lastName', value)}
             onBlur={() => handleFieldBlur('lastName')}
-            placeholder="Last Name"
+            placeholder="As per PAN Card"
             error={formErrors.lastName}
             required
             autoComplete="family-name"
@@ -86,7 +86,7 @@ const CarLoanFields = ({
           value={formValues.mobile}
           onChange={(value) => handleFieldChange('mobile', sanitizeNumericInput(value, 10))}
           onBlur={() => handleFieldBlur('mobile')}
-          placeholder="Phone Number"
+          placeholder="+91 00000 00000"
           error={formErrors.mobile}
           type="tel"
           inputMode="numeric"
@@ -106,7 +106,7 @@ const CarLoanFields = ({
           value={formValues.email}
           onChange={(value) => handleFieldChange('email', value)}
           onBlur={() => handleFieldBlur('email')}
-          placeholder="Enter your Email ID"
+          placeholder="name@email.com"
           error={formErrors.email}
           type="email"
           inputMode="email"
@@ -151,7 +151,7 @@ const CarLoanFields = ({
           value={formValues.pincode}
           onChange={(value) => handleFieldChange('pincode', sanitizeNumericInput(value, 6))}
           onBlur={() => handleFieldBlur('pincode')}
-          placeholder="Enter Pincode"
+          placeholder="000 000"
           error={formErrors.pincode}
           type="text"
           inputMode="numeric"

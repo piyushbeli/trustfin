@@ -110,3 +110,4 @@ export const UNITY_CONSENT = `I hereby give my consent to Unity Small Finance Ba
 
 // Dedicated partner terms route for multi-lender consent UI.
 export const MULTILENDER_PARTNER_TERMS_HREF = '/partner-terms-and-conditions';
+export const BRAND_NAME = 'TrustFin.ai';

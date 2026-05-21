@@ -1,8 +1,13 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
-import { ActionButton } from '@/components/shared';
+import {
+  ActionButton,
+  ApplicationFormBar,
+  ApplicationFormIntro,
+  ApplicationProgress,
+} from '@/components/shared';
+import { getLoanApplicationIntro } from '@/lib/constants/loan-application-copy';
 import BusinessLoanFields from './business-loan-fields';
 import { buildBusinessLoanPayload } from './business-loan-form.config';
 import { useBusinessLoanForm } from './use-business-loan-form';
@@ -88,26 +93,31 @@ const BusinessLoanForm = ({ onClose, isModal = false, onSuccess }: BusinessLoanF
     ? 'flex flex-col flex-1 min-h-0 bg-white'
     : 'bg-white h-screen flex flex-col';
 
+  const { title: introTitle, description: introDescription } =
+    getLoanApplicationIntro('business');
+
   return (
     <div className={rootClassName}>
-      {/* Step header */}
-      <div className="bg-white border-b px-4 py-4 flex items-center gap-3 shrink-0">
-        <button
-          type="button"
-          onClick={handleHeaderBackClick}
-          className="p-1 text-gray-700 hover:text-gray-900"
-          aria-label={isFirstStep ? 'Back' : 'Previous step'}
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-base font-medium text-gray-900">
-          Business Loan ({currentStep}/{totalSteps})
-        </h1>
+      <div className="shrink-0 bg-white border-b">
+        <ApplicationFormBar
+          title="Business Loan Application"
+          onBack={handleHeaderBackClick}
+          backAriaLabel={isFirstStep ? 'Back' : 'Previous step'}
+        />
+        <ApplicationProgress
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          className="px-4 pb-4"
+        />
       </div>
 
       <form onSubmit={onFormSubmit} className="flex flex-col flex-1 min-h-0">
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto w-full p-6 space-y-6">
+            <ApplicationFormIntro
+              title={introTitle}
+              description={introDescription}
+            />
             <h2 className="lead-form-heading">{currentStepConfig.title}</h2>
 
             <AnimatePresence mode="wait">

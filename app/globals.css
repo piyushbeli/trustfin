@@ -560,7 +560,30 @@
 }
 
 .lead-form-label {
-  @apply block text-sm mb-2 text-gray-700
+  @apply block text-sm font-medium mb-2 text-gray-900;
+}
+
+.lead-form-control {
+  @apply w-full px-4 py-3 rounded-md border-0 text-base transition-colors
+         bg-brand-50 text-gray-900 placeholder:text-gray-500
+         focus:outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-0;
+}
+
+.lead-form-control-error {
+  @apply bg-red-50 ring-2 ring-red-300;
+}
+
+.lead-form-control-disabled {
+  @apply opacity-50 cursor-not-allowed;
+}
+
+.lead-form-segment {
+  @apply flex-1 px-4 py-3 rounded-md border-0 text-sm font-medium transition-colors
+         bg-brand-50 text-gray-700;
+}
+
+.lead-form-segment-selected {
+  @apply bg-brand-primary text-white;
 }
 
 /* =============================================================================

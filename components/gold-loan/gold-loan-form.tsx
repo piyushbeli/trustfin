@@ -1,7 +1,12 @@
 'use client';
 
-import { ArrowLeft } from 'lucide-react';
-import { ActionButton } from '@/components/shared';
+import {
+  ActionButton,
+  ApplicationFormBar,
+  ApplicationFormIntro,
+  ApplicationProgress,
+} from '@/components/shared';
+import { getLoanApplicationIntro } from '@/lib/constants/loan-application-copy';
 import GoldLoanFields from './gold-loan-fields';
 import { useGoldLoanForm } from './use-gold-loan-form';
 import { useRouter } from 'next/navigation';
@@ -29,6 +34,7 @@ const GoldLoanForm = ({
     getValidatedPayload,
     isSubmitting,
     canSubmit,
+    applicationProgress,
   } = useGoldLoanForm({ onSuccess });
   const router = useRouter();
   const { isAuthenticated, openAuthModalWithPhoneAndAction } = useAuth();
@@ -62,23 +68,30 @@ const GoldLoanForm = ({
     ? 'flex flex-col flex-1 min-h-0 bg-white'
     : 'bg-white h-screen flex flex-col';
 
+  const { title: introTitle, description: introDescription } =
+    getLoanApplicationIntro('gold');
+
   return (
     <div className={rootClassName}>
-      <div className="bg-white border-b px-4 py-4 flex items-center gap-3 shrink-0">
-        <button
-          type="button"
-          onClick={handleHeaderBackClick}
-          className="p-1 text-gray-700 hover:text-gray-900"
-          aria-label="Back"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-        <h1 className="text-base font-medium text-gray-900">Gold Loan</h1>
+      <div className="shrink-0 bg-white border-b">
+        <ApplicationFormBar
+          title="Gold Loan Application"
+          onBack={handleHeaderBackClick}
+          backAriaLabel="Back"
+        />
+        <ApplicationProgress
+          value={applicationProgress}
+          className="px-4 pb-4"
+        />
       </div>
 
       <form onSubmit={onFormSubmit} className="flex flex-col flex-1 min-h-0">
         <div className="flex-1 overflow-y-auto">
           <div className="max-w-4xl mx-auto w-full p-6 space-y-6">
+            <ApplicationFormIntro
+              title={introTitle}
+              description={introDescription}
+            />
             <GoldLoanFields
               formValues={formValues}
               formErrors={formErrors}

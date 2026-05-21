@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { cn } from '@/lib/utils';
+import { getLeadFormControlClassName } from '@/lib/utils/form-field-styles';
 import {
   dobToNativeFormat,
   formatDobForDisplay,
@@ -42,7 +42,6 @@ const DateOfBirthField = ({
   hint,
 }: DateOfBirthFieldProps): React.ReactNode => {
   const isIos = isIOSDevice();
-  // Normalize the stored DOB into native input format.
   const nativeDisplayValue = /^\d{4}-\d{2}-\d{2}$/.test(value)
     ? value
     : dobToNativeFormat(value);
@@ -59,23 +58,18 @@ const DateOfBirthField = ({
         name="dob"
         type={isIos ? 'text' : 'date'}
         inputMode={isIos ? 'numeric' : undefined}
-        placeholder={isIos ? 'DD-MM-YYYY' : undefined}
+        placeholder={isIos ? 'DD-MM-YYYY' : 'MM/DD/YYYY'}
         maxLength={isIos ? 10 : undefined}
         value={isIos ? textDisplayValue : nativeDisplayValue}
         onChange={(event) => {
           const nextValue = isIos
             ? normalizeDobTextInput(event.target.value)
             : event.target.value;
-          // iOS uses DD-MM-YYYY text entry; non-iOS uses native YYYY-MM-DD.
           onChange(nextValue);
         }}
         onBlur={onBlur}
         max={isIos ? undefined : maxDobDate}
-        className={cn(
-          'w-full px-4 py-3 rounded-lg border text-base transition-colors',
-          'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent',
-          error ? 'border-red-300 bg-red-50' : 'border-gray-300 bg-white'
-        )}
+        className={getLeadFormControlClassName({ error })}
       />
       {hint && <p className="text-xs text-gray-500 mt-1">{hint}</p>}
       {error && (

@@ -4,9 +4,12 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useAuth } from '@/hooks/use-auth';
 import { submitHomeLoanEnquiry } from '@/lib/api/home-loan-service';
 import { useLoadingStore } from '@/stores/loading-store';
+import { getFieldCompletionProgress } from '@/lib/utils/application-progress';
 import {
   DEFAULT_HOME_LOAN_FORM_STATE,
+  HOME_LOAN_PROGRESS_FIELDS,
   buildHomeLoanPayload,
+  isHomeLoanFieldComplete,
   validateHomeLoanForm,
   type HomeLoanEnquiryPayload,
   type HomeLoanFormState,
@@ -21,6 +24,7 @@ interface UseHomeLoanFormReturn {
   getValidatedPayload: () => HomeLoanEnquiryPayload | null;
   isSubmitting: boolean;
   canSubmit: boolean;
+  applicationProgress: number;
 }
 interface UseHomeLoanFormOptions {
   /** Called when the API submit succeeds so the parent can show success state. */
@@ -130,6 +134,16 @@ export const useHomeLoanForm = (
     return true;
   }, [formValues.consent, isSubmitting]);
 
+  const applicationProgress = useMemo(
+    () =>
+      getFieldCompletionProgress(
+        formValues,
+        HOME_LOAN_PROGRESS_FIELDS,
+        isHomeLoanFieldComplete
+      ),
+    [formValues]
+  );
+
   // Auth prefill: set firstName, lastName, mobile from user once when available.
   useEffect(() => {
     if (!isAuthenticated || !user || hasPrefilledRef.current) return;
@@ -153,5 +167,6 @@ export const useHomeLoanForm = (
     getValidatedPayload,
     isSubmitting,
     canSubmit,
+    applicationProgress,
   };
 };

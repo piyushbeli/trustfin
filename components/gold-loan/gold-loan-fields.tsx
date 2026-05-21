@@ -41,7 +41,7 @@ const GoldLoanFields = ({
             value={formValues.firstName}
             onChange={(value) => handleFieldChange('firstName', value)}
             onBlur={() => handleFieldBlur('firstName')}
-            placeholder="First Name"
+            placeholder="As per PAN Card"
             error={formErrors.firstName}
             required
             autoComplete="given-name"
@@ -57,7 +57,7 @@ const GoldLoanFields = ({
             value={formValues.lastName}
             onChange={(value) => handleFieldChange('lastName', value)}
             onBlur={() => handleFieldBlur('lastName')}
-            placeholder="Last Name"
+            placeholder="As per PAN Card"
             error={formErrors.lastName}
             required
             autoComplete="family-name"
@@ -75,7 +75,7 @@ const GoldLoanFields = ({
           value={formValues.mobile}
           onChange={(value) => handleFieldChange('mobile', sanitizeNumericInput(value, 10))}
           onBlur={() => handleFieldBlur('mobile')}
-          placeholder="Phone Number"
+          placeholder="+91 00000 00000"
           error={formErrors.mobile}
           type="tel"
           inputMode="numeric"

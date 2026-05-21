@@ -9,6 +9,7 @@ import {
   isValidDobFormat,
   normalizePan,
 } from '@/lib/utils/form-helpers';
+import type { FieldCompleteChecker } from '@/lib/utils/application-progress';
 
 export { sanitizeNumericInput };
 
@@ -43,6 +44,54 @@ export const DEFAULT_HOME_LOAN_FORM_STATE: HomeLoanFormState = {
   incomeSource: 'Salaried',
   loanAmount: '',
   consent: true,
+};
+
+/** Fields tracked for application progress on the single-page form. */
+export const HOME_LOAN_PROGRESS_FIELDS: (keyof HomeLoanFormState)[] = [
+  'firstName',
+  'lastName',
+  'mobile',
+  'panNumber',
+  'dob',
+  'permanentPincode',
+  'propertyPincode',
+  'incomeSource',
+  'loanAmount',
+  'consent',
+];
+
+const PAN_REGEX_PROGRESS = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+
+/** Lightweight “filled” check for progress bar (not full validation). */
+export const isHomeLoanFieldComplete: FieldCompleteChecker<HomeLoanFormState> = (
+  key,
+  value,
+  values
+) => {
+  switch (key) {
+    case 'firstName':
+    case 'lastName':
+      return typeof value === 'string' && value.trim().length > 0;
+    case 'mobile':
+      return typeof value === 'string' && value.replace(/\D/g, '').length === 10;
+    case 'panNumber': {
+      const pan = normalizePan(String(value));
+      return pan.length === 10 && PAN_REGEX_PROGRESS.test(pan);
+    }
+    case 'dob':
+      return typeof value === 'string' && value.trim().length > 0 && isValidDobFormat(value);
+    case 'permanentPincode':
+    case 'propertyPincode':
+      return typeof value === 'string' && value.replace(/\D/g, '').length === 6;
+    case 'incomeSource':
+      return Boolean(values.incomeSource);
+    case 'loanAmount':
+      return typeof value === 'string' && value.trim().length > 0 && Number(value) > 0;
+    case 'consent':
+      return value === true;
+    default:
+      return false;
+  }
 };
 
 /** PAN format: 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F). */

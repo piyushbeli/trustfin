@@ -10,8 +10,10 @@ import {
   isValidDobFormat,
   normalizePan,
 } from '@/lib/utils/form-helpers';
+import type { FieldCompleteChecker } from '@/lib/utils/application-progress';
 
 export { sanitizeNumericInput, formatDobForApi, dobToNativeFormat };
+
 export interface GoldLoanFormState {
   firstName: string;
   lastName: string;
@@ -34,6 +36,49 @@ export const DEFAULT_GOLD_LOAN_FORM_STATE: GoldLoanFormState = {
   city: '',
   loanAmount: '',
   consent: true,
+};
+
+/** Fields tracked for application progress on the single-page form. */
+export const GOLD_LOAN_PROGRESS_FIELDS: (keyof GoldLoanFormState)[] = [
+  'firstName',
+  'lastName',
+  'mobile',
+  'dob',
+  'pan',
+  'state',
+  'city',
+  'loanAmount',
+  'consent',
+];
+
+const PAN_REGEX_PROGRESS = /^[A-Z]{5}[0-9]{4}[A-Z]$/;
+
+/** Lightweight “filled” check for progress bar (not full validation). */
+export const isGoldLoanFieldComplete: FieldCompleteChecker<GoldLoanFormState> = (
+  key,
+  value
+) => {
+  switch (key) {
+    case 'firstName':
+    case 'lastName':
+    case 'state':
+    case 'city':
+      return typeof value === 'string' && value.trim().length > 0;
+    case 'mobile':
+      return typeof value === 'string' && value.replace(/\D/g, '').length === 10;
+    case 'dob':
+      return typeof value === 'string' && value.trim().length > 0 && isValidDobFormat(value);
+    case 'pan': {
+      const pan = normalizePan(String(value));
+      return pan.length === 10 && PAN_REGEX_PROGRESS.test(pan);
+    }
+    case 'loanAmount':
+      return typeof value === 'string' && value.trim().length > 0 && Number(value) > 0;
+    case 'consent':
+      return value === true;
+    default:
+      return false;
+  }
 };
 
 /** PAN format: 5 letters + 4 digits + 1 letter (e.g. ABCDE1234F). */
