@@ -1,4 +1,5 @@
 export * from './offer-card';
+export * from './offer-card-gradient-border';
 export * from './offers-hero';
 export * from './offers-loading-skeleton';
 export * from './error-state';

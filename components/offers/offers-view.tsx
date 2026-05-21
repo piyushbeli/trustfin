@@ -1,6 +1,7 @@
 'use client';
 
 import { getCookie } from 'cookies-next';
+import { Sparkles } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { newPLEnabled, useOffers } from '@/hooks/use-offers';
 import { useAutoUpswingRedirectAfterLntLead } from '@/hooks/use-auto-upswing-redirect-after-lnt-lead';
@@ -13,7 +14,6 @@ import {
 
 import {
   OfferCard,
-  OffersHero,
   OffersLoadingSkeleton,
   ErrorState,
   PollingState,
@@ -24,7 +24,7 @@ import { UnmatchedOffersSection } from './unmatched-offers-section';
 import type { LenderOfferStatus } from '@/types/wecredit';
 import { forwardUpswingRedirect, updateUtmClicked } from '@/lib/api/wecredit';
 import { STORAGE_AUTH_TOKEN, STORAGE_MOBILE } from '@/lib/constants/api-keys';
-import { ActionButton, PageHeader } from '@/components/shared';
+import { ActionButton, ApplicationFormIntro, PageHeader } from '@/components/shared';
 import { useOfferStore } from '@/stores/offer-store';
 import { useLoanApplicationStore } from '@/stores/loan-application-store';
 import { isUpswingRedirectAllowed, mapingLenderNameToLenderCode, parseAmountToNumber } from '@/lib/utils/common-helper';
@@ -375,6 +375,20 @@ export const OffersView = () => {
     <div className="min-h-screen ">
       <PageHeader title="Offers for you" onBack={handleGoBack} />
 
+      <div className="pb-4 max-w-xl mx-auto">
+        <ApplicationFormIntro
+          title="Your Loan Offers"
+          titleSuffix={
+            <Sparkles
+              className="w-6 h-6 text-brand-primary shrink-0"
+              aria-hidden
+            />
+          }
+          description="AI has matched you with the best offers based on your profile. Compare and choose the perfect fit."
+          className="pt-2"
+        />
+      </div>
+
       {/* Recently Clicked Offers Carousel - At the top */}
       {/*// Show carousel if there are status offers and no lender filter is applied (to avoid confusion in single lender view)*/}
       {/* Recently Clicked Offers Carousel - At the top */}
@@ -401,7 +415,7 @@ export const OffersView = () => {
           </p>
         </div>
       )}
-
+      
 
       <div className="px-4 pb-4">
         {showPolling && <PollingState />}

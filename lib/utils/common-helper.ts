@@ -21,6 +21,29 @@ export const parseAmountToNumber = (amount: string | number | undefined): number
     return isNaN(numeric) ? 0 : numeric;
 };
 
+/** Formats offer amount for card display (e.g. ₹4,50,000). */
+export const formatOfferDisplayAmount = (
+    amount: string | number | undefined
+): string => {
+    const numeric = parseAmountToNumber(amount);
+    if (numeric <= 0) return '₹0';
+    return `₹${numeric.toLocaleString('en-IN')}`;
+};
+
+/** Formats tenure in months for offer cards. */
+export const formatOfferTenureMonths = (tenure: string | number | undefined): string => {
+    const months = Number(tenure);
+    if (!tenure || Number.isNaN(months) || months <= 0) return '—';
+    return `${months} Month${months === 1 ? '' : 's'}`;
+};
+
+/** Formats interest rate for offer cards. */
+export const formatOfferInterestRate = (intRate: string | number | undefined): string => {
+    if (intRate === undefined || intRate === null || intRate === '') return '—';
+    const rate = String(intRate).replace(/%/g, '').trim();
+    if (!rate) return '—';
+    return `${rate}% p.a.`;
+};
 
 export const mapingLenderNameToLenderCode = (lenderName: string): string => {
     switch (lenderName) {

@@ -102,6 +102,7 @@
   /* Background Gradients */
   --background-image-brand-lightest: linear-gradient(135deg, #F0EEFF 0%, #FAFCFF 100%);
   --background-image-brand-light: linear-gradient(135deg, #E8E6FD 0%, #6859F2 100%);
+  --background-image-offer-accent: linear-gradient(135deg, #6945E9 0%, #CC4CA6 100%);
 }
 
 /* =============================================================================
@@ -584,6 +585,11 @@
 
 .lead-form-segment-selected {
   @apply bg-brand-primary text-white;
+}
+
+/* Offer card: light purple → pink surface (Figma accent, ~5–12% visual weight) */
+.offer-card-light-gradient {
+  background: linear-gradient(135deg, #f4f0fc 0%, #fdf2f9 42%, #ffffff 100%);
 }
 
 /* =============================================================================

@@ -4,7 +4,9 @@ import { useId } from 'react';
 import { cn } from '@/lib/utils';
 
 interface ApplicationFormIntroProps {
-  title: string;
+  title?: string;
+  /** Optional icon or decoration beside the title (e.g. sparkle). */
+  titleSuffix?: React.ReactNode;
   description?: string;
   className?: string;
   titleClassName?: string;
@@ -16,6 +18,7 @@ interface ApplicationFormIntroProps {
  */
 const ApplicationFormIntro = ({
   title,
+  titleSuffix,
   description,
   className,
   titleClassName,
@@ -24,16 +27,21 @@ const ApplicationFormIntro = ({
   const headingId = useId();
 
   return (
-    <header className={cn('space-y-2', className)}>
-      <h2
-        id={headingId}
-        className={cn(
-          'text-xl font-bold text-gray-900 sm:text-2xl',
-          titleClassName
-        )}
-      >
-        {title}
-      </h2>
+    <header className={cn('space-y-2', className)} aria-labelledby={title ? headingId : undefined}>
+      {title && (
+        <div className="flex items-center gap-2">
+          <h2
+            id={headingId}
+            className={cn(
+              'text-xl font-bold text-gray-900 sm:text-2xl',
+              titleClassName
+            )}
+          >
+            {title}
+          </h2>
+          {titleSuffix}
+        </div>
+      )}
       {description && (
         <p
           className={cn(

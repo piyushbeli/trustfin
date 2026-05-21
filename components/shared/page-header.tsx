@@ -8,6 +8,8 @@ import { useInfoSearchParams } from '@/hooks/use-info-search-params';
 interface PageHeaderProps {
   /** Title displayed in the header */
   title: string;
+  /** When true, only the back button is shown (title lives in page content). */
+  hideTitle?: boolean;
   /** Custom back action - defaults to router.back() if not provided */
   onBack?: () => void;
   isOfferStatus?: boolean;
@@ -17,7 +19,12 @@ interface PageHeaderProps {
  * Reusable sticky page header with back navigation.
  * Used for internal pages that need a simple back + title header.
  */
-const PageHeader = ({ title, onBack, isOfferStatus = false }: PageHeaderProps): JSX.Element => {
+const PageHeader = ({
+  title,
+  hideTitle = false,
+  onBack,
+  isOfferStatus = false,
+}: PageHeaderProps): JSX.Element => {
   const router = useRouter();
   const { isAffiliate } = useInfoSearchParams();
 
@@ -49,9 +56,11 @@ const PageHeader = ({ title, onBack, isOfferStatus = false }: PageHeaderProps): 
       <div className="px-4 py-4">
         <div className="flex items-center gap-4">
           {renderBackButton()}
-          <h1 className="font-normal text-sm leading-7 tracking-normal text-gray-900">
-            {title}
-          </h1>
+          {!hideTitle && (
+            <h1 className="font-normal text-sm leading-7 tracking-normal text-gray-900">
+              {title}
+            </h1>
+          )}
         </div>
       </div>
     </header>

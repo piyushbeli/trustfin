@@ -38,6 +38,17 @@ export const COLORS = {
       from: '#F0EEFF',
       to: '#FAFCFF',
     },
+    /** Offer card accent (Figma: #6945E9 → #CC4CA6) */
+    offerAccentGradient: {
+      from: '#6945E9',
+      to: '#CC4CA6',
+    },
+    /** Soft tint for offer card backgrounds (same hue, much lighter) */
+    offerAccentGradientLight: {
+      from: '#F4F0FC',
+      mid: '#FDF2F9',
+      to: '#FFFFFF',
+    },
   },
 
   /**
