@@ -49,7 +49,7 @@ export const IMAGES = {
     CALENDAR: `${BUCKET_IMAGE_URL}/calender.png`,
     PERSONAL_LOAN: `${BUCKET_IMAGE_URL}/personal-loan-icon.png`,
     BUSINESS_LOAN: `${BUCKET_IMAGE_URL}/business-loan-icon.png`,
-    WECREDIT_HEART: `${BUCKET_IMAGE_URL}/wecredit-heart.png`,
+    TRUSTFIN_HEART: `${BUCKET_IMAGE_URL}/trustfin-heart.png`,
     PARTNER_WITH_US: `${BUCKET_IMAGE_URL}/partner-with-us.png`,
     CONTACT_US: `${BUCKET_IMAGE_URL}/contact-us.png`,
     PWS_SUCCESS: `${BUCKET_IMAGE_URL}/pws-success.png`,

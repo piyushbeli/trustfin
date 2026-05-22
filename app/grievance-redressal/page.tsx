@@ -31,7 +31,7 @@ const GrievanceRedressalPage = (): React.ReactNode => {
       
       {/* Page Banner with shield+heart icon (default) */}
       <div className="mb-8 flex justify-center">
-        <PageBanner title="GRIEVANCE REDRESSAL"  iconImage={IMAGES.ICONS.WECREDIT_HEART} />
+        <PageBanner title="GRIEVANCE REDRESSAL"  iconImage={IMAGES.ICONS.TRUSTFIN_HEART} />
       </div>
 
       {/* Grievance Content */}

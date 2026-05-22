@@ -56,10 +56,10 @@ const TermsOfServicePage = async (): Promise<React.ReactNode> => {
       </div>
 
       {/* Page Banner */}
-      <div className="flex justify-center mx-4">
+      <div className="mb-1 mx-4 flex justify-center container">
         <PageBanner
           title="TERMS OF USE"
-          iconImage={IMAGES.ICONS.TERMS_OF_SERVICE}
+          iconImage={IMAGES.ICONS.TRUSTFIN_HEART}
         />
       </div>
 

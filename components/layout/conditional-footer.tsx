@@ -8,8 +8,6 @@ const FOOTER_EXCLUDED_ROUTES: string[] = [
   // Add routes here where footer should always be hidden
   // Example: '/partner-with-us' when showing success state
   '/partner-with-us',
-  '/terms-of-service/',
-  '/privacy-policy/',
   '/about-us/',
   '/contact-us/',
   '/faq/',

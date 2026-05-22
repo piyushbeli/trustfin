@@ -61,10 +61,10 @@ const PrivacyPolicyPage = async (): Promise<React.ReactNode> => {
       </div>
 
       {/* Page Banner */}
-      <div className="mb-1 mx-4 flex justify-center">
+      <div className="mb-1 mx-4 flex justify-center container">
         <PageBanner
           title="PRIVACY POLICY"
-          iconImage={IMAGES.ICONS.WECREDIT_HEART}
+          iconImage={IMAGES.ICONS.TRUSTFIN_HEART}
           iconAlt="WeCredit Heart Icon"
         />
       </div>
