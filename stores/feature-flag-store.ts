@@ -35,6 +35,8 @@ interface FeatureFlagState {
   resetFlags: () => void;
   togglePanel: () => void;
   setDevMode: (isDevMode: boolean) => void;
+  /** Load persisted flags after mount to keep SSR and first client render identical */
+  hydrateFromStorage: () => void;
   getFlag: (name: FeatureFlagName) => boolean;
   exportFlags: () => string;
   importFlags: (jsonString: string) => boolean;
@@ -104,7 +106,8 @@ const saveFlagsToStorage = (flags: FeatureFlags): void => {
  * Feature flag store
  */
 export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
-  flags: loadFlagsFromStorage(),
+  // Always start from defaults so SSR markup matches the first client render.
+  flags: DEFAULT_FEATURE_FLAGS,
   isDevMode: false,
   isPanelOpen: false,
 
@@ -160,6 +163,10 @@ export const useFeatureFlagStore = create<FeatureFlagState>((set, get) => ({
    */
   setDevMode: (isDevMode: boolean): void => {
     set({ isDevMode });
+  },
+
+  hydrateFromStorage: (): void => {
+    set({ flags: loadFlagsFromStorage() });
   },
 
   /**

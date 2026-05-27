@@ -305,19 +305,8 @@ export const useAuthStore = create<AuthState & AuthActions>()(
             state?.setAuthInitialized(true);
             return;
           }
-          // After rehydrating from localStorage, sync with cookies to ensure consistency.
-          // If cookies are present, derive isAuthenticated from them.
-          const token = getCookie(STORAGE_AUTH_TOKEN);
-          const mobile = getCookie(STORAGE_MOBILE);
-          const hasCookies = !!(token && mobile);
-
-          if (hasCookies && state.user) {
-            // Cookies exist and we have user data - mark as authenticated
-            state.setUser(state.user, token?.toString() ?? '');
-          } else if (!hasCookies && state.user) {
-            // No cookies but user data exists - clear stale state
-            state.logout();
-          }
+          // AuthProvider validates cookies on mount. Avoid mutating auth state here
+          // during hydration — that can mismatch SSR markup (e.g. Login vs account UI).
           state.setAuthInitialized(true);
         },
       }

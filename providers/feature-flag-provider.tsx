@@ -5,7 +5,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useFeatureFlagStore } from '@/stores/feature-flag-store';
 import { FloatingToggleButton } from '@/components/dev/floating-toggle-button';
 import { FeatureFlagPanel } from '@/components/dev/feature-flag-panel';
@@ -50,13 +50,18 @@ const shouldShowFeatureFlagDevTools = (): boolean => {
  */
 export function FeatureFlagProvider({ children }: FeatureFlagProviderProps): React.ReactNode {
   const setDevMode = useFeatureFlagStore((state) => state.setDevMode);
+  const hydrateFromStorage = useFeatureFlagStore((state) => state.hydrateFromStorage);
   const isDevMode = useFeatureFlagStore((state) => state.isDevMode);
+  const [hasMounted, setHasMounted] = useState(false);
 
   /**
    * Initialize feature flags on mount
    * Set dev mode status and load flags from localStorage
    */
   useEffect(() => {
+    setHasMounted(true);
+    hydrateFromStorage();
+
     const devMode = shouldShowFeatureFlagDevTools();
     setDevMode(devMode);
 
@@ -70,14 +75,16 @@ export function FeatureFlagProvider({ children }: FeatureFlagProviderProps): Rea
         'color: #9333ea;'
       );
     }
-  }, [setDevMode]);
+  }, [hydrateFromStorage, setDevMode]);
+
+  const showDevTools = hasMounted && isDevMode;
 
   return (
     <>
       {children}
       
       {/* Dev panel + toggles when shouldShowFeatureFlagDevTools() is true */}
-      {isDevMode && (
+      {showDevTools && (
         <>
           <FloatingToggleButton />
           <FeatureFlagPanel />
