@@ -12,7 +12,7 @@ import InfoAccordionList from './info-accordion-list';
 
 const PersonalLoanInfoAccordion = (): JSX.Element => {
   return (
-    <SectionWrapper innerClassName="max-w-md mx-auto">
+    <SectionWrapper>
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         whileInView={{ opacity: 1, y: 0 }}

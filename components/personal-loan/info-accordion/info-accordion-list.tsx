@@ -29,12 +29,12 @@ const InfoAccordionList = (): JSX.Element => {
             className="border-0 mb-3 rounded-xl overflow-hidden"
           >
             <AccordionTrigger
-              titleClassName="text-brand-primary text-sm font-medium"
+              titleClassName="text-base font-semibold"
               className="px-4 bg-brand-primary/5 rounded-xl"
             >
               {item.title}
             </AccordionTrigger>
-            <AccordionContent className="pr-4 pb-4">
+            <AccordionContent className="pr-4 pb-4 pt-4">
               <InfoAccordionPanel panel={item.panel} />
             </AccordionContent>
           </AccordionItem>

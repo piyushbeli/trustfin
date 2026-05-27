@@ -335,7 +335,12 @@ export const INTEREST_RATES_INFO = {
   title: 'Personal loan Interest Rates',
   description:
     "Personal loan interest rates available on WeCredit start from 9.99% p.a.* The final rate offered depends on the lender's criteria, loan amount, tenure, and the applicant's credit profile. Comparing offers from multiple banks and NBFCs can help in selecting a suitable interest rate.",
-};
+  /** Copy shown inside the personal-loan info accordion "Interest Rates" panel */
+  accordionParagraphs: [
+    'Personal loan interest rates on TrustFin start from 9.99% p.a.* Your final rate depends on your credit score, income, loan amount, tenure, and the lender\'s own criteria.',
+    'Rather than guessing which lender will give you the best rate, let the AI compare across 25+ lenders and surface the most competitive offer available for your profile.',
+  ],
+} as const;
 
 /** Eligibility section content */
 export const ELIGIBILITY_SECTION_INFO = {
@@ -517,11 +522,130 @@ export const FEES_AND_CHARGES: FeeChargeItem[] = [
   },
 ];
 
+/** Feature bullet used in the "Why Customers Choose TrustFin" accordion panel */
+export interface TrustFinFeatureItem {
+  id: string;
+  title: string;
+  description: string;
+}
+
+/** Exact copy for the "Why Customers Choose TrustFin" accordion panel */
+export const WHY_TRUSTFIN_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
+  {
+    id: 'matched-offers',
+    title: 'Matched offers, not a random list',
+    description:
+      'Every offer you see on TrustFin is filtered by the AI based on your profile. This means higher approval chances and less time wasted on lenders who would reject you anyway.',
+  },
+  {
+    id: 'one-platform',
+    title: 'One platform, 25+ lenders',
+    description:
+      'Compare personal loans from top banks and NBFCs in one place without visiting multiple websites or filling out multiple forms.',
+  },
+  {
+    id: 'fewer-enquiries',
+    title: 'Fewer credit enquiries',
+    description:
+      'TrustFin checks your eligibility internally before forwarding your application to a lender. This reduces the number of hard enquiries on your credit report.',
+  },
+  {
+    id: 'transparent-comparison',
+    title: 'Transparent cost comparison',
+    description:
+      'See interest rates, processing fees, and disbursal timelines side by side. No hidden surprises.',
+  },
+  {
+    id: 'ai-support',
+    title: 'AI support around the clock',
+    description:
+      "Get answers to any loan question at any time. TrustFin's AI is always on.",
+  },
+];
+
+/** Exact copy for the "Things to Know Before You Apply" accordion panel */
+export const BEFORE_APPLYING_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
+  {
+    id: 'credit-score-rate',
+    title: 'Your credit score influences your rate, not just your approval',
+    description:
+      "A strong credit score does not just help you get approved. It can significantly lower the interest rate you are offered. If your score is below 720, it is worth improving it before applying. TrustFin's AI can tell you which lenders are still accessible at your current score.",
+  },
+  {
+    id: 'lender-fit',
+    title: 'Not every lender is right for every borrower',
+    description:
+      'A bank that approves one person may reject another with a similar profile, because each lender has different weightages for income, employer type, location, and credit history. This is exactly why AI-based matching exists.',
+  },
+  {
+    id: 'total-cost',
+    title: 'The interest rate is not the only cost',
+    description:
+      'A loan at 12% with a 3% processing fee can cost more than a loan at 13% with no processing fee over a short tenure. Always evaluate the total cost before deciding.',
+  },
+  {
+    id: 'platform-comparison',
+    title: 'Comparing on one platform protects your credit score',
+    description:
+      'Every time you apply directly to a lender, it triggers a hard enquiry. Multiple enquiries in a short period signal credit-hungry behaviour to bureaus. Using TrustFin reduces this risk significantly.',
+  },
+  {
+    id: 'repayment-track-record',
+    title: 'Your repayment track record follows you',
+    description:
+      'EMI payments are reported to credit bureaus every month. A single missed payment can take months to recover from. Borrow an amount whose EMI you can comfortably pay every month without strain.',
+  },
+];
+
+/** Intro line for the "After Your Loan Is Closed" accordion panel */
+export const AFTER_LOAN_CLOSED_ACCORDION_INTRO =
+  'Paying off your loan is a win. Here is what to do next to protect that win.';
+
+/** Exact copy for the "After Your Loan Is Closed" accordion panel */
+export const AFTER_LOAN_CLOSED_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
+  {
+    id: 'confirm-closure',
+    title: 'Get official confirmation of closure',
+    description:
+      'Do not assume the loan is closed after the last EMI. Confirm with the lender in writing that the account has been marked as closed.',
+  },
+  {
+    id: 'collect-noc',
+    title: 'Collect the NOC and closure letter',
+    description:
+      'The No Objection Certificate is proof that the lender has no further claim against you. Keep it permanently.',
+  },
+  {
+    id: 'verify-credit-report',
+    title: 'Verify your credit report',
+    description:
+      'Check all four bureaus (CIBIL, Experian, CRIF, Equifax) to confirm the loan status shows as "Closed." Discrepancies can affect your next loan application and are easier to fix sooner rather than later.',
+  },
+  {
+    id: 'cancel-auto-debit',
+    title: 'Cancel the auto-debit instruction',
+    description:
+      'Revoke the NACH mandate from your bank so no further deductions are triggered by mistake.',
+  },
+  {
+    id: 'wait-before-new-loan',
+    title: 'Wait before taking a new loan',
+    description:
+      'Give your credit profile a short recovery window before applying for the next loan. This keeps your utilization and enquiry count healthy.',
+  },
+  {
+    id: 'archive-documents',
+    title: 'Archive your documents',
+    description:
+      'Save your loan agreement, all payment receipts, and the closure documents both digitally and in hard copy for future reference.',
+  },
+];
+
 /** Personal loan info accordion panel types (keeps accordion extensible). */
 export type PersonalLoanInfoAccordionPanel =
-  | { type: 'text'; body: string }
+  | { type: 'text'; paragraphs: readonly string[] }
   | { type: 'fees-table'; rows: FeeChargeItem[] }
-  | { type: 'benefits-grid'; items: WhyWeCreditSimpleItem[] };
+  | { type: 'feature-list'; items: TrustFinFeatureItem[]; intro?: string };
 
 export interface PersonalLoanInfoAccordionItem {
   id: string;
@@ -535,7 +659,7 @@ export const PERSONAL_LOAN_INFO_ACCORDION_ITEMS: PersonalLoanInfoAccordionItem[]
     {
       id: 'interest-rates',
       title: 'Interest Rates',
-      panel: { type: 'text', body: INTEREST_RATES_INFO.description },
+      panel: { type: 'text', paragraphs: INTEREST_RATES_INFO.accordionParagraphs },
     },
     {
       id: 'fees-and-charges',
@@ -545,7 +669,21 @@ export const PERSONAL_LOAN_INFO_ACCORDION_ITEMS: PersonalLoanInfoAccordionItem[]
     {
       id: 'why-trustfin',
       title: 'Why Customers Choose TrustFin',
-      panel: { type: 'benefits-grid', items: WHY_WECREDIT_SIMPLE },
+      panel: { type: 'feature-list', items: WHY_TRUSTFIN_ACCORDION_FEATURES },
+    },
+    {
+      id: 'before-applying',
+      title: 'Things to Know Before You Apply',
+      panel: { type: 'feature-list', items: BEFORE_APPLYING_ACCORDION_FEATURES },
+    },
+    {
+      id: 'after-loan-closed',
+      title: 'After Your Loan Is Closed',
+      panel: {
+        type: 'feature-list',
+        intro: AFTER_LOAN_CLOSED_ACCORDION_INTRO,
+        items: AFTER_LOAN_CLOSED_ACCORDION_FEATURES,
+      },
     },
   ];
 

@@ -18,7 +18,7 @@ import StepsCta from './steps/steps-cta';
 
 const HowToApplySteps = (): JSX.Element => {
   return (
-    <SectionWrapper innerClassName="max-w-md mx-auto">
+    <SectionWrapper>
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

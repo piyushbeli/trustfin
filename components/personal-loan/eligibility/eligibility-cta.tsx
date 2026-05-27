@@ -15,7 +15,7 @@ const EligibilityCta = (): JSX.Element => {
   const { triggerApplyFlow, isApplyLoading } = useLoanApplicationStore();
 
   return (
-    <SectionWrapper innerClassName="max-w-md mx-auto">
+    <SectionWrapper>
       <ActionButton
         className="h-12 w-full rounded-xl bg-brand-primary text-base font-medium text-white hover:bg-brand-primary/90"
         fullWidth

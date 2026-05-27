@@ -23,7 +23,7 @@ const DocumentsRequired = (): JSX.Element => {
   const documents = activeTab === 'salaried' ? SALARIED_DOCUMENTS : SELF_EMPLOYED_DOCUMENTS;
 
   return (
-    <SectionWrapper className="bg-white" innerClassName="max-w-md mx-auto">
+    <SectionWrapper>
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}

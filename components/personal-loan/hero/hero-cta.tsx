@@ -15,7 +15,7 @@ const HeroCta = (): JSX.Element => {
 
   return (
     <ActionButton
-      className="h-14 w-full text-base font-medium bg-brand-primary text-white hover:bg-brand-primary/90 rounded-xl"
+      className="h-14 w-full rounded-md! text-base font-medium bg-brand-primary text-white hover:bg-brand-primary/90"
       fullWidth
       size="lg"
       onClick={triggerApplyFlow}

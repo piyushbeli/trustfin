@@ -6,10 +6,7 @@
  */
 
 import { JSX } from 'react';
-import type {
-  PersonalLoanInfoAccordionPanel,
-} from '../constants';
-import BenefitsGrid from '../benefits/benefits-grid';
+import type { PersonalLoanInfoAccordionPanel } from '../constants';
 
 interface InfoAccordionPanelProps {
   panel: PersonalLoanInfoAccordionPanel;
@@ -17,7 +14,15 @@ interface InfoAccordionPanelProps {
 
 const InfoAccordionPanel = ({ panel }: InfoAccordionPanelProps): JSX.Element => {
   if (panel.type === 'text') {
-    return <p className="text-sm text-gray-400 leading-relaxed">{panel.body}</p>;
+    return (
+      <div className="space-y-3">
+        {panel.paragraphs.map((paragraph) => (
+          <p key={paragraph.slice(0, 32)} className="text-sm text-gray-600 leading-relaxed">
+            {paragraph}
+          </p>
+        ))}
+      </div>
+    );
   }
 
   if (panel.type === 'fees-table') {
@@ -26,11 +31,11 @@ const InfoAccordionPanel = ({ panel }: InfoAccordionPanelProps): JSX.Element => 
         <table className="w-full border-collapse">
           <tbody>
             {panel.rows.map((row) => (
-              <tr key={row.id} className="bg-black/0">
-                <td className="w-36 border-r border-brand-primary/20 bg-black/10 p-2 text-sm text-gray-200">
+              <tr key={row.id}>
+                <td className="w-36 border-b border-r border-brand-primary/20 bg-brand-primary/5 p-2 text-sm text-gray-700">
                   {row.label}
                 </td>
-                <td className="p-2 text-sm text-gray-400">
+                <td className="border-b border-brand-primary/20 p-2 text-sm text-gray-600">
                   {row.value}
                 </td>
               </tr>
@@ -42,11 +47,18 @@ const InfoAccordionPanel = ({ panel }: InfoAccordionPanelProps): JSX.Element => 
   }
 
   return (
-    <div>
-      <BenefitsGrid items={panel.items} />
+    <div className="space-y-4">
+      {panel.intro && (
+        <p className="text-sm text-gray-600 leading-relaxed">{panel.intro}</p>
+      )}
+      {panel.items.map((item) => (
+        <p key={item.id} className="text-sm text-gray-600 leading-relaxed">
+          <span className="font-semibold text-gray-900">{item.title}</span>{' '}
+          {item.description}
+        </p>
+      ))}
     </div>
   );
 };
 
 export default InfoAccordionPanel;
-

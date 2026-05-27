@@ -12,7 +12,7 @@ import { MatchedByAiSection } from '@/components/personal-loan/matched-by-ai';
 import { FaqSection } from '@/components/shared';
 import { PersonalLoanContent } from '@/components/personal-loan/personal-loan-content';
 import StickyApplyButton from '@/components/personal-loan/sticky-apply-button';
-import { TrendingOffersClient } from '@/components/home';
+import { PartnersSection, TrendingOffersClient } from '@/components/home';
 import { PERSONAL_LOAN_FAQS } from '@/components/personal-loan/constants';
 import EligibilityList from '@/components/personal-loan/eligibility/eligibility-list';
 import EligibilityCta from '@/components/personal-loan/eligibility/eligibility-cta';
@@ -51,6 +51,10 @@ const PersonalLoanPage = (): React.ReactNode => {
 
       {/* Personal Loan Info accordion (Interest Rates, Fees & Charges, Why TrustFin) */}
       <PersonalLoanInfoAccordion />
+
+      {/* Our Partners Section */}
+      <PartnersSection />
+
 
       {/* FAQ Section */}
       <FaqSection items={PERSONAL_LOAN_FAQS} />
