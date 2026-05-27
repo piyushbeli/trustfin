@@ -11,7 +11,15 @@ import { SectionWrapper, AiChatCta } from '@/components/shared';
 import { LOAN_MARKETPLACE_DISCLAIMER } from '@/lib/constants/legal-copy';
 import { AI_CTA_COPY } from './constants';
 
-const FaqFooterSection = ({hideDisclaimer = false}: {hideDisclaimer?: boolean}): JSX.Element => {
+interface FaqFooterSectionProps {
+	hideDisclaimer?: boolean;
+	disclaimer?: string;
+}
+
+const FaqFooterSection = ({
+	hideDisclaimer = false,
+	disclaimer = LOAN_MARKETPLACE_DISCLAIMER,
+}: FaqFooterSectionProps): JSX.Element => {
 	return (
 		<SectionWrapper className="pt-0">
 			<motion.div
@@ -24,7 +32,7 @@ const FaqFooterSection = ({hideDisclaimer = false}: {hideDisclaimer?: boolean}):
 				<AiChatCta label={AI_CTA_COPY.askAiLabel} variant="gradient" />
 				{!hideDisclaimer && (
 					<p className="text-sm italic leading-relaxed text-muted-foreground">
-						{LOAN_MARKETPLACE_DISCLAIMER}
+						{disclaimer}
 					</p>
 				)}
 			</motion.div>

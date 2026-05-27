@@ -588,7 +588,7 @@ export const AFTER_LOAN_CLOSED_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
 /** Personal loan info accordion panel types (keeps accordion extensible). */
 export type PersonalLoanInfoAccordionPanel =
   | { type: 'text'; paragraphs: readonly string[] }
-  | { type: 'fees-table'; rows: FeeChargeItem[] }
+  | { type: 'fees-table'; rows: FeeChargeItem[]; intro?: string; closing?: string }
   | { type: 'feature-list'; items: TrustFinFeatureItem[]; intro?: string; closing?: string };
 
 export interface PersonalLoanInfoAccordionItem {

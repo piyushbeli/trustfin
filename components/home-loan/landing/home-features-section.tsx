@@ -22,7 +22,7 @@ const HomeFeaturesSection = (): JSX.Element => {
         <SectionTitle className="mb-6 custom-text-black text-left font-semibold">
           {HOME_FEATURES_SECTION.title}
         </SectionTitle>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {HOME_FEATURES_ITEMS.map((item, index) => (
             <HomeBenefitCard key={item.id} item={item} index={index} />
           ))}
