@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * HowToApplySteps
  * Section that explains the personal loan application flow as a
@@ -7,7 +5,6 @@
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import {
   SectionWrapper,
   SectionTitle,
@@ -33,11 +30,7 @@ const HowToApplySteps = ({
 
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-2 custom-text-black text-left text-xl font-semibold">
           {sectionTitle}
@@ -46,7 +39,7 @@ const HowToApplySteps = ({
         <div className="flex justify-center">
         <CtaComponent />
         </div>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

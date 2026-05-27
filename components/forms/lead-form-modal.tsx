@@ -7,7 +7,6 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { useRouter, useSearchParams, type ReadonlyURLSearchParams } from 'next/navigation';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useFetchFormFields } from '@/hooks/use-fetch-form-fields';
 import { useCreateLead } from '@/hooks/use-create-lead' ;
@@ -499,14 +498,11 @@ const LeadFormModal = ({
     searchParams,
   ]);
 
-
   const renderSubmitError = (): React.ReactElement | null => {
     if (!submitError) return null;
 
     return (
-      <motion.div
-        initial={{ opacity: 0, height: 0 }}
-        animate={{ opacity: 1, height: 'auto' }}
+      <div
         className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-start gap-3"
       >
         <AlertCircle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -514,7 +510,7 @@ const LeadFormModal = ({
           <p className="text-sm font-medium text-red-900">Submission Failed</p>
           <p className="text-sm text-red-700 mt-1">{submitError}</p>
         </div>
-      </motion.div>
+      </div>
     );
   };
 
@@ -802,36 +798,21 @@ const LeadFormModal = ({
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      <motion.div
+    <div
         className="fixed left-0 right-0 top-0 z-50 bg-white flex flex-col"
         style={modalStyle}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
       >
         {/* Success Overlay */}
-        <AnimatePresence>
-          {showSuccess && (
-            <motion.div
+        {showSuccess && (
+            <div
               className="absolute inset-0 bg-white z-100 flex flex-col items-center justify-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
             >
               <div className="text-center space-y-4">
-                <motion.div
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ type: 'spring', delay: 0.1 }}
+                <div
                 >
                   <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto" />
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.3 }}
+                </div>
+                <div
                 >
                   <h3 className="text-2xl font-bold text-gray-900">
                     {isPrimePlLeadSuccess ? 'Thank you' : 'Success!'}
@@ -850,12 +831,10 @@ const LeadFormModal = ({
                       Continue
                     </ActionButton>
                   ) : null}
-                </motion.div>
+                </div>
               </div>
-            </motion.div>
+            </div>
           )}
-        </AnimatePresence>
-
         {/* Header */}
         <div className="bg-white border-b px-4 py-4 flex items-center gap-3 shrink-0">
           {!isAffiliate &&<button
@@ -918,28 +897,19 @@ const LeadFormModal = ({
                   )}
 
                   {isSinglePage ? (
-                    <motion.div
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 0.2 }}
+                    <div
                       className="space-y-5"
                     >
                       {renderStepContent()}
-                    </motion.div>
+                    </div>
                   ) : (
-                    <AnimatePresence mode="wait">
-                      <motion.div
+                    <div
                         key={currentStep}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        transition={{ duration: 0.2 }}
                         className="space-y-5"
                       >
                         {renderStepContent()}
-                      </motion.div>
-                    </AnimatePresence>
-                  )}
+                      </div>
+                    )}
 
                   {renderSubmitError()}
                 </form>
@@ -952,9 +922,8 @@ const LeadFormModal = ({
             </>
           )}
         </div>
-      </motion.div>
-    </AnimatePresence>
-  );
+      </div>
+    );
 };
 
 export default LeadFormModal;

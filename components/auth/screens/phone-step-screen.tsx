@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 import { GradientHeader } from '@/components/shared';
 import { BottomSheet, PhoneInput } from '@/components/auth';
@@ -37,13 +36,9 @@ export const PhoneStepScreen = ({
     headerHeightPercent ? undefined : headerHeight;
 
   return (
-    <motion.div
+    <div
 className="relative flex flex-col"
       style={containerStyle}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ type: 'tween', duration: 0.25, ease: 'easeInOut' }}
     >
       {/* Close Button */}
       <button
@@ -64,14 +59,10 @@ className="relative flex flex-col"
          isPhoneNumberHeader
 />
 
-
       {/* Bottom Sheet - fills remaining 50% */}
       <BottomSheet className={bottomSheetClasses}>
-        <motion.div
+        <div
           className="flex-1 flex flex-col"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
         >
           {/* Title Section */}
           <div className="mb-6">
@@ -120,7 +111,7 @@ className="relative flex flex-col"
           <div className="flex-1" />
 
           {/* Continue Button */}
-          <motion.button
+          <button
             type="button"
             onClick={onContinue}
             disabled={!isPhoneValid || isLoading}
@@ -130,7 +121,6 @@ className="relative flex flex-col"
                 ? 'bg-wc-blue-500 text-white shadow-lg shadow-wc-blue-500/30 hover:bg-wc-blue-600 active:scale-[0.98]'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             )}
-            whileTap={isPhoneValid && !isLoading ? { scale: 0.98 } : {}}
           >
             {isLoading ? (
               <span className="flex items-center justify-center gap-2">
@@ -140,9 +130,9 @@ className="relative flex flex-col"
             ) : (
               'Continue'
             )}
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
       </BottomSheet>
-    </motion.div>
+    </div>
   );
 };

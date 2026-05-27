@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * Interest Rates Info Component
  * Displays personal loan interest rates information text section
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { INTEREST_RATES_INFO } from './constants';
 
 /**
@@ -16,11 +13,7 @@ import { INTEREST_RATES_INFO } from './constants';
 const InterestRatesInfo = (): JSX.Element => {
   return (
     <section className="py-6 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="max-w-3xl mx-auto"
       >
         {/* Section Title */}
@@ -32,7 +25,7 @@ const InterestRatesInfo = (): JSX.Element => {
         <p className="text-sm text-gray-500 leading-5">
           {INTEREST_RATES_INFO.description}
         </p>
-      </motion.div>
+      </div>
     </section>
   );
 };

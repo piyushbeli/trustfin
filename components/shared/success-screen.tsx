@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import ActionButton from './action-button';
 
 interface SuccessScreenProps {
@@ -64,19 +63,11 @@ const SuccessScreen = ({
   }
 
   return (
-    <AnimatePresence>
-      <motion.div
+    <div
         className="flex flex-col flex-1 min-h-0 items-center justify-center p-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.2 }}
       >
-        <motion.div
+        <div
           className="flex flex-col items-center text-center max-w-md"
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
         >
           {resolvedMedia}
           <h2 className="text-lg font-bold text-blue-600 uppercase tracking-wide mb-3">
@@ -91,10 +82,9 @@ const SuccessScreen = ({
           >
             {ctaLabel}
           </ActionButton>
-        </motion.div>
-      </motion.div>
-    </AnimatePresence>
-  );
+        </div>
+      </div>
+    );
 };
 
 export default SuccessScreen;

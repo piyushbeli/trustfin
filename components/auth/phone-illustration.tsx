@@ -1,7 +1,3 @@
-'use client';
-
-import { motion } from 'framer-motion';
-
 /** Props for PhoneIllustration component */
 interface PhoneIllustrationProps {
   className?: string;
@@ -13,11 +9,8 @@ interface PhoneIllustrationProps {
  */
 const PhoneIllustration = ({ className }: PhoneIllustrationProps): React.ReactNode => {
   return (
-    <motion.div
+    <div
       className={className}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       <svg
         width="180"
@@ -77,27 +70,21 @@ const PhoneIllustration = ({ className }: PhoneIllustrationProps): React.ReactNo
         <rect x="75" y="74" width="20" height="3" rx="1.5" fill="#E2E8F0" />
         
         {/* Checkmark Circle */}
-        <motion.circle
+        <circle
           cx="120"
           cy="50"
           r="18"
           fill="#48BB78"
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
-          transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
         />
         
         {/* Checkmark */}
-        <motion.path
+        <path
           d="M112 50L117 55L128 44"
           stroke="white"
           strokeWidth="3"
           strokeLinecap="round"
           strokeLinejoin="round"
           fill="none"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
-          transition={{ delay: 0.5, duration: 0.3 }}
         />
         
         {/* Phone Speaker */}
@@ -134,7 +121,7 @@ const PhoneIllustration = ({ className }: PhoneIllustrationProps): React.ReactNo
           fill="#FDBF8F"
         />
       </svg>
-    </motion.div>
+    </div>
   );
 };
 

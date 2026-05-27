@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { X, ArrowLeft } from 'lucide-react';
 import { GradientHeader } from '@/components/shared';
 import { OTPInput } from '@/components/auth';
@@ -36,13 +35,9 @@ export const OTPStepScreen = ({
     headerHeightPercent ? undefined : headerHeight;
 
   return (
-    <motion.div
+    <div
       className="relative flex flex-col bg-white"
       style={containerStyle}
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ type: 'tween', duration: 0.25, ease: 'easeInOut' }}
     >
       {/* Back Button */}
       <button
@@ -76,21 +71,15 @@ export const OTPStepScreen = ({
       {/* White Content Section - fills remaining space */}
       <div className="flex-1 bg-white rounded-t-3xl -mt-6 px-6 pb-8 pt-6 flex flex-col relative z-10">
         {/* Title */}
-        <motion.h1
+        <h1
           className="text-2xl font-bold text-gray-900 mb-6 text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
         >
           Enter your OTP
-        </motion.h1>
+        </h1>
 
         {/* OTP Input */}
-        <motion.div
+        <div
           className="w-full mx-auto"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
         >
           <OTPInput
             onChange={onOtpChange}
@@ -105,13 +94,13 @@ export const OTPStepScreen = ({
             showResend={true}
             phoneNumber={phoneNumber}
           />
-        </motion.div>
+        </div>
 
         {/* Spacer to push button to bottom */}
         <div className="flex-1" />
 
         {/* Continue Button */}
-        <motion.button
+        <button
           type="button"
           onClick={() => {
             void onVerify();
@@ -123,10 +112,6 @@ export const OTPStepScreen = ({
               ? 'bg-wc-blue-500 text-white shadow-lg shadow-wc-blue-500/30 hover:bg-wc-blue-600 active:scale-[0.98]'
               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
           )}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          whileTap={isOtpComplete && !isLoading ? { scale: 0.98 } : {}}
         >
           {isLoading ? (
             <span className="flex items-center justify-center gap-2">
@@ -136,8 +121,8 @@ export const OTPStepScreen = ({
           ) : (
             'Continue'
           )}
-        </motion.button>
+        </button>
       </div>
-    </motion.div>
+    </div>
   );
 };

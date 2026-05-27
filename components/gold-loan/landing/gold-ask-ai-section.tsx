@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * GoldAskAiSection
  * AI advisor section with common borrower questions and chat CTA.
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper, SectionTitle, SectionDescription, AiChatCta } from '@/components/shared';
 import BorrowerQuestionsList from '@/components/personal-loan/matched-by-ai/borrower-questions-list';
 import {
@@ -17,11 +14,7 @@ import {
 const GoldAskAiSection = (): JSX.Element => {
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="space-y-4"
       >
         <SectionTitle className="custom-text-black text-left font-semibold">
@@ -45,7 +38,7 @@ const GoldAskAiSection = (): JSX.Element => {
         </SectionDescription>
 
         <AiChatCta label={GOLD_ASK_AI_SECTION.ctaLabel} variant="gradient" />
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

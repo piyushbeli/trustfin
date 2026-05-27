@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -123,10 +122,7 @@ const PhoneInput = ({
 
       {/* Country Dropdown */}
       {isDropdownOpen && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -10 }}
+        <div
           className="absolute top-full left-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden z-20"
         >
           {countryCodes.map((country) => (
@@ -144,18 +140,16 @@ const PhoneInput = ({
               <span className="text-sm text-gray-500">{country.dialCode}</span>
             </button>
           ))}
-        </motion.div>
+        </div>
       )}
 
       {/* Error Message */}
       {hasError && (
-        <motion.p
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
+        <p
           className="text-red-500 text-xs mt-2"
         >
           {error}
-        </motion.p>
+        </p>
       )}
     </div>
   );

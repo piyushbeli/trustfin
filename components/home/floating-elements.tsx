@@ -1,6 +1,5 @@
 'use client';
 
-import { motion } from 'framer-motion';
 import { Coins, PiggyBank, Gift, Sparkles, Banknote, CreditCard } from 'lucide-react';
 
 /** Floating element configuration */
@@ -79,7 +78,7 @@ const FloatingElements = (): React.ReactNode => {
   return (
     <>
       {floatingElements.map((element) => (
-        <motion.div
+        <div
           key={element.id}
           className={`absolute ${element.bgColor} backdrop-blur-sm rounded-xl flex items-center justify-center shadow-lg`}
           style={{
@@ -87,32 +86,9 @@ const FloatingElements = (): React.ReactNode => {
             width: element.size,
             height: element.size,
           }}
-          initial={{ opacity: 0, scale: 0 }}
-          animate={{
-            opacity: 1,
-            scale: 1,
-            y: [0, -8, 0],
-            rotate: [-2, 2, -2],
-          }}
-          transition={{
-            opacity: { duration: 0.5, delay: element.delay },
-            scale: { duration: 0.5, delay: element.delay, type: 'spring', stiffness: 200 },
-            y: {
-              duration: element.duration,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: element.delay,
-            },
-            rotate: {
-              duration: element.duration * 1.2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-              delay: element.delay,
-            },
-          }}
         >
           {element.icon}
-        </motion.div>
+        </div>
       ))}
     </>
   );

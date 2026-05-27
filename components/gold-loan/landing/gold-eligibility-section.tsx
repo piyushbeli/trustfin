@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * GoldEligibilitySection
  * Eligibility criteria table for gold loan.
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper, SectionTitle, SectionDescription } from '@/components/shared';
 import GoldDataTable from './gold-data-table';
 import {
@@ -17,11 +14,7 @@ import {
 const GoldEligibilitySection = (): JSX.Element => {
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="space-y-4"
       >
         <SectionTitle className="custom-text-black text-left font-semibold">
@@ -37,7 +30,7 @@ const GoldEligibilitySection = (): JSX.Element => {
         <SectionDescription align="left" className="custom-text-black">
           {GOLD_ELIGIBILITY_SECTION.footerNote}
         </SectionDescription>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

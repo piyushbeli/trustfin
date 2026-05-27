@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * How We Work Section Component
  * Explains the personal loan matching process
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { HOW_WE_WORK_INFO } from './constants';
 
 /**
@@ -16,11 +13,7 @@ import { HOW_WE_WORK_INFO } from './constants';
 const HowWeWorkSection = (): JSX.Element => {
   return (
     <section className="py-6 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="max-w-3xl mx-auto"
       >
         {/* Section Title */}
@@ -30,7 +23,7 @@ const HowWeWorkSection = (): JSX.Element => {
 
         {/* Description */}
         <p className="text-sm text-gray-500 leading-5">{HOW_WE_WORK_INFO.description}</p>
-      </motion.div>
+      </div>
     </section>
   );
 };

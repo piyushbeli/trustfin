@@ -1,8 +1,5 @@
-'use client';
-
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
 type ProductCardVariant = 'compact' | 'default';
@@ -75,22 +72,12 @@ const ProductCard = ({
   const imageSize = isCompact ? 20 : 40;
 
   return (
-    <motion.div
+    <div
       className={isCompact ? 'shrink-0' : undefined}
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-        delay: index * 0.1,
-      }}
     >
       <Link href={href} className={linkClassName}>
-        <motion.div
+        <div
           className={iconContainerClassName}
-          whileTap={{ scale: 0.95 }}
         >
           {imagePath ? ( 
             <Image
@@ -107,11 +94,11 @@ const ProductCard = ({
               aria-hidden
             />
           ) : null}
-        </motion.div>
+        </div>
 
         <ProductCardLabel label={label} variant={variant} />
       </Link>
-    </motion.div>
+    </div>
   );
 };
 

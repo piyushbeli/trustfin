@@ -1,11 +1,8 @@
-'use client';
-
 /**
  * Combined eligibility criteria and documents required section for home loan.
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import {
   SectionWrapper,
   SectionTitle,
@@ -24,11 +21,7 @@ import EligibilityCta from '@/components/personal-loan/eligibility/eligibility-c
 const HomeEligibilityDocumentsSection = (): JSX.Element => {
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-2 custom-text-black text-left font-semibold">
           {HOME_ELIGIBILITY_SECTION.title}
@@ -50,7 +43,7 @@ const HomeEligibilityDocumentsSection = (): JSX.Element => {
         <DocumentGroupHeading>{HOME_ELIGIBILITY_SECTION.eligibilityHeading}</DocumentGroupHeading>
         <DocumentList documents={HOME_DOCUMENTS} />
 
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

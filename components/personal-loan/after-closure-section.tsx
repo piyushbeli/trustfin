@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * After Closure Section Component
  * Checklist of things to do after loan closure
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { CheckSquare } from 'lucide-react';
 import { AFTER_CLOSURE_CHECKLIST, AFTER_CLOSURE_INFO, ChecklistItem } from './constants';
 
@@ -21,12 +18,8 @@ interface ChecklistItemProps {
  */
 const ChecklistItemRow = ({ item, index }: ChecklistItemProps): JSX.Element => {
   return (
-    <motion.div
+    <div
       className="flex items-start gap-2.5"
-      initial={{ opacity: 0, x: -10 }}
-      whileInView={{ opacity: 1, x: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
     >
       {/* Checkmark Icon */}
       <div className="shrink-0 mt-0.5">
@@ -38,7 +31,7 @@ const ChecklistItemRow = ({ item, index }: ChecklistItemProps): JSX.Element => {
         <p className="text-gray-900 text-sm font-normal leading-5">{item.title}</p>
         <p className="text-gray-500 text-sm font-normal leading-5 mt-0.5">{item.description}</p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -49,11 +42,7 @@ const ChecklistItemRow = ({ item, index }: ChecklistItemProps): JSX.Element => {
 const AfterClosureSection = (): JSX.Element => {
   return (
     <section className="py-6 px-4">
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="max-w-3xl mx-auto"
       >
         {/* Section Title */}
@@ -67,7 +56,7 @@ const AfterClosureSection = (): JSX.Element => {
             <ChecklistItemRow key={item.id} item={item} index={index} />
           ))}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

@@ -9,7 +9,6 @@
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import type { BorrowerQuestionItem } from '../constants';
 
@@ -30,14 +29,10 @@ const BorrowerQuestionRow = ({
   };
 
   return (
-    <motion.button
+    <button
       type="button"
       onClick={handleClick}
       className="flex w-full items-center justify-between gap-3 rounded-xl bg-brand-50 p-3 text-left transition-colors hover:bg-brand-100 active:scale-[0.99]"
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
     >
       <p className="flex-1 text-sm font-normal leading-5 text-gray-700">
         {item.question}
@@ -48,7 +43,7 @@ const BorrowerQuestionRow = ({
       >
         <ArrowRight className="h-4 w-4 text-white" />
       </span>
-    </motion.button>
+    </button>
   );
 };
 

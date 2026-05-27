@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * EligibilityCard
  * Single criterion row with an icon and label/requirement copy.
@@ -7,7 +5,6 @@
 
 import { JSX } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { IMAGES } from '@/lib/constants/images';
 import type { EligibilityItem } from '../constants';
 
@@ -18,12 +15,8 @@ interface EligibilityCardProps {
 
 const EligibilityCard = ({ item, index }: EligibilityCardProps): JSX.Element => {
   return (
-    <motion.div
+    <div
       className="flex items-center justify-center gap-3 p-2 mb-2 bg-white rounded-lg shadow border border-gray-50"
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
     >
       <div className="w-9 h-9 bg-brand-primary/10 rounded flex items-center justify-center shrink-0">
         <Image
@@ -40,7 +33,7 @@ const EligibilityCard = ({ item, index }: EligibilityCardProps): JSX.Element => 
           <span className="font-normal custom-text-black">{item.requirement}</span>
         </p>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

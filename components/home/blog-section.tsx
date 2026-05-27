@@ -1,7 +1,4 @@
-'use client';
-
 import React from 'react';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowUpRight } from 'lucide-react';
@@ -63,11 +60,7 @@ interface BlogCardProps {
  */
 const BlogCard = ({ post, index }: BlogCardProps): React.ReactNode => {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
+    <div
       className="min-w-0"
     >
       <Link
@@ -96,7 +89,7 @@ const BlogCard = ({ post, index }: BlogCardProps): React.ReactNode => {
           <ArrowUpRight className="h-4 w-4 shrink-0" aria-hidden />
         </span>
       </Link>
-    </motion.div>
+    </div>
   );
 };
 
@@ -106,17 +99,13 @@ const BlogCard = ({ post, index }: BlogCardProps): React.ReactNode => {
 const BlogSection = (): React.ReactNode => {
   return (
     <section className="min-w-0 bg-white px-4 py-6 sm:py-10 md:py-12 common-section-wrapper">
-      <motion.h2
+      <h2
         className="mb-6 text-center text-xl font-semibold text-zinc-900 sm:mb-8 sm:text-2xl"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
       >
         Smart Money Guides
         <br />
         <span className="text-brand-primary">For everyday Needs</span>
-      </motion.h2>
+      </h2>
 
       <div className="mx-auto grid w-full min-w-0 grid-cols-2 gap-4 sm:grid-cols-4 md:grid-cols-4 md:gap-5">
         {blogPosts.map((post, index) => (

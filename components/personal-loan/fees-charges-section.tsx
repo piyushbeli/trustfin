@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * Fees and Charges Section Component
  * Displays a table of personal loan fees and charges
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { FEES_AND_CHARGES, FEES_CHARGES_INFO, FeeChargeItem } from './constants';
 
 /** Fee row props */
@@ -20,11 +17,7 @@ interface FeeRowProps {
  */
 const FeeRow = ({ fee, index }: FeeRowProps): JSX.Element => {
   return (
-    <motion.tr
-      initial={{ opacity: 0, y: 10 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
+    <tr
       className="border-b border-white"
     >
       {/* Label Column */}
@@ -35,7 +28,7 @@ const FeeRow = ({ fee, index }: FeeRowProps): JSX.Element => {
       <td className="bg-black/5 p-2">
         <span className="text-gray-500 text-sm font-normal leading-5">{fee.value}</span>
       </td>
-    </motion.tr>
+    </tr>
   );
 };
 
@@ -46,11 +39,7 @@ const FeeRow = ({ fee, index }: FeeRowProps): JSX.Element => {
 const FeesAndChargesSection = (): JSX.Element => {
   return (
     <section className="py-6 px-4">
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="max-w-3xl mx-auto"
       >
         {/* Section Title */}
@@ -71,7 +60,7 @@ const FeesAndChargesSection = (): JSX.Element => {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

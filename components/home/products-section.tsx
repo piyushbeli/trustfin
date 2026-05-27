@@ -1,6 +1,3 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import {
   BriefcaseBusiness,
   CreditCard,
@@ -67,27 +64,19 @@ const ProductsSection = (): React.ReactNode => {
   return (
     <section className="min-w-0 bg-white py-4 md:mt-5 md:py-0 mb-2">
       {/* Mobile header */}
-      <motion.div
+      <div
         className="mb-4 flex items-center justify-between px-4 md:hidden"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
       >
         <h2 className="text-lg font-semibold text-gray-900">Our Products</h2>
         <span className="text-sm text-gray-500">Swipe to explore</span>
-      </motion.div>
+      </div>
 
       {/* Desktop header */}
-      <motion.h2
+      <h2
         className="mb-6 hidden px-4 text-center text-lg font-medium md:block"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
       >
         Our Products
-      </motion.h2>
+      </h2>
 
       {/* Mobile: horizontal scroll — wc-products-scroll + min-w-0 prevent page-level overflow */}
       <div className="min-w-0 max-w-full overflow-hidden md:hidden">

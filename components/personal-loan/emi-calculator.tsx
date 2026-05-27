@@ -8,7 +8,6 @@
  */
 
 import { JSX, useState, useCallback, useMemo, useRef, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { EMI_CALCULATOR_CONFIG } from './constants';
 import {
   calculateEmi,
@@ -497,17 +496,12 @@ const EmiCalculator = ({ title, config = EMI_CALCULATOR_CONFIG }: EmiCalculatorP
 
   return (
     <section className="bg-white py-4 px-0">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+      <div
       >
         {/* Section Title — left-aligned per design */}
         <h2 className="text-xl font-semibold text-left mb-4">
           {title}
         </h2>
-
 
         {/* Calculator Card */}
         <div className="">
@@ -589,7 +583,7 @@ const EmiCalculator = ({ title, config = EMI_CALCULATOR_CONFIG }: EmiCalculatorP
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

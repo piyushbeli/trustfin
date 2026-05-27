@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * FaqSection
  * Thin section wrapper that pairs a section title with a FaqList.
@@ -7,7 +5,6 @@
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper, SectionTitle } from '@/components/shared/section';
 import { STANDARD_FAQS, type FaqItem } from '@/lib/constants/faqs';
 import FaqList from './faq-list';
@@ -25,15 +22,11 @@ const FaqSection = ({
 }: FaqSectionProps): JSX.Element => {
   return (
     <SectionWrapper className={className}>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-4">{title}</SectionTitle>
         <FaqList items={items} />
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

@@ -1,7 +1,4 @@
-'use client';
-
 import { Fragment } from 'react';
-import { motion, Variants } from 'framer-motion';
 import { Star } from 'lucide-react';
 
 /** Individual stat configuration */
@@ -41,30 +38,6 @@ const stats: StatItem[] = [
 ];
 
 /** Animation variants for staggered reveal */
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.15,
-      delayChildren: 0.1,
-    },
-  },
-};
-
-const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: 'spring',
-      stiffness: 100,
-      damping: 15,
-    },
-  },
-};
-
 interface StatValueProps {
   value: string;
   suffix?: string;
@@ -100,21 +73,19 @@ const StatDivider = (): React.ReactNode => {
 
 interface StatColumnProps {
   stat: StatItem;
-  variants: Variants;
 }
 
 /** Single stat column: value stack + label */
-const StatColumn = ({ stat, variants }: StatColumnProps): React.ReactNode => {
+const StatColumn = ({ stat }: StatColumnProps): React.ReactNode => {
   return (
-    <motion.div
+    <div
       className="flex min-w-0 flex-1 flex-col items-center px-1 text-center sm:px-2"
-      variants={variants}
     >
       <StatValue value={stat.value} suffix={stat.suffix} showStar={stat.showStar} />
       <span className="mt-1 text-[10px] leading-snug text-gray-600 sm:text-xs md:text-sm">
         {stat.label}
       </span>
-    </motion.div>
+    </div>
   );
 };
 
@@ -124,23 +95,19 @@ const StatColumn = ({ stat, variants }: StatColumnProps): React.ReactNode => {
 const StatsSection = (): React.ReactNode => {
   return (
     <section className="min-w-0 bg-white px-4 py-6 sm:py-8">
-      <motion.div
+      <div
         className="mx-auto flex max-w-3xl min-w-0 items-stretch lg:max-w-5xl"
-        variants={containerVariants}
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true, margin: '-50px' }}
       >
         {stats.map((stat, index) => {
           const isLast = index === stats.length - 1;
           return (
             <Fragment key={stat.id}>
-              <StatColumn stat={stat} variants={itemVariants} />
+              <StatColumn stat={stat} />
               {!isLast ? <StatDivider /> : null}
             </Fragment>
           );
         })}
-      </motion.div>
+      </div>
     </section>
   );
 };

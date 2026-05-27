@@ -6,7 +6,6 @@
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import {
   Carousel,
   CarouselContent,
@@ -25,12 +24,8 @@ interface TipCardProps {
  */
 const TipCard = ({ tip, index }: TipCardProps): JSX.Element => {
   return (
-    <motion.div
+    <div
       className="h-40 bg-brand-lightest rounded-sm overflow-hidden p-2"
-      initial={{ opacity: 0, scale: 0.95 }}
-      whileInView={{ opacity: 1, scale: 1 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.3, delay: index * 0.05 }}
     >
       <p className="text-gray-700 text-sm font-normal leading-5">
         {tip.title}
@@ -38,7 +33,7 @@ const TipCard = ({ tip, index }: TipCardProps): JSX.Element => {
       <p className="text-gray-500 text-sm font-normal leading-5 mt-1">
         {tip.description}
       </p>
-    </motion.div>
+    </div>
   );
 };
 
@@ -49,11 +44,7 @@ const TipCard = ({ tip, index }: TipCardProps): JSX.Element => {
 const BeforeApplyingSection = (): JSX.Element => {
   return (
     <section className="py-6 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         {/* Section Title */}
         <h2 className="text-base font-medium text-center text-gray-900 mb-6 px-4">
@@ -74,7 +65,7 @@ const BeforeApplyingSection = (): JSX.Element => {
             ))}
           </CarouselContent>
         </Carousel>
-      </motion.div>
+      </div>
     </section>
   );
 };

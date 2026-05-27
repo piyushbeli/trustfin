@@ -1,47 +1,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion, AnimatePresence, Variants } from 'framer-motion';
 import { X, User, LogOut } from 'lucide-react';
 import type { GlobalLink } from '@/types/strapi';
 import type { User as UserType } from '@/stores/auth-store';
 import { IMAGES } from '@/lib/constants/images';
 import { MenuLink } from './menu-link';
-
-/** Menu item animation variants */
-const menuItemVariants: Variants = {
-    hidden: { opacity: 0, x: -20 },
-    visible: (i: number) => ({
-        opacity: 1,
-        x: 0,
-        transition: {
-            delay: i * 0.1,
-            duration: 0.3,
-            ease: 'easeOut',
-        },
-    }),
-    exit: { opacity: 0, x: -20 },
-};
-
-/** Drawer animation variants */
-const drawerVariants: Variants = {
-    hidden: { x: '-100%' },
-    visible: {
-        x: 0,
-        transition: {
-            type: 'spring',
-            stiffness: 300,
-            damping: 30,
-        },
-    },
-    exit: {
-        x: '-100%',
-        transition: {
-            type: 'spring',
-            stiffness: 300,
-            damping: 30,
-        },
-    },
-};
 
 interface MobileMenuDrawerProps {
     isMenuOpen: boolean;
@@ -64,27 +27,18 @@ export const MobileMenuDrawer = ({
     openAuthModal,
     headerLinks,
 }: MobileMenuDrawerProps) => {
-    return (
-        <AnimatePresence>
-            {isMenuOpen && (
-                <>
-                    {/* Overlay */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-50 wc-menu-overlay"
-                        onClick={closeMenu}
-                    />
+    if (!isMenuOpen) {
+        return null;
+    }
 
-                    {/* Drawer */}
-                    <motion.div
-                        variants={drawerVariants}
-                        initial="hidden"
-                        animate="visible"
-                        exit="exit"
-                        className="fixed top-0 left-0 bottom-0 w-[280px] z-50 bg-wc-dark shadow-2xl"
-                    >
+    return (
+        <>
+            <div
+                className="fixed inset-0 z-50 wc-menu-overlay"
+                onClick={closeMenu}
+            />
+
+            <div className="fixed top-0 left-0 bottom-0 w-[280px] z-50 bg-wc-dark shadow-2xl">
                         {/* Drawer Header */}
                         <div className="flex items-center justify-between p-4 border-b border-white/10">
                             <Link href="/" onClick={closeMenu} className="flex items-center">
@@ -96,15 +50,14 @@ export const MobileMenuDrawer = ({
                                     className="h-7 w-auto"
                                 />
                             </Link>
-                            <motion.button
+                            <button
                                 type="button"
                                 onClick={closeMenu}
                                 className="p-2 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
                                 aria-label="Close menu"
-                                whileTap={{ scale: 0.95 }}
                             >
                                 <X className="w-5 h-5" />
-                            </motion.button>
+                            </button>
                         </div>
 
                         {/* User Section */}
@@ -122,7 +75,7 @@ export const MobileMenuDrawer = ({
                                             </p>
                                         </div>
                                     </div>
-                                    <motion.button
+                                    <button
                                         type="button"
                                         onClick={() => {
                                             logout();
@@ -130,23 +83,21 @@ export const MobileMenuDrawer = ({
                                         }}
                                         className="p-2 text-white/70 hover:text-white rounded-lg hover:bg-white/10 transition-colors"
                                         aria-label="Logout"
-                                        whileTap={{ scale: 0.95 }}
                                     >
                                         <LogOut className="w-5 h-5" />
-                                    </motion.button>
+                                    </button>
                                 </div>
                             ) : (
-                                <motion.button
+                                <button
                                     type="button"
                                     onClick={() => {
                                         openAuthModal();
                                         closeMenu();
                                     }}
                                     className="w-full py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-brand-primary/90 transition-colors"
-                                    whileTap={{ scale: 0.98 }}
                                 >
                                     Login / Sign Up
-                                </motion.button>
+                                </button>
                             )}
                         </div>
 
@@ -154,12 +105,7 @@ export const MobileMenuDrawer = ({
                         <nav className="p-4">
                             <ul className="space-y-1">
                                 {isAuthenticated && (
-                                    <motion.li
-                                        custom={0}
-                                        variants={menuItemVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                        exit="exit"
+                                    <li
                                     >
                                         <Link
                                             href="/offers"
@@ -168,25 +114,18 @@ export const MobileMenuDrawer = ({
                                         >
                                             <span className="font-medium">Loan Status</span>
                                         </Link>
-                                    </motion.li>
+                                    </li>
                                 )}
                                 {headerLinks.map((link, index) => (
-                                    <motion.li
+                                    <li
                                         key={link.id}
-                                        custom={isAuthenticated ? index + 1 : index}
-                                        variants={menuItemVariants}
-                                        initial="hidden"
-                                        animate="visible"
-                                        exit="exit"
                                     >
                                         <MenuLink link={link} onNavigate={closeMenu} />
-                                    </motion.li>
+                                    </li>
                                 ))}
                             </ul>
                         </nav>
-                    </motion.div>
-                </>
-            )}
-        </AnimatePresence>
+            </div>
+        </>
     );
 };

@@ -3,7 +3,6 @@
 import React, { useCallback, useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { motion } from 'framer-motion';
 import { getCookie } from 'cookies-next';
 import { useAuth } from '@/hooks/use-auth';
 import { checkStatusAll } from '@/lib/api/wecredit';
@@ -223,22 +222,7 @@ const TrendingOfferCard = ({
   };
 
   return (
-    <motion.div
-      initial={skipAnimation ? false : { opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={
-        skipAnimation
-          ? { duration: 0 }
-          : {
-              type: 'spring',
-              stiffness: 100,
-              damping: 15,
-              delay: index * 0.05,
-            }
-      }
-      className="h-full w-full"
-    >
+    <div className="h-full w-full">
       <div
         role="button"
         tabIndex={0}
@@ -278,7 +262,7 @@ const TrendingOfferCard = ({
           <OfferPill label="Quick Disbursal" variant="amber" />
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

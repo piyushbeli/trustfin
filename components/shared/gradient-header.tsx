@@ -2,7 +2,6 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { Menu, ImageIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { IMAGES } from '@/lib/constants/images';
@@ -74,15 +73,14 @@ const GradientHeader = ({
                 priority
               />
             </Link>
-            <motion.button
+            <button
               type="button"
               onClick={onMenuClick}
               className="p-2 text-white rounded-lg hover:bg-white/10 transition-colors"
               aria-label="Open menu"
-              whileTap={{ scale: 0.95 }}
             >
               <Menu className="w-6 h-6" />
-            </motion.button>
+            </button>
           </div>
         </div>
       )}
@@ -90,10 +88,7 @@ const GradientHeader = ({
       {/* Centered Logo - for logo-only variant */}
       {variant === 'logo-only' && !isPhoneNumberHeader && (
         <div className="flex-1 flex items-center justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5 }}
+          <div
           >
             <Image
               src={IMAGES.LOGOS.TRUSTFIN_LOGO_TRANSPARENT}
@@ -103,7 +98,7 @@ const GradientHeader = ({
               className="h-14 w-auto"
               priority
             />
-          </motion.div>
+          </div>
         </div>
       )}
 
@@ -114,10 +109,7 @@ const GradientHeader = ({
           <div className="absolute bottom-0 left-0 right-0 h-8 bg-white rounded-t-[2rem] z-10" />
           {/* Illustration or placeholder */}
           <div className={cn("flex items-center justify-center relative z-0", isPhoneNumberHeader ? 'flex-1 px-4' : 'px-0')}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.4 }}
+            <div
               className="relative w-full "
             >
               {illustration ? (
@@ -136,7 +128,7 @@ const GradientHeader = ({
                   <span className="text-sm font-medium">Add Image</span>
                 </div>
               )}
-            </motion.div>
+            </div>
           </div>
         </>
       )}

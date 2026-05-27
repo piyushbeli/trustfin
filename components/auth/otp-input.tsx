@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import OtpInput from 'react-otp-input';
-import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
 /** Number of OTP digits */
@@ -132,17 +131,11 @@ const OTPInput = ({
   };
 
   return (
-    <motion.div
+    <div
       className={cn('w-full flex flex-col items-center', className)}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
     >
       {/* OTP Input */}
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.3 }}
+      <div
         className="mb-6 px-4 sm:px-0"
       >
         <OtpInput
@@ -170,28 +163,23 @@ const OTPInput = ({
             gap: '0.5rem',
           }}
         />
-      </motion.div>
+      </div>
 
       {/* Error Message */}
       {error && (
-        <motion.p
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
+        <p
           className={cn(
             'text-sm text-center mb-4 font-medium',
             variant === 'blue' ? 'text-red-200' : 'text-red-500'
           )}
         >
           {error}
-        </motion.p>
+        </p>
       )}
 
       {/* Resend Section */}
       {showResend && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+        <div
           className="text-center space-y-2"
         >
           <div className={cn(
@@ -226,11 +214,8 @@ const OTPInput = ({
 
           {/* Phone number and change link */}
           {phoneNumber && (
-            <motion.p
+            <p
               className="text-sm text-gray-600 mb-6 text-center"
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.25 }}
             >
               we have sent OTP on {phoneNumber}{' '}
               <button
@@ -240,11 +225,11 @@ const OTPInput = ({
               >
                 Change Number
               </button>
-            </motion.p>
+            </p>
           )}
-        </motion.div>
+        </div>
       )}
-    </motion.div>
+    </div>
   );
 };
 

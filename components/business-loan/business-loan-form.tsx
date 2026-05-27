@@ -1,6 +1,5 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   ActionButton,
   ApplicationFormBar,
@@ -120,23 +119,14 @@ const BusinessLoanForm = ({ onClose, isModal = false, onSuccess }: BusinessLoanF
             />
             <h2 className="lead-form-heading">{currentStepConfig.title}</h2>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.2 }}
-                className="space-y-5"
-              >
-                <BusinessLoanFields
-                  stepNumber={currentStep}
-                  formValues={formValues}
-                  formErrors={formErrors}
-                  handleFieldChange={handleFieldChange}
-                />
-              </motion.div>
-            </AnimatePresence>
+            <div key={currentStep} className="space-y-5">
+              <BusinessLoanFields
+                stepNumber={currentStep}
+                formValues={formValues}
+                formErrors={formErrors}
+                handleFieldChange={handleFieldChange}
+              />
+            </div>
           </div>
         </div>
 

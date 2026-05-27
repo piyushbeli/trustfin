@@ -1,7 +1,4 @@
-'use client';
-
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
 
 interface ToolCardProps {
@@ -33,16 +30,7 @@ const ToolCard = ({
   const displayTitle = formatToolTitle(title);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 12 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-        delay: index * 0.08,
-      }}
+    <div
       className={`flex h-full shrink-0 ${className}`}
     >
       <div className="flex h-full min-h-[200px] w-full flex-col rounded-md border border-brand-200 bg-brand-50/80 p-4">
@@ -68,7 +56,7 @@ const ToolCard = ({
           {ctaLabel}
         </Link>
       </div>
-    </motion.div>
+    </div>
   );
 };
 

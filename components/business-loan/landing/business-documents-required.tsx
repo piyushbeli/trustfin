@@ -1,11 +1,8 @@
-'use client';
-
 /**
  * Documents required for a business loan — two static groups per content doc.
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import {
   SectionWrapper,
   SectionTitle,
@@ -21,11 +18,7 @@ import {
 const BusinessDocumentsRequired = (): JSX.Element => {
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-2 custom-text-black text-left font-semibold">
           {BUSINESS_DOCUMENTS_SECTION_INFO.title}
@@ -49,7 +42,7 @@ const BusinessDocumentsRequired = (): JSX.Element => {
         <SectionDescription align="left" className="mt-6 custom-text-black">
           {BUSINESS_DOCUMENTS_SECTION_INFO.closing}
         </SectionDescription>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

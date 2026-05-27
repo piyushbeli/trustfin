@@ -7,7 +7,6 @@
  */
 
 import { JSX, useState } from 'react';
-import { motion } from 'framer-motion';
 import {
   SectionWrapper,
   SectionTitle,
@@ -28,11 +27,7 @@ const GoldDocumentsSection = (): JSX.Element => {
 
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-2 custom-text-black text-left font-semibold">
           {GOLD_DOCUMENTS_SECTION.title}
@@ -47,7 +42,7 @@ const GoldDocumentsSection = (): JSX.Element => {
         <SectionDescription align="left" className="mt-6 custom-text-black">
           {GOLD_DOCUMENTS_SECTION.closing}
         </SectionDescription>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

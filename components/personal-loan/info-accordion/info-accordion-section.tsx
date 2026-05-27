@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * PersonalLoanInfoAccordion
  * Thin composer rendering the personal-loan info accordion list.
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper } from '@/components/shared';
 import InfoAccordionList from './info-accordion-list';
 import {
@@ -26,14 +23,10 @@ const PersonalLoanInfoAccordion = ({
 }: PersonalLoanInfoAccordionProps): JSX.Element => {
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <InfoAccordionList items={items} defaultOpen={defaultOpen} />
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

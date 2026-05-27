@@ -1,12 +1,9 @@
-'use client';
-
 /**
  * GoldProseSection
  * Flexible prose section for gold loan landing — paragraphs, bullets, or feature list.
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper, SectionTitle, SectionDescription } from '@/components/shared';
 import type { GoldProseSectionConfig } from './constants';
 
@@ -22,11 +19,7 @@ const GoldProseSection = ({ config }: GoldProseSectionProps): JSX.Element => {
 
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="space-y-4"
       >
         <SectionTitle className="custom-text-black text-left font-semibold">
@@ -75,7 +68,7 @@ const GoldProseSection = ({ config }: GoldProseSectionProps): JSX.Element => {
             {config.footerNote}
           </SectionDescription>
         )}
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

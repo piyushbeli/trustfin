@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { Pause, Play } from 'lucide-react';
 import {
@@ -21,7 +20,6 @@ export interface Testimonial {
   quote: string;
   customerName?: string;
 }
-
 
 /** Props for TestimonialSlide component */
 interface TestimonialSlideProps {
@@ -53,15 +51,9 @@ const TestimonialSlide = ({
   const isPlaying = playingVideoId === testimonial.id;
 
   return (
-    <motion.div
+    <div
       className="relative overflow-hidden"
       style={{ borderRadius: '2rem' }}
-      initial={{ opacity: 0, scale: 0.75 }}
-      animate={{
-        scale: isActive ? 1 : 0.75,
-        opacity: isActive ? 1 : isAdjacent ? 0.9 : 0.5,
-      }}
-      transition={{ duration: 0.5, ease: 'easeOut' }}
     >
       {/* Video Thumbnail Container */}
       <div className="relative aspect-3/4 w-full overflow-hidden rounded-[2rem]">
@@ -145,7 +137,7 @@ const TestimonialSlide = ({
           </p>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 };
 
@@ -192,15 +184,11 @@ const TestimonialsSection = (): React.ReactNode => {
   return (
     <section className="bg-white py-4 sm:py-10 md:py-12 overflow-hidden">
       {/* Section Title */}
-      <motion.h2
+      <h2
         className="text-lg sm:text-xl md:text-2xl font-medium text-center mb-6 sm:mb-8 px-4"
-        initial={{ opacity: 0, y: 10 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
       >
         Real Results / Testimonials
-      </motion.h2>
+      </h2>
 
       <Carousel options={{ loop: true, align: 'center', containScroll: false }}>
         {({ selectedIndex }) => (

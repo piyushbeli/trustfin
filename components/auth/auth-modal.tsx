@@ -1,6 +1,5 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
 import { useCallback, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
@@ -77,64 +76,40 @@ const AuthModal = (): React.ReactNode => {
   if (!isModalOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isModalOpen && (
-        <motion.div
-          className="fixed inset-0 z-100 flex flex-col"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {/* Backdrop */}
-          <motion.div
-            className="absolute inset-0 bg-black/50"
-            onClick={handleBackdropClick}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          />
+    <div className="fixed inset-0 z-100 flex flex-col">
+      <div
+        className="absolute inset-0 bg-black/50"
+        onClick={handleBackdropClick}
+      />
 
-          {/* Modal Container - handles slide-up entrance */}
-          <motion.div
-            className="relative flex flex-col h-full overflow-hidden"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          >
-            {/* Screen transitions - use sync mode to avoid a visible gap when switching */}
-            <AnimatePresence mode="sync" initial={false}>
-              {currentStep === 'phone' ? (
-                <PhoneStepScreen
-                  key="phone-screen"
-                  phoneNumber={phoneNumber}
-                  isPhoneValid={isPhoneValid}
-                  isLoading={isLoading}
-                  error={error}
-                  onPhoneChange={handlePhoneChange}
-                  onContinue={handleSendOtp}
-                  onClose={handleClose}
-                />
-              ) : (
-                <OTPStepScreen
-                  key="otp-screen"
-                  phoneNumber={phoneNumber}
-                  otpValue={otpValue}
-                  isLoading={isLoading}
-                  error={error}
-                  onOtpChange={handleOtpChange}
-                  onVerify={handleVerifyOtp}
-                  onResend={handleResendOtp}
-                  onBack={handleBack}
-                  onClose={handleClose}
-                />
-              )}
-            </AnimatePresence>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      <div className="relative flex flex-col h-full overflow-hidden">
+        {currentStep === 'phone' ? (
+          <PhoneStepScreen
+            key="phone-screen"
+            phoneNumber={phoneNumber}
+            isPhoneValid={isPhoneValid}
+            isLoading={isLoading}
+            error={error}
+            onPhoneChange={handlePhoneChange}
+            onContinue={handleSendOtp}
+            onClose={handleClose}
+          />
+        ) : (
+          <OTPStepScreen
+            key="otp-screen"
+            phoneNumber={phoneNumber}
+            otpValue={otpValue}
+            isLoading={isLoading}
+            error={error}
+            onOtpChange={handleOtpChange}
+            onVerify={handleVerifyOtp}
+            onResend={handleResendOtp}
+            onBack={handleBack}
+            onClose={handleClose}
+          />
+        )}
+      </div>
+    </div>
   );
 };
 

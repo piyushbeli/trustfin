@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * Expert Quote Section Component
  * Displays a testimonial card from an expert
@@ -7,7 +5,6 @@
 
 import { JSX } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { Quote } from 'lucide-react';
 import { EXPERT_QUOTE, EXPERT_QUOTE_INFO } from './constants';
 import { IMAGES } from '@/lib/constants/images';
@@ -19,11 +16,7 @@ import { IMAGES } from '@/lib/constants/images';
 const ExpertQuoteSection = (): JSX.Element => {
 	return (
 		<section className="py-6 px-4">
-			<motion.div
-				initial={{ opacity: 0, y: 10 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				viewport={{ once: true }}
-				transition={{ duration: 0.4 }}
+			<div
 				className="max-w-3xl mx-auto"
 			>
 				{/* Card Container */}
@@ -70,7 +63,7 @@ const ExpertQuoteSection = (): JSX.Element => {
 						</div>
 					</div>
 				</div>
-			</motion.div>
+			</div>
 		</section>
 	);
 };

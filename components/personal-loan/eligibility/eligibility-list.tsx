@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * EligibilityList
  * Vertical stack of EligibilityCards driven by the constants file.
@@ -9,8 +7,6 @@ import { JSX } from 'react';
 import EligibilityCard from './eligibility-card';
 import { SectionDescription, SectionTitle, SectionWrapper } from '@/components/shared';
 import { ELIGIBILITY_CRITERIA, type EligibilityItem } from '../constants';
-import { motion } from 'framer-motion';
-
 interface EligibilityListProps {
   title?: string;
   description?: string;
@@ -27,18 +23,14 @@ const EligibilityList = ({
 }: EligibilityListProps): JSX.Element => {
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-2 custom-text-black text-left font-semibold">{title}</SectionTitle>
         <SectionDescription className="mb-6 custom-text-black text-left">{description}</SectionDescription>
         {criteria.map((item, index) => (
           <EligibilityCard key={item.id} item={item} index={index} />
         ))}
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

@@ -7,7 +7,6 @@
  */
 
 import { JSX, useEffect, useState, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { ActionButton } from '@/components/shared';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
 import PrivacyBadge from './privacy-badge';
@@ -123,32 +122,13 @@ const AutoFillModal = ({ isOpen, onProceed, onClose, disableTimer = false }: Aut
   if (!isOpen) return null;
 
   return (
-    <AnimatePresence>
-      {isOpen && (
-        <motion.div
-          className="fixed inset-0 z-100 flex flex-col"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {/* Backdrop - blocks all interactions behind */}
-          <motion.div
-            className="absolute inset-0 bg-black/50 backdrop-blur-sm"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            style={{ touchAction: 'none' }}
-          />
+    <div className="fixed inset-0 z-100 flex flex-col">
+      <div
+        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        style={{ touchAction: 'none' }}
+      />
 
-          {/* Modal Container - slides up from bottom */}
-          <motion.div
-            className="relative mt-auto bg-white rounded-tl-2xl rounded-tr-2xl shadow-[1px_1px_4px_0px_rgba(102,102,102,0.10),-1px_-1px_4px_0px_rgba(102,102,102,0.10)] overflow-hidden"
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 28, stiffness: 300 }}
-          >
+      <div className="relative mt-auto bg-white rounded-tl-2xl rounded-tr-2xl shadow-[1px_1px_4px_0px_rgba(102,102,102,0.10),-1px_-1px_4px_0px_rgba(102,102,102,0.10)] overflow-hidden">
             <div className="w-full max-w-sm mx-auto px-4 pt-6 pb-8 flex flex-col items-center">
               <h2 className="text-center text-zinc-800 text-xl font-medium leading-6 mb-2">
                 Auto- Filling your details from credit bureau
@@ -190,10 +170,8 @@ const AutoFillModal = ({ isOpen, onProceed, onClose, disableTimer = false }: Aut
                 Add Details Manually
               </ActionButton>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
+      </div>
+    </div>
   );
 };
 

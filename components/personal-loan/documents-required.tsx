@@ -16,19 +16,13 @@ import {
 import EmploymentTabs, { type EmploymentType } from './documents/employment-tabs';
 import DocumentList from './documents/document-list';
 import { DOCUMENTS_SECTION_INFO, SALARIED_DOCUMENTS, SELF_EMPLOYED_DOCUMENTS } from './constants';
-import { motion } from 'framer-motion';
-
 const DocumentsRequired = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<EmploymentType>('salaried');
   const documents = activeTab === 'salaried' ? SALARIED_DOCUMENTS : SELF_EMPLOYED_DOCUMENTS;
 
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
       >
         <SectionTitle className="mb-2 custom-text-black text-left font-semibold">
           {DOCUMENTS_SECTION_INFO.title}
@@ -43,7 +37,7 @@ const DocumentsRequired = (): JSX.Element => {
         <SectionDescription align="left" className="mt-6 custom-text-black">
           {DOCUMENTS_SECTION_INFO.closing}
         </SectionDescription>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

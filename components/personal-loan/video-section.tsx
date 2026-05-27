@@ -7,7 +7,6 @@
 
 import { JSX, useState, useCallback } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { Play } from 'lucide-react';
 import { VIDEO_CONFIG } from './constants';
 
@@ -44,11 +43,7 @@ const VideoSection = ({ config = DEFAULT_VIDEO_CONFIG }: VideoSectionProps): JSX
 
   return (
     <section className="bg-white py-6 px-4">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.5 }}
+      <div
       >
         <div className="bg-brand-lightest rounded-2xl overflow-hidden p-4 max-w-3xl mx-auto">
           <h2 className="text-center text-black/80 text-base font-medium mb-4">
@@ -105,7 +100,7 @@ const VideoSection = ({ config = DEFAULT_VIDEO_CONFIG }: VideoSectionProps): JSX
             )}
           </div>
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 };

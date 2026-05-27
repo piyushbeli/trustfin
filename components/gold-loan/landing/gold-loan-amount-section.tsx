@@ -6,7 +6,6 @@
  */
 
 import { JSX, useCallback } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper, SectionTitle, SectionDescription } from '@/components/shared';
 import GoldMultiColumnTable from './gold-multi-column-table';
 import GoldApplyButton from './gold-apply-button';
@@ -24,11 +23,7 @@ const GoldLoanAmountSection = (): JSX.Element => {
 
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="space-y-4"
       >
         <SectionTitle className="custom-text-black text-left font-semibold">
@@ -60,7 +55,7 @@ const GoldLoanAmountSection = (): JSX.Element => {
           label={GOLD_LOAN_AMOUNT_SECTION.ctaLabel}
           onClick={scrollToCalculator}
         />
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };

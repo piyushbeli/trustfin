@@ -1,5 +1,3 @@
-'use client';
-
 /**
  * MatchedByAiSection
  * Loan product AI matching content section. Thin composer over the
@@ -8,7 +6,6 @@
  */
 
 import { JSX } from 'react';
-import { motion } from 'framer-motion';
 import { SectionWrapper, AiChatCta } from '@/components/shared';
 import MatchedByAiHeading from './matched-by-ai-heading';
 import AiFeaturesGrid from './ai-features-grid';
@@ -61,11 +58,7 @@ const MatchedByAiSection = ({
 
   return (
     <SectionWrapper>
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.4 }}
+      <div
         className="space-y-6"
       >
         <div className="space-y-3">
@@ -108,7 +101,7 @@ const MatchedByAiSection = ({
             <AiChatCta label={advisor.ctaLabel} className="mt-2 custom-cta-button" />
           </div>
         </div>
-      </motion.div>
+      </div>
     </SectionWrapper>
   );
 };
