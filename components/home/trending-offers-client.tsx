@@ -116,7 +116,7 @@ const TrendingOffersClient = ({ heading = 'Best Offers' }: { heading?: string })
           </div>
         </div>
       )}
-      <TrendingOffersSection activeLenders={displayLenders} heading={heading} />
+      <TrendingOffersSection showSwipeHint={true} activeLenders={displayLenders} heading={heading} />
     </div>
   );
 };
