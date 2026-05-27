@@ -53,7 +53,7 @@ const HeroSection = (): JSX.Element => {
               variant="outline"
               size="lg"
               fullWidth
-              className="h-14 rounded-xl border-2 border-brand-primary bg-white text-base font-semibold text-brand-primary hover:bg-brand-50"
+              className="h-14 border-2 border-brand-primary bg-white text-base font-semibold text-brand-primary hover:bg-brand-50"
               onClick={triggerApplyFlow}
               isLoading={isApplyLoading}
             >
