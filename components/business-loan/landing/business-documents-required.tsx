@@ -12,10 +12,10 @@ import {
   SectionDescription,
 } from '@/components/shared';
 import DocumentList from '@/components/personal-loan/documents/document-list';
+import DocumentGroupHeading from '@/components/personal-loan/documents/document-group-heading';
 import {
+  BUSINESS_DOCUMENT_GROUPS,
   BUSINESS_DOCUMENTS_SECTION_INFO,
-  BUSINESS_FINANCIAL_DOCUMENTS,
-  BUSINESS_IDENTITY_DOCUMENTS,
 } from './constants';
 
 const BusinessDocumentsRequired = (): JSX.Element => {
@@ -34,15 +34,17 @@ const BusinessDocumentsRequired = (): JSX.Element => {
           {BUSINESS_DOCUMENTS_SECTION_INFO.description}
         </SectionDescription>
 
-        <p className="text-sm font-semibold custom-text-black mb-3">
-          Identity and Address Proof
-        </p>
-        <DocumentList documents={BUSINESS_IDENTITY_DOCUMENTS} />
+        {BUSINESS_DOCUMENT_GROUPS.map((group, index) => {
+          const isFirstGroup = index === 0;
+          const groupSpacing = isFirstGroup ? '' : 'mt-6';
 
-        <p className="text-sm font-semibold custom-text-black mb-3 mt-6">
-          Business and Financial Documents
-        </p>
-        <DocumentList documents={BUSINESS_FINANCIAL_DOCUMENTS} />
+          return (
+            <div key={group.id} className={groupSpacing}>
+              <DocumentGroupHeading>{group.title}</DocumentGroupHeading>
+              <DocumentList documents={group.documents} />
+            </div>
+          );
+        })}
 
         <SectionDescription align="left" className="mt-6 custom-text-black">
           {BUSINESS_DOCUMENTS_SECTION_INFO.closing}

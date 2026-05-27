@@ -169,6 +169,26 @@ export const BUSINESS_FINANCIAL_DOCUMENTS: DocumentItem[] = [
   },
 ];
 
+export interface BusinessDocumentGroup {
+  id: string;
+  title: string;
+  documents: DocumentItem[];
+}
+
+/** Static document groups shown under the business loan documents section */
+export const BUSINESS_DOCUMENT_GROUPS: BusinessDocumentGroup[] = [
+  {
+    id: 'identity-address',
+    title: 'Identity and Address Proof',
+    documents: BUSINESS_IDENTITY_DOCUMENTS,
+  },
+  {
+    id: 'business-financial',
+    title: 'Business and Financial Documents',
+    documents: BUSINESS_FINANCIAL_DOCUMENTS,
+  },
+];
+
 export const BUSINESS_AI_MATCHED_FEATURES: AiFeatureItem[] = [
   {
     id: 'profile-matching',
