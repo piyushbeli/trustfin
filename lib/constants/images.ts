@@ -1,3 +1,6 @@
+import ai from '@/public/assets/images/ai.png';
+import aiTransparent from '@/public/assets/images/ai-transparent.png';
+
 /**
  * Centralized image and SVG paths for the entire project.
  * Use these constants instead of hardcoded strings to ensure consistency
@@ -67,4 +70,6 @@ export const IMAGES = {
   PARTNERS: {
     BASE_PATH: `${BUCKET_IMAGE_URL}/partners`,
   },
+  ai,
+  aiTransparent,
 } as const;

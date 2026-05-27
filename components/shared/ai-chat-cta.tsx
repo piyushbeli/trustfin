@@ -16,9 +16,10 @@
  */
 
 import { JSX, type ButtonHTMLAttributes } from 'react';
+import Image, { type StaticImageData } from 'next/image';
 import { cva, type VariantProps } from 'class-variance-authority';
-import { Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { IMAGES } from '@/lib/constants/images';
 import { AI_CTA_COPY } from '@/components/personal-loan/constants';
 
 const aiChatCtaVariants = cva(
@@ -95,6 +96,10 @@ export type AiChatCtaSize = NonNullable<
   VariantProps<typeof aiChatCtaVariants>['size']
 >;
 
+/** Colored icon on light backgrounds; solid icon on filled / dark buttons */
+const getAiCtaIconSrc = (variant: AiChatCtaVariant | null | undefined): StaticImageData =>
+  variant !== 'outline' ? IMAGES.aiTransparent : IMAGES.ai;
+
 export interface AiChatCtaProps
   extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children'>,
     VariantProps<typeof aiChatCtaVariants> {
@@ -109,7 +114,7 @@ export interface AiChatCtaProps
   onClick?: () => void;
   /** Defaults to true so the CTA stretches inside section containers */
   fullWidth?: boolean;
-  /** Show sparkle icon after the label — defaults to true */
+  /** Show AI icon after the label — defaults to true */
   showIcon?: boolean;
   /** Optional extra classes appended to variant styles */
   className?: string;
@@ -146,7 +151,8 @@ const AiChatCta = ({
     openAiChatPlaceholder(prefillQuestion);
   };
 
-  const iconSizeClass = size === 'compact' ? 'h-3.5 w-3.5' : 'h-4 w-4';
+  const iconDimension = size === 'compact' ? 28 : 32;
+  const iconSrc = getAiCtaIconSrc(variant);
 
   return (
     <button
@@ -162,8 +168,12 @@ const AiChatCta = ({
     >
       <span>{buttonLabel}</span>
       {showIcon ? (
-        <Sparkles
-          className={cn(iconSizeClass, 'shrink-0', variant === 'outline' && 'text-cyan-500')}
+        <Image
+          src={iconSrc}
+          alt=""
+          width={iconDimension}
+          height={iconDimension}
+          className="shrink-0 -ms-2"
           aria-hidden
         />
       ) : null}
