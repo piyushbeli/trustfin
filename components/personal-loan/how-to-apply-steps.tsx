@@ -25,11 +25,13 @@ const HowToApplySteps = (): JSX.Element => {
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
       >
-        <SectionTitle className="mb-2 text-gray-900/80 text-left text-xl font-semibold">
+        <SectionTitle className="mb-2 custom-text-black text-left text-xl font-semibold">
           How to Apply for Personal Loan Online?
         </SectionTitle>
         <StepsTimeline />
+        <div className="flex justify-center">
         <StepsCta />
+        </div>
       </motion.div>
     </SectionWrapper>
   );

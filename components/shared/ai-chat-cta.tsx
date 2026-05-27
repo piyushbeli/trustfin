@@ -43,32 +43,32 @@ const aiChatCtaVariants = cva(
       {
         variant: 'gradient',
         size: 'default',
-        class: 'rounded-xl',
+        class: 'rounded-md',
       },
       {
         variant: 'gradient',
         size: 'compact',
-        class: 'rounded-lg',
+        class: 'rounded-md',
       },
       {
         variant: 'solid',
         size: 'default',
-        class: 'rounded-xl',
+        class: 'rounded-md',
       },
       {
         variant: 'solid',
         size: 'compact',
-        class: 'rounded-lg',
+        class: 'rounded-md',
       },
       {
         variant: 'dark',
         size: 'default',
-        class: 'rounded-xl',
+        class: 'rounded-md',
       },
       {
         variant: 'dark',
         size: 'compact',
-        class: 'rounded-lg',
+        class: 'rounded-md',
       },
       {
         variant: 'outline',

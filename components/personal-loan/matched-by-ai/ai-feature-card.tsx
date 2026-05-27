@@ -19,13 +19,13 @@ interface AiFeatureCardProps {
 const AiFeatureCard = ({ feature, index }: AiFeatureCardProps): JSX.Element => {
   return (
     <motion.div
-      className="rounded-xl border border-cyan-200 bg-brand-50 p-3"
+      className="rounded-md wc-ai-feature-card p-3"
       initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.3, delay: index * 0.05 }}
     >
-      <p className="text-sm font-normal leading-5 text-gray-700">{feature.text}</p>
+      <p className="text-sm font-normal leading-5 custom-text-black">{feature.text}</p>
     </motion.div>
   );
 };

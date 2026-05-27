@@ -13,6 +13,7 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion';
 import {
+  PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN,
   PERSONAL_LOAN_INFO_ACCORDION_ITEMS,
   type PersonalLoanInfoAccordionItem,
 } from '../constants';
@@ -20,7 +21,11 @@ import InfoAccordionPanel from './info-accordion-panel';
 
 const InfoAccordionList = (): JSX.Element => {
   return (
-    <Accordion type="multiple" className="w-full">
+    <Accordion
+      type="multiple"
+      className="w-full"
+      defaultValue={PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN}
+    >
       {PERSONAL_LOAN_INFO_ACCORDION_ITEMS.map(
         (item: PersonalLoanInfoAccordionItem) => (
           <AccordionItem

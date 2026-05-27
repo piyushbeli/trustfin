@@ -10,56 +10,69 @@ export interface FaqItem {
 }
 
 /**
- * Standard FAQ items for personal loans
- * Used across home page, personal loan page, and other relevant pages
+ * Standard FAQ items for TrustFin platform
+ * Used across home page, FAQ page, personal loan page, and other relevant pages
  */
 export const STANDARD_FAQS: FaqItem[] = [
 	{
 		id: 'faq-1',
-		question: 'What is a personal loan and how does it work?',
+		question:
+			'What is TrustFin.ai and how is it different from other loan platforms?',
 		answer:
-			'A personal loan is an unsecured loan that can be used for any personal need. The approved amount is repaid in fixed monthly EMIs over a chosen tenure.',
+			'TrustFin.ai is an AI-powered loan marketplace connecting borrowers with personal loans, business loans, and gold loans from 25+ trusted banks and NBFCs. Unlike other platforms that simply list lenders, our AI matches you only with lenders whose criteria you actually meet, reducing rejections and protecting your credit score.',
 	},
 	{
 		id: 'faq-2',
-		question: 'What credit score is required for a personal loan?',
+		question: 'Is TrustFin.ai a lender?',
 		answer:
-			'Most lenders prefer a credit score of 720 or above, but some of our lenders may consider applications with a CIBIL score of around 700.',
+			'No. TrustFin is a loan marketplace intermediary operated by Cleartrust Fintech Services Private Limited. We connect borrowers with banks and NBFCs. All approvals, disbursals, and repayments are handled directly by the respective lending partner.',
 	},
 	{
 		id: 'faq-3',
-		question: 'How much personal loan amount can be availed?',
+		question: 'What types of loans can I apply for on TrustFin?',
 		answer:
-			'The loan amount depends on income, credit profile, existing liabilities, and lender policy. On WeCredit, offers may range from ₹5,000 to ₹15 lakh.',
+			'TrustFin currently offers personal loans up to ₹15 lakh, business loans up to ₹60 lakh, and gold loans up to ₹20 lakh, all from a network of 25+ trusted banks and NBFCs.',
 	},
 	{
 		id: 'faq-4',
-		question: 'How are personal loan interest rates decided?',
+		question: 'How does the AI on TrustFin work?',
 		answer:
-			'Interest rates are based on factors like credit score, income stability, loan amount, tenure, and the lender\'s internal policy.',
+			"When you enter your details, TrustFin's AI analyses your income, employment type, credit profile, and loan requirement, then matches you with lenders you are genuinely likely to qualify for. You can also chat with the AI directly to ask questions, compare costs, or understand your options before applying.",
 	},
 	{
 		id: 'faq-5',
-		question: 'How long does personal loan approval and disbursal take?',
+		question: 'Will using TrustFin affect my credit score?',
 		answer:
-			'Approval timelines vary by lender, but many personal loans are approved within minutes and disbursed shortly after verification.',
+			"No. TrustFin's eligibility check does not trigger a hard inquiry. A credit pull happens only when you formally apply to a specific lender and give your consent. This protects your score from the damage caused by applying to multiple lenders separately.",
 	},
 	{
 		id: 'faq-6',
-		question: 'Does applying for a personal loan affect credit score?',
+		question: 'What documents do I need to apply?',
 		answer:
-			'Yes. Each application may result in a credit enquiry, which can slightly impact the credit score. Comparing offers on a single platform helps reduce multiple enquiries.',
+			"It depends on the loan type and lender. Most loans require KYC documents such as PAN and Aadhaar, along with income proof. Gold loans typically need only KYC documents. Once matched, TrustFin's AI will tell you exactly what your chosen lender requires.",
 	},
 	{
 		id: 'faq-7',
-		question: 'Can a personal loan be repaid before tenure completion?',
+		question: 'How long does it take to get a loan through TrustFin?',
 		answer:
-			'Yes, most lenders allow prepayment or foreclosure, but charges may apply depending on lender terms and loan duration.',
+			'Personal loans are often approved within minutes and disbursed within 1 to 2 business days. Business loans typically take 1 to 3 business days post-verification.',
 	},
 	{
 		id: 'faq-8',
-		question: 'What happens if an EMI is missed?',
+		question: 'Is my data safe on TrustFin?',
 		answer:
-			'Missing an EMI can attract late payment charges and negatively impact the credit score. Repeated delays may affect future loan eligibility.',
+			'Yes. All data is stored on secure servers within India, in compliance with applicable regulations. We do not sell your information to any third party. Data shared with lenders is limited strictly to what is needed to process your application.',
+	},
+	{
+		id: 'faq-9',
+		question: 'Can I apply with a low credit score or no credit history?',
+		answer:
+			"For personal and business loans, most lenders prefer a score of 700 and above, though some NBFCs consider lower scores. For gold loans, credit score is generally not a barrier. TrustFin's AI shows you available options for your profile without requiring you to apply and risk rejection.",
+	},
+	{
+		id: 'faq-10',
+		question: 'Is TrustFin free to use?',
+		answer:
+			'Yes. There are no registration, membership, or application fees for borrowers. TrustFin is completely free to use. We receive a fee from lending partners only when a loan is successfully facilitated through the platform.',
 	},
 ];

@@ -14,17 +14,21 @@ import {
   AccordionContent,
 } from '@/components/ui/accordion';
 import type { FaqItem } from '@/lib/constants/faqs';
+import { cn } from '@/lib/utils';
 
 interface FaqListProps {
   items: FaqItem[];
   className?: string;
 }
 
+const FAQ_ITEM_CLASS =
+  'mb-3 overflow-hidden rounded-xl border border-brand-primary px-2 last:mb-0 last:!border-b';
+
 const FaqList = ({ items, className }: FaqListProps): JSX.Element => {
   return (
-    <Accordion type="multiple" className={className}>
+    <Accordion type="multiple" className={cn('pb-px', className)}>
       {items.map((item) => (
-        <AccordionItem key={item.id} value={item.id}>
+        <AccordionItem key={item.id} value={item.id} className={FAQ_ITEM_CLASS}>
           <AccordionTrigger>{item.question}</AccordionTrigger>
           <AccordionContent>
             <p className="whitespace-pre-line">{item.answer}</p>

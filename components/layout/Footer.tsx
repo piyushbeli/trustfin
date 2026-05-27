@@ -94,7 +94,7 @@ const FooterLinkSection = ({ title, links }: FooterLinkSectionProps) => (
  */
 const Footer = () => {
   return (
-    <footer className="relative w-full min-w-0 bg-brand-50 pb-4 pt-6 sm:px-6 sm:pt-8 lg:px-8 ">
+    <footer className="relative w-full min-w-0 bg-brand-50 pt-6 sm:px-6 sm:pt-8 lg:px-8 pb-[100px]">
       <div className="mx-auto w-full min-w-0 common-section-wrapper ">
         <div className="relative mx-auto w-full min-w-0  space-y-6 rounded-2xl bg-white py-8 text-center sm:space-y-8 sm:px-6 sm:py-10">
         <p className="text-pretty text-sm font-normal leading-relaxed text-zinc-600 sm:text-base sm:leading-6">

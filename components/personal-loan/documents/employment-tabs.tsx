@@ -37,7 +37,7 @@ const EmploymentTabs = ({ activeTab, onChange }: EmploymentTabsProps): JSX.Eleme
             type="button"
             onClick={() => onChange(tab.id)}
             className={cn(
-              'flex-1 text-sm font-medium leading-5 pb-2 transition-colors',
+              'flex-1 text-sm font-medium leading-5 py-3 transition-colors',
               isActive
                 ? 'bg-brand-50 border-b-2 border-brand-primary text-gray-900'
                 : 'bg-transparent border-b-2 border-transparent text-gray-700',

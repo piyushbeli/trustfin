@@ -17,8 +17,7 @@ const EligibilityCta = (): JSX.Element => {
   return (
     <SectionWrapper>
       <ActionButton
-        className="h-12 w-full rounded-xl bg-brand-primary text-base font-medium text-white hover:bg-brand-primary/90"
-        fullWidth
+        className="h-12 custom-cta-button bg-brand-primary text-base font-medium text-white hover:bg-brand-primary/90"
         size="lg"
         onClick={triggerApplyFlow}
         isLoading={isApplyLoading}

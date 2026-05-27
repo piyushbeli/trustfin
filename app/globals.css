@@ -338,14 +338,57 @@
   box-shadow: 0 8px 32px color-mix(in srgb, var(--color-brand-primary) 15%, transparent);
 }
 
-/* Primary hero CTA — purple to sky blue */
+/* Primary hero CTA — purple dominant, cyan on the right tail */
 .wc-hero-cta-gradient {
   background: linear-gradient(
     90deg,
     var(--color-brand-primary) 0%,
-    #38bdf8 100%
+    var(--color-brand-primary) 50%,
+    #3bdcf9 100%
   );
 }
+
+/* For text gradient, purple dominant, cyan on the right tail */
+.wc-text-gradient {
+  color: var(--color-wc-blue-600); background: linear-gradient(
+    90deg,
+    var(--color-brand-primary) 0%,
+    var(--color-brand-primary) 50%,
+    #3bdcf9 100%
+  );
+}
+
+/* For border gradient, purple dominant, cyan on the right tail */
+.wc-border-gradient {
+  border: 1px solid transparent;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(
+      90deg,
+      #38bdf8 0%,
+      var(--color-brand-primary) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+/* Matched-by-AI feature tiles — light fill + purple → cyan border */
+.wc-ai-feature-card {
+  border: 1px solid transparent;
+  /* I want lighter the bg b */
+  background-image: linear-gradient(
+      90deg,
+      var(--color-brand-lightest-from) 0%,
+      color-mix(in srgb, #3bdcf9 14%, var(--color-brand-lightest-to)) 100%
+    ),
+    linear-gradient(
+      90deg,
+      var(--color-brand-primary) 0%,
+      #3bdcf9 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
 
 /*
  * Secondary AI CTA — gradient border on a single element so border-radius
@@ -675,4 +718,12 @@
 
 .common-section-wrapper {
   @apply max-w-6xl mx-auto px-4 xl:px-0;
+}
+
+.custom-cta-button {
+  @apply w-full sm:w-96 mx-auto;
+}
+
+.custom-text-black {
+  @apply text-black/80;
 }

@@ -16,7 +16,7 @@ const HeroStats = (): JSX.Element => {
           <Fragment key={stat.id}>
             <div className="flex min-w-0 flex-1 flex-col items-center px-1 text-center">
               <span className="text-base font-semibold text-brand-primary">{stat.value}</span>
-              <span className="mt-1 text-xs text-gray-600 leading-snug">{stat.label}</span>
+              <span className="mt-1 text-xs custom-text-black leading-snug">{stat.label}</span>
             </div>
             {!isLast ? <StatDivider /> : null}
           </Fragment>

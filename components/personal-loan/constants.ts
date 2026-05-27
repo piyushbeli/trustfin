@@ -6,8 +6,6 @@
 import { IMAGES } from '@/lib/constants/images';
 import { Calculator, Clock, Shield, Percent, FileText, Users, Zap, HeadphonesIcon } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import type { FaqItem } from '@/lib/constants/faqs';
-
 /** Benefit card configuration */
 export interface BenefitItem {
   id: string;
@@ -422,60 +420,6 @@ export const VIDEO_CONFIG = {
   fallbackThumbnail: '/assets/images/personal-loan-illustration.png',
 };
 
-/** FAQ items specific to personal loan */
-export const PERSONAL_LOAN_FAQS: FaqItem[] = [
-  {
-    id: 'faq-1',
-    question: 'What is a personal loan and how does it work?',
-    answer: 'A personal loan is an unsecured loan that can be used for any personal need. The approved amount is repaid in fixed monthly EMIs over a chosen tenure.',
-  },
-  {
-    id: 'faq-2',
-    question: 'What credit score is required for a personal loan?',
-    answer: 'Most lenders prefer a credit score of 720 or above. A higher score improves approval chances and may help get better interest rates.',
-  },
-  {
-    id: 'faq-3',
-    question: 'How much personal loan amount can be availed?',
-    answer: 'The loan amount depends on income, credit profile, existing liabilities, and lender policy. On WeCredit, offers may range from ₹5,000 to ₹15 lakh.',
-  },
-  {
-    id: 'faq-4',
-    question: 'How are personal loan interest rates decided?',
-    answer: 'Interest rates are based on factors like credit score, income stability, loan amount, tenure, and the lender\'s internal policy.',
-  },
-  {
-    id: 'faq-5',
-    question: 'What documents are required to apply for a personal loan?',
-    answer: 'Basic documents usually include identity proof, address proof, income proof, and bank statements. Requirements may vary by lender.',
-  },
-  {
-    id: 'faq-6',
-    question: 'How long does personal loan approval and disbursal take?',
-    answer: 'Approval timelines vary by lender, but many personal loans are approved within minutes and disbursed shortly after verification.',
-  },
-  {
-    id: 'faq-7',
-    question: 'Does applying for a personal loan affect credit score?',
-    answer: 'Yes. Each application may result in a credit enquiry, which can slightly impact the credit score. Comparing offers on a single platform helps reduce multiple enquiries.',
-  },
-  {
-    id: 'faq-8',
-    question: 'Can a personal loan be repaid before tenure completion?',
-    answer: 'Yes, most lenders allow prepayment or foreclosure, but charges may apply depending on lender terms and loan duration.',
-  },
-  {
-    id: 'faq-9',
-    question: 'What happens if an EMI is missed?',
-    answer: 'Missing an EMI can attract late payment charges and negatively impact the credit score. Repeated delays may affect future loan eligibility.',
-  },
-  {
-    id: 'faq-10',
-    question: 'Is collateral required for a personal loan?',
-    answer: 'No. Personal loans are unsecured and do not require any collateral or security.',
-  },
-];
-
 /** Fee and charge item configuration */
 export interface FeeChargeItem {
   id: string;
@@ -686,6 +630,10 @@ export const PERSONAL_LOAN_INFO_ACCORDION_ITEMS: PersonalLoanInfoAccordionItem[]
       },
     },
   ];
+
+/** Interest Rates and Fees and Charges panels open on initial page load */
+export const PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN: string[] =
+  PERSONAL_LOAN_INFO_ACCORDION_ITEMS.slice(0, 2).map((item) => item.id);
 
 /** Fees and charges section content */
 export const FEES_CHARGES_INFO = {
@@ -916,4 +864,5 @@ export const AI_BORROWER_QUESTIONS: BorrowerQuestionItem[] = [
 export const AI_CTA_COPY = {
   defaultLabel: 'Chat with TrustFin AI',
   heroSecondaryLabel: 'Talk to AI Assistant',
+  askAiLabel: 'Ask AI',
 } as const;

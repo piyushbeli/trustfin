@@ -36,8 +36,8 @@ const EligibilityCard = ({ item, index }: EligibilityCardProps): JSX.Element => 
       </div>
       <div className="flex-1 min-w-0 pt-0.5">
         <p className="text-sm leading-5">
-          <span className="font-medium text-gray-700">{item.title} </span>
-          <span className="font-normal text-gray-500">{item.requirement}</span>
+          <span className="font-medium custom-text-black">{item.title} </span>
+          <span className="font-normal custom-text-black">{item.requirement}</span>
         </p>
       </div>
     </motion.div>

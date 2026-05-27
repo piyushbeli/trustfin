@@ -14,8 +14,7 @@ const StepsCta = (): JSX.Element => {
 
   return (
     <ActionButton
-      className="h-14 w-full text-lg font-medium bg-brand-primary text-white hover:bg-brand-primary/90"
-      fullWidth
+      className="h-14 custom-cta-button text-lg font-medium bg-brand-primary text-white hover:bg-brand-primary/90"
       size="lg"
       onClick={triggerApplyFlow}
       isLoading={isApplyLoading}

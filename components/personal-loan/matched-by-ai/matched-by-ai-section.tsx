@@ -18,8 +18,8 @@ import AiFeaturesGrid from './ai-features-grid';
 import BorrowerQuestionsList from './borrower-questions-list';
 import { AI_MATCHED_SECTION } from '../constants';
 
-const SUBSECTION_TITLE_CLASS = 'text-base font-medium text-gray-900 mb-2';
-const BODY_PARAGRAPH_CLASS = 'text-sm text-gray-500 leading-5';
+const SUBSECTION_TITLE_CLASS = 'text-base font-bold custom-text-black mb-2';
+const BODY_PARAGRAPH_CLASS = 'text-sm custom-text-black leading-5';
 
 const MatchedByAiSection = (): JSX.Element => {
   const { intro, difference, advisor } = AI_MATCHED_SECTION;
@@ -38,7 +38,7 @@ const MatchedByAiSection = (): JSX.Element => {
           <MatchedByAiHeading />
           <p className={BODY_PARAGRAPH_CLASS}>
             {intro.lead}{' '}
-            <span className="font-semibold italic text-gray-700">{intro.emphasis}</span>{' '}
+            <span className="font-semibold italic custom-text-black">{intro.emphasis}</span>{' '}
             {intro.closing}
           </p>
         </div>
@@ -71,8 +71,9 @@ const MatchedByAiSection = (): JSX.Element => {
           {/* Suggested questions — tap to prefill the AI chat (placeholder for now) */}
           <h3 className={SUBSECTION_TITLE_CLASS}>{advisor.questionsTitle}</h3>
           <BorrowerQuestionsList />
-
-          <AiChatCta label={advisor.ctaLabel} className="mt-2" />
+          <div className="flex justify-center">
+            <AiChatCta label={advisor.ctaLabel} className="mt-2 custom-cta-button" />
+          </div>
         </div>
       </motion.div>
     </SectionWrapper>

@@ -30,17 +30,17 @@ const DocumentsRequired = (): JSX.Element => {
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
       >
-        <SectionTitle className="mb-2 text-gray-900/80 text-left font-semibold">
+        <SectionTitle className="mb-2 custom-text-black text-left font-semibold">
           {DOCUMENTS_SECTION_INFO.title}
         </SectionTitle>
-        <SectionDescription align="left" className="mb-6 text-gray-500/80">
+        <SectionDescription align="left" className="mb-6 custom-text-black">
           {DOCUMENTS_SECTION_INFO.description}
         </SectionDescription>
 
         <EmploymentTabs activeTab={activeTab} onChange={setActiveTab} />
         <DocumentList documents={documents} />
 
-        <SectionDescription align="left" className="mt-6">
+        <SectionDescription align="left" className="mt-6 custom-text-black">
           {DOCUMENTS_SECTION_INFO.closing}
         </SectionDescription>
       </motion.div>
