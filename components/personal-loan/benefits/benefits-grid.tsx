@@ -8,12 +8,16 @@
 
 import { JSX } from 'react';
 import BenefitCard from './benefit-card';
-import { WHY_WECREDIT_SIMPLE } from '../constants';
+import { WHY_WECREDIT_SIMPLE, type WhyWeCreditSimpleItem } from '../constants';
 
-const BenefitsGrid = (): JSX.Element => {
+interface BenefitsGridProps {
+  items?: WhyWeCreditSimpleItem[];
+}
+
+const BenefitsGrid = ({ items = WHY_WECREDIT_SIMPLE }: BenefitsGridProps): JSX.Element => {
   return (
     <div className="grid grid-cols-2 gap-4">
-      {WHY_WECREDIT_SIMPLE.map((benefit, index) => (
+      {items.map((benefit, index) => (
         <BenefitCard key={benefit.id} benefit={benefit} index={index} />
       ))}
     </div>

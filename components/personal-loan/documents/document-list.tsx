@@ -9,7 +9,7 @@ interface DocumentListProps {
 /** Vertical list of DocumentRows */
 const DocumentList = ({ documents }: DocumentListProps): JSX.Element => {
   return (
-    <div className="space-y-5">
+    <div className="space-y-3">
       {documents.map((doc) => (
         <DocumentRow key={doc.id} document={doc} />
       ))}

@@ -117,7 +117,7 @@ export const DOCUMENTS_REQUIRED: DocumentItem[] = [
 export const SALARIED_DOCUMENTS: DocumentItem[] = [
   {
     id: 'identity',
-    title: 'Identity Proof :',
+    title: 'Identity Proof:',
     description: 'PAN, Aadhaar, Passport, or Voter ID',
   },
   {
@@ -128,7 +128,7 @@ export const SALARIED_DOCUMENTS: DocumentItem[] = [
   {
     id: 'income',
     title: 'Income Proof:',
-    description: 'Last 3 months salary slips and bank statements',
+    description: "Last 3 months' salary slips and bank statements",
   },
 ];
 
@@ -136,7 +136,7 @@ export const SALARIED_DOCUMENTS: DocumentItem[] = [
 export const SELF_EMPLOYED_DOCUMENTS: DocumentItem[] = [
   {
     id: 'identity',
-    title: 'Identity Proof :',
+    title: 'Identity Proof:',
     description: 'PAN, Aadhaar, Passport, or Voter ID',
   },
   {
@@ -344,6 +344,15 @@ export const ELIGIBILITY_SECTION_INFO = {
     'Eligibility criteria for a personal loan may vary from lender to lender, but these are some basic requirements.',
 };
 
+/** Documents section content */
+export const DOCUMENTS_SECTION_INFO = {
+  title: 'Documents You Will Need',
+  description:
+    'The exact documents required depend on the lender. Here is what most banks and NBFCs on TrustFin commonly ask for.',
+  closing:
+    "Once you are matched with a lender, TrustFin's AI will tell you the specific documents that lender requires so there are no surprises at the application stage.",
+} as const;
+
 /** EMI Calculator configuration */
 export const EMI_CALCULATOR_CONFIG = {
   loanAmount: {
@@ -507,6 +516,38 @@ export const FEES_AND_CHARGES: FeeChargeItem[] = [
     value: '₹100 to ₹500 per request',
   },
 ];
+
+/** Personal loan info accordion panel types (keeps accordion extensible). */
+export type PersonalLoanInfoAccordionPanel =
+  | { type: 'text'; body: string }
+  | { type: 'fees-table'; rows: FeeChargeItem[] }
+  | { type: 'benefits-grid'; items: WhyWeCreditSimpleItem[] };
+
+export interface PersonalLoanInfoAccordionItem {
+  id: string;
+  title: string;
+  panel: PersonalLoanInfoAccordionPanel;
+}
+
+/** Items shown inside the "Personal Loan Info" accordion section. */
+export const PERSONAL_LOAN_INFO_ACCORDION_ITEMS: PersonalLoanInfoAccordionItem[] =
+  [
+    {
+      id: 'interest-rates',
+      title: 'Interest Rates',
+      panel: { type: 'text', body: INTEREST_RATES_INFO.description },
+    },
+    {
+      id: 'fees-and-charges',
+      title: 'Fees and Charges',
+      panel: { type: 'fees-table', rows: FEES_AND_CHARGES },
+    },
+    {
+      id: 'why-trustfin',
+      title: 'Why Customers Choose TrustFin',
+      panel: { type: 'benefits-grid', items: WHY_WECREDIT_SIMPLE },
+    },
+  ];
 
 /** Fees and charges section content */
 export const FEES_CHARGES_INFO = {

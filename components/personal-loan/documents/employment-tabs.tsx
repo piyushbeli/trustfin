@@ -22,33 +22,31 @@ interface TabConfig {
 }
 
 const TABS: TabConfig[] = [
-  { id: 'salaried', label: 'Salaried' },
-  { id: 'self-employed', label: 'Self-Employed' },
+  { id: 'salaried', label: 'Salaried Applicants' },
+  { id: 'self-employed', label: 'Self-Employed Applicants' },
 ];
 
 const EmploymentTabs = ({ activeTab, onChange }: EmploymentTabsProps): JSX.Element => {
   return (
-    <div className="flex justify-center mb-6">
-      <div className="w-60 h-10 bg-brand-primary/10 rounded-lg p-1 flex items-center">
-        {TABS.map((tab) => {
-          const isActive = activeTab === tab.id;
-          return (
-            <button
-              key={tab.id}
-              type="button"
-              onClick={() => onChange(tab.id)}
-              className={cn(
-                'w-28 h-8 rounded-md text-xs font-medium leading-5 transition-colors',
-                isActive
-                  ? 'bg-brand-primary text-white'
-                  : 'bg-transparent text-zinc-800',
-              )}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex mb-6 w-full">
+      {TABS.map((tab) => {
+        const isActive = activeTab === tab.id;
+        return (
+          <button
+            key={tab.id}
+            type="button"
+            onClick={() => onChange(tab.id)}
+            className={cn(
+              'flex-1 text-sm font-medium leading-5 pb-2 transition-colors',
+              isActive
+                ? 'bg-brand-50 border-b-2 border-brand-primary text-gray-900'
+                : 'bg-transparent border-b-2 border-transparent text-gray-700',
+            )}
+          >
+            {tab.label}
+          </button>
+        );
+      })}
     </div>
   );
 };

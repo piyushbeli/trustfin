@@ -15,9 +15,15 @@ import { useAccordionItemContext } from './accordion-item-context';
 interface AccordionTriggerProps {
   children: ReactNode;
   className?: string;
+  /** Optional class override for the trigger label text. */
+  titleClassName?: string;
 }
 
-const AccordionTrigger = ({ children, className }: AccordionTriggerProps): JSX.Element => {
+const AccordionTrigger = ({
+  children,
+  className,
+  titleClassName,
+}: AccordionTriggerProps): JSX.Element => {
   const { toggle } = useAccordionContext();
   const { value, isExpanded, contentId, triggerId } = useAccordionItemContext();
 
@@ -34,7 +40,14 @@ const AccordionTrigger = ({ children, className }: AccordionTriggerProps): JSX.E
         className,
       )}
     >
-      <span className="text-sm font-medium text-gray-900">{children}</span>
+      <span
+        className={cn(
+          'text-sm font-medium text-gray-900',
+          titleClassName,
+        )}
+      >
+        {children}
+      </span>
       <ChevronDown
         className={cn(
           'w-5 h-5 shrink-0 text-brand-primary transition-transform duration-300',

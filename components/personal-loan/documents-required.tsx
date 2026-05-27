@@ -15,22 +15,35 @@ import {
 } from '@/components/shared';
 import EmploymentTabs, { type EmploymentType } from './documents/employment-tabs';
 import DocumentList from './documents/document-list';
-import { SALARIED_DOCUMENTS, SELF_EMPLOYED_DOCUMENTS } from './constants';
+import { DOCUMENTS_SECTION_INFO, SALARIED_DOCUMENTS, SELF_EMPLOYED_DOCUMENTS } from './constants';
+import { motion } from 'framer-motion';
 
 const DocumentsRequired = (): JSX.Element => {
   const [activeTab, setActiveTab] = useState<EmploymentType>('salaried');
   const documents = activeTab === 'salaried' ? SALARIED_DOCUMENTS : SELF_EMPLOYED_DOCUMENTS;
 
   return (
-    <SectionWrapper className="bg-white">
-      <SectionTitle className="mb-2">Documents Required for Personal Loan</SectionTitle>
-      <SectionDescription align="left" className="mb-6">
-        Basically it depends on the lender how they verify the customer, here are some common
-        documents required for personal loan application.
-      </SectionDescription>
+    <SectionWrapper className="bg-white" innerClassName="max-w-md mx-auto">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.4 }}
+      >
+        <SectionTitle className="mb-2 text-gray-900/80 text-left font-semibold">
+          {DOCUMENTS_SECTION_INFO.title}
+        </SectionTitle>
+        <SectionDescription align="left" className="mb-6 text-gray-500/80">
+          {DOCUMENTS_SECTION_INFO.description}
+        </SectionDescription>
 
-      <EmploymentTabs activeTab={activeTab} onChange={setActiveTab} />
-      <DocumentList documents={documents} />
+        <EmploymentTabs activeTab={activeTab} onChange={setActiveTab} />
+        <DocumentList documents={documents} />
+
+        <SectionDescription align="left" className="mt-6">
+          {DOCUMENTS_SECTION_INFO.closing}
+        </SectionDescription>
+      </motion.div>
     </SectionWrapper>
   );
 };

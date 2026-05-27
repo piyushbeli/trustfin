@@ -16,6 +16,8 @@ import { TrendingOffersClient } from '@/components/home';
 import { PERSONAL_LOAN_FAQS } from '@/components/personal-loan/constants';
 import EligibilityList from '@/components/personal-loan/eligibility/eligibility-list';
 import EligibilityCta from '@/components/personal-loan/eligibility/eligibility-cta';
+import DocumentsRequired from '@/components/personal-loan/documents-required';
+import { PersonalLoanInfoAccordion } from '@/components/personal-loan/info-accordion';
 
 const PersonalLoanPage = (): React.ReactNode => {
   return (
@@ -43,6 +45,12 @@ const PersonalLoanPage = (): React.ReactNode => {
 
       {/* Apply CTA shown right after the eligibility rules */}
       <EligibilityCta />
+
+      {/* Documents section shown right after the eligibility CTA */}
+      <DocumentsRequired />
+
+      {/* Personal Loan Info accordion (Interest Rates, Fees & Charges, Why TrustFin) */}
+      <PersonalLoanInfoAccordion />
 
       {/* FAQ Section */}
       <FaqSection items={PERSONAL_LOAN_FAQS} />
