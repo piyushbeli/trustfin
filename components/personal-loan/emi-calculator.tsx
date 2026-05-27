@@ -298,7 +298,7 @@ const Slider = ({
   );
 
   return (
-    <div className="bg-white rounded-lg shadow-[1px_1px_4px_rgba(102,102,102,0.10),-1px_-1px_4px_rgba(102,102,102,0.10)] p-4 mb-3">
+    <div className="bg-white rounded-lg border border-gray-200 shadow-[1px_1px_4px_rgba(102,102,102,0.10),-1px_-1px_4px_rgba(102,102,102,0.10)] p-4 mb-3">
       {/* Header row with label and optional right element */}
       <div className="flex justify-between items-center">
         <span className="text-zinc-800 text-sm font-medium leading-5">
@@ -332,12 +332,12 @@ const Slider = ({
         <div className="absolute w-full h-1.5 top-[3px] bg-zinc-300 rounded-3xl" />
         {/* Filled track */}
         <div
-          className="absolute h-1.5 top-[3px] bg-blue-700 rounded-3xl"
+          className="absolute h-1.5 top-[3px] bg-brand-primary rounded-3xl"
           style={{ width: `${percentage}%` }}
         />
         {/* Thumb */}
         <div
-          className="absolute size-3 bg-white rounded-full border border-blue-700 -translate-x-1/2"
+          className="absolute size-3 bg-white rounded-full border border-brand-primary -translate-x-1/2"
           style={{ left: `${percentage}%` }}
         />
       </div>
@@ -371,8 +371,8 @@ const TenureToggle = ({ mode, onModeChange }: TenureToggleProps): JSX.Element =>
         type="button"
         onClick={() => onModeChange('years')}
         className={`px-3 py-1 text-sm font-medium rounded transition-colors ${mode === 'years'
-          ? 'bg-wc-blue-500 text-white'
-          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          ? 'bg-brand-primary text-white'
+          : 'bg-brand-primary/10 text-gray-600 hover:bg-brand-primary/20'
           }`}
       >
         Yr
@@ -381,8 +381,8 @@ const TenureToggle = ({ mode, onModeChange }: TenureToggleProps): JSX.Element =>
         type="button"
         onClick={() => onModeChange('months')}
         className={`px-3 py-1 text-sm font-medium rounded transition-colors ${mode === 'months'
-          ? 'bg-wc-blue-500 text-white'
-          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+          ? 'bg-brand-primary text-white'
+          : 'bg-brand-primary/10 text-gray-600 hover:bg-brand-primary/20'
           }`}
       >
         Mo
@@ -470,21 +470,21 @@ const EmiCalculator = ({ title }: EmiCalculatorProps): JSX.Element => {
     return formatTenureDisplay(maxYears, 'years');
   };
 
-  // Show just the number for rate value since % is in the label
-  const formatRateValueSimple = (value: number): string => `${value}`;
+  // Display rate with trailing % to match design (e.g. "10.5 %")
+  const formatRateValueSimple = (value: number): string => `${value} %`;
   const formatRateMin = (value: number): string => `${value}%`;
   const formatRateMax = (value: number): string => `${value}%`;
 
   return (
-    <section className="bg-white py-6 px-4">
+    <section className="bg-white py-4 px-0">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.5 }}
       >
-        {/* Section Title */}
-        <h2 className="text-xl font-semibold text-center mb-6">
+        {/* Section Title — left-aligned per design */}
+        <h2 className="text-xl font-semibold text-left mb-4">
           {title}
         </h2>
 
@@ -524,7 +524,7 @@ const EmiCalculator = ({ title }: EmiCalculatorProps): JSX.Element => {
 
           {/* Interest Rate Slider - percentage input for direct editing */}
           <Slider
-            label="Rate of Interest (%)"
+            label="Rate of Interest"
             value={interestRate}
             min={rateConfig.min}
             max={rateConfig.max}
@@ -539,7 +539,7 @@ const EmiCalculator = ({ title }: EmiCalculatorProps): JSX.Element => {
           {/* Results Card */}
           <div className="rounded-lg shadow-[0px_0px_8px_0px_rgba(102,102,102,0.15)] border border-gray-200 overflow-hidden">
             {/* Monthly EMI - Blue Header */}
-            <div className="bg-wc-blue-500 p-4 flex items-center justify-between">
+            <div className="bg-brand-primary p-4 flex items-center justify-between">
               <div className="text-white text-2xl font-bold">
                 {formatCurrency(emiResult.monthlyEmi)}
               </div>
@@ -550,19 +550,19 @@ const EmiCalculator = ({ title }: EmiCalculatorProps): JSX.Element => {
 
             {/* Total Interest & Total Repayment */}
             <div className="bg-white flex divide-x divide-gray-200">
-              <div className="flex-1 py-3 px-4 text-center">
-                <p className="text-zinc-500 text-sm font-normal uppercase mb-1">
+              <div className="flex-1 py-3 px-4 text-left">
+                <p className="text-zinc-500 text-xs font-normal uppercase mb-1">
                   Total Interest
                 </p>
-                <p className="text-zinc-900 text-xl font-medium">
+                <p className="text-zinc-900 text-xl font-semibold">
                   {formatCurrency(emiResult.totalInterest)}
                 </p>
               </div>
-              <div className="flex-1 py-3 px-4 text-center">
-                <p className="text-zinc-500 text-sm font-normal uppercase mb-1">
+              <div className="flex-1 py-3 px-4 text-left">
+                <p className="text-zinc-500 text-xs font-normal uppercase mb-1">
                   Total Repayment
                 </p>
-                <p className="text-zinc-900 text-xl font-medium">
+                <p className="text-zinc-900 text-xl font-semibold">
                   {formatCurrency(emiResult.totalAmount)}
                 </p>
               </div>

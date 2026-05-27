@@ -2,9 +2,10 @@
 
 import { JSX } from 'react';
 import Image from 'next/image';
-import { ActionButton } from '@/components/shared';
+import { ActionButton, AiChatCta } from '@/components/shared';
 import { useLoanApplicationStore } from '@/stores/loan-application-store';
 import { IMAGES } from '@/lib/constants/images';
+import { AI_CTA_COPY } from '@/components/personal-loan/constants';
 
 /** Finn intro copy shown in the glass chat bubble */
 const FINN_CHAT_MESSAGE =
@@ -12,14 +13,11 @@ const FINN_CHAT_MESSAGE =
 
 /**
  * Trustfin home hero — static layout with boat image, Finn bubble, and dual CTAs.
- * AI Assistant CTA is a placeholder until the full-screen modal is implemented.
+ * AI Assistant CTA is rendered via the shared AiChatCta so all AI buttons
+ * stay in sync until the full-screen chat modal is implemented.
  */
 const HeroSection = (): JSX.Element => {
   const { triggerApplyFlow, isApplyLoading } = useLoanApplicationStore();
-
-  const handleAiAssistantClick = (): void => {
-    // Placeholder: full-screen AI modal will be wired in a follow-up
-  };
 
   return (
     <section className="wc-hero-bg relative overflow-x-hidden px-6 pt-24 pb-8">
@@ -49,13 +47,7 @@ const HeroSection = (): JSX.Element => {
 
           {/* CTAs sit above mascot feet via z-index + opaque backgrounds */}
           <div className="relative z-10 flex w-full flex-col gap-3">
-            <button
-              type="button"
-              onClick={handleAiAssistantClick}
-              className="wc-hero-cta-gradient h-14 w-full rounded-xl text-base font-semibold text-white transition-all duration-200 active:scale-[0.98]"
-            >
-              Talk to AI Assistant ✨
-            </button>
+            <AiChatCta variant="gradient" label={AI_CTA_COPY.heroSecondaryLabel} />
 
             <ActionButton
               variant="outline"

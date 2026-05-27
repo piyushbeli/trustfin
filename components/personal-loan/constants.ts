@@ -6,6 +6,7 @@
 import { IMAGES } from '@/lib/constants/images';
 import { Calculator, Clock, Shield, Percent, FileText, Users, Zap, HeadphonesIcon } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import type { FaqItem } from '@/lib/constants/faqs';
 
 /** Benefit card configuration */
 export interface BenefitItem {
@@ -55,19 +56,19 @@ export const HOW_TO_APPLY_STEPS: StepItem[] = [
     id: 'step-1',
     number: 1,
     title: 'Step 1 :',
-    description: 'Enter your mobile number and verify with OTP',
+    description: 'Verify your mobile number Enter your number and confirm with OTP. Quick and secure.',
   },
   {
     id: 'step-2',
     number: 2,
     title: 'Step 2:',
-    description: 'Enter your personal details',
+    description: 'Enter your details, Share your income, employment type, and loan requirement. The AI analyses your profile instantly.',
   },
   {
     id: 'step-3',
     number: 3,
     title: 'Step 3 :',
-    description: 'Choose best-suited offer or lender for you',
+    description: 'Pick your offer and apply Review your matched offers, compare them side by side, and proceed with the one that suits you best.',
   },
 ];
 
@@ -364,6 +365,27 @@ export const EMI_CALCULATOR_CONFIG = {
   },
 } as const;
 
+/** Hero stats row shown below the headline on the personal loan page */
+export interface HeroStatItem {
+  id: string;
+  value: string;
+  label: string;
+}
+
+export const HERO_STATS: HeroStatItem[] = [
+  { id: 'loan-range', value: '5K-15L', label: 'Loan Range' },
+  { id: 'rate', value: '9.99%', label: 'Rate From p.a.' },
+  { id: 'lenders', value: '50+', label: 'Money Lenders' },
+];
+
+/** Hero section copy for the personal loan landing page */
+export const HERO_COPY = {
+  subtitle:
+    'Stop applying blindly. Tell our AI what you need, and it will find the right personal loan from 25+ lenders in seconds.',
+  primaryCta: 'Start Loan Application',
+  secondaryCta: 'Talk to AI Assistant',
+} as const;
+
 /** Stats data */
 export const STATS_DATA = [
   {
@@ -387,12 +409,6 @@ export const VIDEO_CONFIG = {
 };
 
 /** FAQ items specific to personal loan */
-export interface FaqItem {
-  id: string;
-  question: string;
-  answer: string;
-}
-
 export const PERSONAL_LOAN_FAQS: FaqItem[] = [
   {
     id: 'faq-1',
@@ -622,3 +638,103 @@ export const EXPERT_QUOTE: ExpertQuote = {
 export const EXPERT_QUOTE_INFO = {
   title: 'Direct from Expert',
 };
+
+/** A single AI feature card item shown in the "Matched by AI" 2x2 grid */
+export interface AiFeatureItem {
+  id: string;
+  text: string;
+}
+
+/** Feature cards listed under "What the AI handles for you" */
+export const AI_MATCHED_FEATURES: AiFeatureItem[] = [
+  {
+    id: 'eligibility-matching',
+    text: 'Eligibility matching across 25+ lenders before you apply.',
+  },
+  {
+    id: 'offer-ranking',
+    text: 'Ranking of offers by interest rate, fees, disbursal speed, and approval likelihood.',
+  },
+  {
+    id: 'reduce-enquiries',
+    text: 'Reduction of hard credit enquiries by filtering out unsuitable lenders upfront.',
+  },
+  {
+    id: 'realtime-answers',
+    text: 'Real-time answers to any question you have about loans, eligibility, or repayment.',
+  },
+];
+
+/**
+ * Copy for the "Personal Loans, Matched by AI" section.
+ * Intro paragraph is split so the middle sentence can be emphasised in the UI
+ * without coupling layout to constants.
+ */
+export const AI_MATCHED_SECTION = {
+  titleLead: 'Personal Loans,',
+  titleHighlight: 'Matched by AI',
+  intro: {
+    lead: 'Finding a personal loan should not feel like a lottery. At TrustFin.ai, our AI reads your profile and matches you with lenders who are actually likely to approve you, before you even apply.',
+    emphasis:
+      'Borrow from ₹5,000 to ₹15 lakh at interest rates starting from 9.99% p.a.* with tenure options from 6 months to 5 years.',
+    closing: 'No collateral. No multiple applications. No wasted credit enquiries.',
+  },
+  difference: {
+    title: 'What Makes TrustFin Different',
+    paragraphs: [
+      'Most loan platforms show you a list and leave you to figure out the rest. TrustFin works differently.',
+      'Our AI loan engine does not just display offers. It actively analyses your income, employment type, credit score, and loan requirement, then cross-checks your profile against the eligibility rules of 25+ banks and NBFCs in real time. What you see on TrustFin are offers you actually qualify for, ranked by the factors that matter most to you.',
+    ],
+    featuresTitle: 'What the AI handles for you',
+  },
+  advisor: {
+    title: 'Got a Loan Question? Ask the AI',
+    paragraphs: [
+      "TrustFin's AI assistant is not just a matching engine. It is also your personal loan advisor, available around the clock.",
+      'Whether you are a first-time borrower or comparing your third loan, the AI gives you straight answers in plain language without the sales pitch.',
+    ],
+    questionsTitle: 'Some things borrowers ask:',
+    closing:
+      'You get an instant, personalised response. And if you are ready to move forward, the AI guides you through the application right away.',
+    ctaLabel: 'Ask AI',
+  },
+} as const;
+
+/** A single suggested question shown in the "Some things borrowers ask" list */
+export interface BorrowerQuestionItem {
+  id: string;
+  question: string;
+}
+
+/** Suggested prompts surfaced in the advisor block — keep short and conversational */
+export const AI_BORROWER_QUESTIONS: BorrowerQuestionItem[] = [
+  {
+    id: 'salary-loan',
+    question: 'How much loan can I get with a ₹25,000 salary?',
+  },
+  {
+    id: 'cibil-690',
+    question: 'I have a 690 CIBIL score. Which lenders will approve me?',
+  },
+  {
+    id: 'self-employed-no-itr',
+    question: 'I am self-employed without ITR. What are my options?',
+  },
+  {
+    id: 'emi-2-lakh',
+    question: 'What will my EMI be for ₹2 lakh over 2 years?',
+  },
+  {
+    id: 'credit-score-impact',
+    question: 'If I apply today, will it affect my credit score?',
+  },
+];
+
+/**
+ * Shared copy for AI chat CTAs across pages. Kept centralised so the home
+ * hero, personal loan hero, and matched-by-ai section stay aligned.
+ */
+export const AI_CTA_COPY = {
+  defaultLabel: 'Chat with TrustFin AI',
+  heroSecondaryLabel: 'Talk to AI Assistant',
+} as const;
