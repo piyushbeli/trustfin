@@ -8,7 +8,6 @@ import HeroSection from '@/components/personal-loan/hero-section';
 import EmiCalculator from '@/components/personal-loan/emi-calculator';
 import HowToApplySteps from '@/components/personal-loan/how-to-apply-steps';
 import { MatchedByAiSection } from '@/components/personal-loan/matched-by-ai';
-import VideoSection from '@/components/personal-loan/video-section';
 import { FaqSection } from '@/components/shared';
 import { PartnersSection, TrendingOffersClient } from '@/components/home';
 import EligibilityList from '@/components/personal-loan/eligibility/eligibility-list';
@@ -31,7 +30,6 @@ import {
   BUSINESS_HOW_TO_APPLY_STEPS,
   BUSINESS_LOAN_INFO_ACCORDION_DEFAULT_OPEN,
   BUSINESS_LOAN_INFO_ACCORDION_ITEMS,
-  BUSINESS_VIDEO_CONFIG,
 } from '@/components/business-loan/landing/constants';
 import { BUSINESS_LOAN_FAQS } from '@/lib/constants/business-loan-faqs';
 
