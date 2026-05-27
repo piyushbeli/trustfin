@@ -7,18 +7,16 @@
 
 import { FaqSection } from '@/components/shared';
 import CreditCardsList from './credit-cards-list';
+import CreditCardsRecommendedHeader from './credit-cards-recommended-header';
 
 const CreditCardsPageContent = (): React.ReactNode => {
   return (
     <div className="min-h-screen bg-white">
-      <div className="py-8 sm:py-10 pt-20">
-
-        {/* Credit cards grid */}
-        <section className="mb-12 sm:mb-16 px-4" aria-label="Credit card offers">
+      <div className="pb-8 sm:pb-10">
+        <CreditCardsRecommendedHeader />
+        <section className="mb-12 sm:mb-16" aria-label="Credit card offers">
           <CreditCardsList />
         </section>
-
-        {/* FAQ section */}
         <FaqSection />
       </div>
     </div>

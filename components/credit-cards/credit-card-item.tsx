@@ -1,22 +1,24 @@
 'use client';
 
 /**
- * Single credit card offer card with gradient background, image, benefits, and Apply CTA.
- * Renders external application link in a new tab.
+ * Single credit card recommendation card with AI insight and Apply CTA.
  */
 
+import Image from 'next/image';
+import { ArrowUpRight } from 'lucide-react';
 import type { CreditCard } from '@/types/credit-card';
 import { useCreditCardTracking } from '@/hooks/use-credit-card-tracking';
+import { IMAGES } from '@/lib/constants/images';
+import { CREDIT_CARD_FEATURE_ICONS } from './constants';
 import ActionButton from '../shared/action-button';
 
 export interface CreditCardItemProps {
   card: CreditCard;
-  /** Optional badge text (e.g. "Popular", "Top Choices") */
-  badge?: string;
 }
 
-const CreditCardItem = ({ card, badge }: CreditCardItemProps): React.ReactNode => {
+const CreditCardItem = ({ card }: CreditCardItemProps): React.ReactNode => {
   const { trackCreditCardClick } = useCreditCardTracking();
+  const cardImage = card.imageAsset ?? IMAGES.ICONS.CREDIT_CARD;
 
   const handleApplyNow = (): void => {
     // Open URL first so user is never blocked
@@ -25,88 +27,52 @@ const CreditCardItem = ({ card, badge }: CreditCardItemProps): React.ReactNode =
     trackCreditCardClick(card.title);
   };
 
-  const gradientStyle = {
-    background:
-      card.gradientColors.length > 0
-        ? `linear-gradient(to bottom, ${card.gradientColors.join(', ')})`
-        : undefined,
-  };
-
-  const imageRadius = card.clip ? 'rounded-lg' : 'rounded-none';
-
   return (
-    <article
-      className="w-full relative bg-white rounded-xl shadow overflow-hidden flex flex-col transition-transform hover:scale-[1.02]"
-      data-card-title={card.title}
-    >
-      {/* Image area with gradient behind */}
-      <div
-        className="relative w-full h-48 shrink-0 overflow-hidden bg-zinc-700"
-        style={gradientStyle}
-      >
-        <img
-          src={card.imageAsset}
-          alt={card.title}
-          className={`absolute inset-0 w-full h-full object-fill ${imageRadius}`}
-          loading="lazy"
-        />
-      </div>
-
-
-      {/* Content area */}
-      <div className="flex-1 flex flex-col p-2.5 min-h-0">
-        {/* Title row with optional badge */}
-        <div className="flex items-start justify-between gap-2 mb-1">
-          <h2 className="text-neutral-900 text-[18px] leading-[22px] font-medium text-left flex-1 min-w-0">
-            {card.title}
-          </h2>
-          {badge ? (
-            <span className="shrink-0 px-2.5 py-1.5 bg-blue-500/20 rounded-3xl inline-flex items-center justify-center w-30">
-              <span className="text-blue-500 text-xs font-medium font-sans leading-4">
-                {badge}
-              </span>
-            </span>
-          ) : null}
+    <article className="w-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm" data-card-title={card.title}>
+      <div className="flex items-start gap-3">
+        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-brand-200 bg-brand-50">
+          <img src={cardImage} alt="" className="h-8 w-8 object-contain" loading="lazy" />
         </div>
-
-        {/* Intro */}
-        <p className="text-zinc-500 text-xs font-normal font-sans leading-4 my-2 line-clamp-2">
-          {card.intro}
-        </p>
-
-        {/* Rewards section */}
-        <div className="mb-2">
-          <h3 className="text-neutral-900 text-sm font-medium font-sans leading-5 mb-1">
-            Rewards :
-          </h3>
-          <ul className="space-y-0.5">
-            {card.benefits.map((benefit, idx) => (
-              <li
-                key={idx}
-                className="text-zinc-500 text-xs font-normal font-sans leading-4"
-              >
-                {benefit}
-              </li>
-            ))}
-          </ul>
+        <div className="min-w-0">
+          <h2 className="text-2xl font-medium leading-7 text-gray-900">{card.title}</h2>
+          <p className="mt-1 text-sm leading-5 text-gray-500">{card.intro}</p>
         </div>
       </div>
 
-      {/* Footer: fee + Apply button */}
-      <div className="border-t border-gray-200 p-2.5 flex items-center justify-between gap-3 shrink-0">
-        <div className="w-full">
-          <p className="text-brand-primary text-base font-semibold font-sans leading-6 text-center">
-            {card.amount}
-          </p>
-          <p className="text-zinc-500 text-xs font-normal font-sans leading-4 text-center">
-            {card.feeDetails}
+      <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2">
+        {card.features.map((feature) => {
+          const FeatureIcon = CREDIT_CARD_FEATURE_ICONS[feature.icon];
+          return (
+            <li key={feature.label} className="flex items-center gap-1.5 text-sm text-gray-700">
+              <FeatureIcon className="h-3.5 w-3.5 shrink-0 text-brand-primary" aria-hidden />
+              <span>{feature.label}</span>
+            </li>
+          );
+        })}
+      </ul>
+
+      <div className="mt-4 rounded-lg border border-brand-200 bg-brand-50/80 p-3">
+        <div className="mb-1 flex items-center gap-1.5">
+          <Image src={IMAGES.aiTransparent} alt="" width={14} height={14} className="h-3.5 w-3.5" />
+          <span className="text-[11px] font-semibold tracking-wide text-brand-primary">AI INSIGHT</span>
+        </div>
+        <p className="text-sm leading-5 text-gray-600">{card.aiInsight}</p>
+      </div>
+
+      <div className="mt-4 flex items-end justify-between gap-3 border-t border-gray-200 pt-3">
+        <div className="border-l-2 border-brand-primary pl-2">
+          <p className="text-[10px] font-medium tracking-wide text-brand-primary">ANNUAL FEE</p>
+          <p className="text-2xl font-semibold leading-7 text-gray-900">
+            {card.annualFee}
+            <span className="ml-1 text-xs font-medium text-brand-primary">{card.annualFeePeriod}</span>
           </p>
         </div>
 
         <ActionButton
           type="button"
           onClick={handleApplyNow}
-          className="text-xs font-medium rounded-lg py-1 w-30"
+          rightIcon={<ArrowUpRight className="h-3.5 w-3.5" aria-hidden />}
+          className="h-10 rounded-lg px-4 text-sm font-medium"
         >
           Apply Now
         </ActionButton>

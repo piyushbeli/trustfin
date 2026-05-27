@@ -5,13 +5,22 @@
 
 export interface CreditCard {
   title: string;
-  imageAsset: string;
   link: string;
   intro: string;
-  benefits: string[];
-  feeDetails: string;
-  gradientColors: string[];
-  /** Whether to clip image corners with border-radius (default: false) */
-  clip?: boolean;
-  amount: string;
+  imageAsset?: string;
+  features: CreditCardFeature[];
+  aiInsight: string;
+  annualFee: string;
+  annualFeePeriod: string;
+}
+
+export type CreditCardFeatureIcon =
+  | 'shopping-bag'
+  | 'check-circle'
+  | 'gauge'
+  | 'badge-indian-rupee';
+
+export interface CreditCardFeature {
+  icon: CreditCardFeatureIcon;
+  label: string;
 }
