@@ -9,17 +9,29 @@ import { JSX } from 'react';
 import { ActionButton } from '@/components/shared';
 import { useLoanApplicationStore } from '@/stores/loan-application-store';
 
-const StepsCta = (): JSX.Element => {
+interface StepsCtaProps {
+  label?: string;
+  onClick?: () => void;
+  isLoading?: boolean;
+}
+
+const StepsCta = ({
+  label = 'Start Loan Application',
+  onClick,
+  isLoading: isLoadingProp,
+}: StepsCtaProps): JSX.Element => {
   const { triggerApplyFlow, isApplyLoading } = useLoanApplicationStore();
+  const handleClick = onClick ?? triggerApplyFlow;
+  const isLoading = isLoadingProp ?? isApplyLoading;
 
   return (
     <ActionButton
       className="h-14 custom-cta-button text-lg font-medium bg-brand-primary text-white hover:bg-brand-primary/90"
       size="lg"
-      onClick={triggerApplyFlow}
-      isLoading={isApplyLoading}
+      onClick={handleClick}
+      isLoading={isLoading}
     >
-      Start Loan Application
+      {label}
     </ActionButton>
   );
 };

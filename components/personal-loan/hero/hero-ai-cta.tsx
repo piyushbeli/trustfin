@@ -10,12 +10,16 @@ import { JSX } from 'react';
 import { AiChatCta } from '@/components/shared';
 import { HERO_COPY } from '../constants';
 
-const HeroAiCta = (): JSX.Element => {
+interface HeroAiCtaProps {
+  label?: string;
+}
+
+const HeroAiCta = ({ label = HERO_COPY.secondaryCta }: HeroAiCtaProps): JSX.Element => {
   return (
     <AiChatCta
       variant="outline"
       size="default"
-      label={HERO_COPY.secondaryCta}
+      label={label}
     />
   );
 };

@@ -589,7 +589,7 @@ export const AFTER_LOAN_CLOSED_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
 export type PersonalLoanInfoAccordionPanel =
   | { type: 'text'; paragraphs: readonly string[] }
   | { type: 'fees-table'; rows: FeeChargeItem[] }
-  | { type: 'feature-list'; items: TrustFinFeatureItem[]; intro?: string };
+  | { type: 'feature-list'; items: TrustFinFeatureItem[]; intro?: string; closing?: string };
 
 export interface PersonalLoanInfoAccordionItem {
   id: string;

@@ -2,12 +2,9 @@
 
 /**
  * MatchedByAiSection
- * "Personal Loans, Matched by AI" content section. Thin composer over the
- * heading, intro copy, "What Makes TrustFin Different" subsection (with the
- * 2x2 AI feature grid), and the "Got a Loan Question? Ask the AI" subsection.
- *
- * All content is left-aligned to match the design, so we don't reuse the
- * centered SectionTitle / SectionDescription atoms here.
+ * Loan product AI matching content section. Thin composer over the
+ * heading, intro copy, difference subsection (with the 2x2 AI feature grid),
+ * and the "Ask the AI" advisor subsection.
  */
 
 import { JSX } from 'react';
@@ -16,13 +13,51 @@ import { SectionWrapper, AiChatCta } from '@/components/shared';
 import MatchedByAiHeading from './matched-by-ai-heading';
 import AiFeaturesGrid from './ai-features-grid';
 import BorrowerQuestionsList from './borrower-questions-list';
-import { AI_MATCHED_SECTION } from '../constants';
+import {
+  AI_MATCHED_SECTION,
+  AI_BORROWER_QUESTIONS,
+  AI_MATCHED_FEATURES,
+  type AiFeatureItem,
+  type BorrowerQuestionItem,
+} from '../constants';
 
 const SUBSECTION_TITLE_CLASS = 'text-base font-bold custom-text-black mb-2';
 const BODY_PARAGRAPH_CLASS = 'text-sm custom-text-black leading-5';
 
-const MatchedByAiSection = (): JSX.Element => {
-  const { intro, difference, advisor } = AI_MATCHED_SECTION;
+export interface AiMatchedSectionConfig {
+  titleLead: string;
+  titleHighlight: string;
+  intro: {
+    lead: string;
+    emphasis: string;
+    closing: string;
+  };
+  difference: {
+    title: string;
+    paragraphs: readonly string[];
+    featuresTitle: string;
+  };
+  advisor: {
+    title: string;
+    paragraphs: readonly string[];
+    questionsTitle: string;
+    closing: string;
+    ctaLabel: string;
+  };
+}
+
+interface MatchedByAiSectionProps {
+  sectionConfig?: AiMatchedSectionConfig;
+  features?: AiFeatureItem[];
+  questions?: BorrowerQuestionItem[];
+}
+
+const MatchedByAiSection = ({
+  sectionConfig = AI_MATCHED_SECTION as AiMatchedSectionConfig,
+  features = AI_MATCHED_FEATURES,
+  questions = AI_BORROWER_QUESTIONS,
+}: MatchedByAiSectionProps): JSX.Element => {
+  const { intro, difference, advisor } = sectionConfig;
 
   return (
     <SectionWrapper>
@@ -33,9 +68,11 @@ const MatchedByAiSection = (): JSX.Element => {
         transition={{ duration: 0.4 }}
         className="space-y-6"
       >
-        {/* Intro: heading + opening paragraph with an emphasised middle sentence */}
         <div className="space-y-3">
-          <MatchedByAiHeading />
+          <MatchedByAiHeading
+            titleLead={sectionConfig.titleLead}
+            titleHighlight={sectionConfig.titleHighlight}
+          />
           <p className={BODY_PARAGRAPH_CLASS}>
             {intro.lead}{' '}
             <span className="font-semibold italic custom-text-black">{intro.emphasis}</span>{' '}
@@ -43,7 +80,6 @@ const MatchedByAiSection = (): JSX.Element => {
           </p>
         </div>
 
-        {/* What Makes TrustFin Different */}
         <div className="space-y-3">
           <h2 className={SUBSECTION_TITLE_CLASS}>{difference.title}</h2>
           {difference.paragraphs.map((paragraph) => (
@@ -53,13 +89,11 @@ const MatchedByAiSection = (): JSX.Element => {
           ))}
         </div>
 
-        {/* What the AI handles for you */}
         <div className="space-y-3">
           <h3 className={SUBSECTION_TITLE_CLASS}>{difference.featuresTitle}</h3>
-          <AiFeaturesGrid />
+          <AiFeaturesGrid features={features} />
         </div>
 
-        {/* Got a Loan Question? Ask the AI */}
         <div className="space-y-3">
           <h2 className={SUBSECTION_TITLE_CLASS}>{advisor.title}</h2>
           {advisor.paragraphs.map((paragraph) => (
@@ -68,9 +102,8 @@ const MatchedByAiSection = (): JSX.Element => {
             </p>
           ))}
 
-          {/* Suggested questions — tap to prefill the AI chat (placeholder for now) */}
           <h3 className={SUBSECTION_TITLE_CLASS}>{advisor.questionsTitle}</h3>
-          <BorrowerQuestionsList />
+          <BorrowerQuestionsList questions={questions} />
           <div className="flex justify-center">
             <AiChatCta label={advisor.ctaLabel} className="mt-2 custom-cta-button" />
           </div>

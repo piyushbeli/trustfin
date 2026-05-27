@@ -9,9 +9,15 @@
 
 import { JSX } from 'react';
 import BorrowerQuestionRow from './borrower-question-row';
-import { AI_BORROWER_QUESTIONS } from '../constants';
+import { AI_BORROWER_QUESTIONS, type BorrowerQuestionItem } from '../constants';
 
-const BorrowerQuestionsList = (): JSX.Element => {
+interface BorrowerQuestionsListProps {
+  questions?: BorrowerQuestionItem[];
+}
+
+const BorrowerQuestionsList = ({
+  questions = AI_BORROWER_QUESTIONS,
+}: BorrowerQuestionsListProps): JSX.Element => {
   const handleAsk = (_question: string): void => {
     // Placeholder until AI chat modal ships. Question will be forwarded as
     // a prefill prompt at that point.
@@ -20,7 +26,7 @@ const BorrowerQuestionsList = (): JSX.Element => {
 
   return (
     <div className="space-y-3">
-      {AI_BORROWER_QUESTIONS.map((item, index) => (
+      {questions.map((item, index) => (
         <BorrowerQuestionRow
           key={item.id}
           item={item}

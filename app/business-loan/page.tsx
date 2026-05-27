@@ -1,7 +1,6 @@
 /**
  * Business Loan Landing Page - Server Component
- * Composes the redesigned business loan landing flow.
- * Interactive logic remains in BusinessLoanContent and other client sections.
+ * Marketing content for business loans; apply flow at /business-loan/apply.
  */
 
 import React from 'react';
@@ -9,64 +8,91 @@ import HeroSection from '@/components/personal-loan/hero-section';
 import EmiCalculator from '@/components/personal-loan/emi-calculator';
 import HowToApplySteps from '@/components/personal-loan/how-to-apply-steps';
 import { MatchedByAiSection } from '@/components/personal-loan/matched-by-ai';
+import VideoSection from '@/components/personal-loan/video-section';
 import { FaqSection } from '@/components/shared';
-import { PersonalLoanContent } from '@/components/personal-loan/personal-loan-content';
-import StickyApplyButton from '@/components/personal-loan/sticky-apply-button';
 import { PartnersSection, TrendingOffersClient } from '@/components/home';
 import EligibilityList from '@/components/personal-loan/eligibility/eligibility-list';
-import EligibilityCta from '@/components/personal-loan/eligibility/eligibility-cta';
-import DocumentsRequired from '@/components/personal-loan/documents-required';
 import { PersonalLoanInfoAccordion } from '@/components/personal-loan/info-accordion';
 import FaqFooterSection from '@/components/personal-loan/faq-footer-section';
+import BusinessHeroCta from '@/components/business-loan/landing/business-hero-cta';
+import BusinessStepsCta from '@/components/business-loan/landing/business-steps-cta';
+import BusinessEligibilityCta from '@/components/business-loan/landing/business-eligibility-cta';
+import BusinessDocumentsRequired from '@/components/business-loan/landing/business-documents-required';
+import BusinessStickyApplyButton from '@/components/business-loan/landing/business-sticky-apply-button';
+import {
+  BUSINESS_AI_BORROWER_QUESTIONS,
+  BUSINESS_AI_MATCHED_FEATURES,
+  BUSINESS_AI_MATCHED_SECTION,
+  BUSINESS_EMI_CALCULATOR_CONFIG,
+  BUSINESS_ELIGIBILITY_CRITERIA,
+  BUSINESS_ELIGIBILITY_SECTION_INFO,
+  BUSINESS_HERO_COPY,
+  BUSINESS_HERO_STATS,
+  BUSINESS_HOW_TO_APPLY_STEPS,
+  BUSINESS_LOAN_INFO_ACCORDION_DEFAULT_OPEN,
+  BUSINESS_LOAN_INFO_ACCORDION_ITEMS,
+  BUSINESS_VIDEO_CONFIG,
+} from '@/components/business-loan/landing/constants';
+import { BUSINESS_LOAN_FAQS } from '@/lib/constants/business-loan-faqs';
+
+const BUSINESS_ELIGIBILITY_DESCRIPTION = `${BUSINESS_ELIGIBILITY_SECTION_INFO.description} ${BUSINESS_ELIGIBILITY_SECTION_INFO.footer}`;
 
 const BusinessLoanPage = (): React.ReactNode => {
   return (
     <div className="min-h-screen">
+      <HeroSection
+        productLabel={BUSINESS_HERO_COPY.productLabel}
+        subtitle={BUSINESS_HERO_COPY.subtitle}
+        stats={BUSINESS_HERO_STATS}
+        secondaryCtaLabel={BUSINESS_HERO_COPY.secondaryCta}
+        PrimaryCta={BusinessHeroCta}
+      />
 
-      {/* Hero Section */}
-      <HeroSection />
-
-      {/* EMI Calculator */}
       <div className="px-4 pb-4 max-w-3xl mx-auto">
-        <EmiCalculator title="Personal Loan EMI Calculator" />
+        <EmiCalculator
+          title="Business Loan EMI Calculator"
+          config={BUSINESS_EMI_CALCULATOR_CONFIG}
+        />
       </div>
 
-      {/* Trending Offers */}
-      <TrendingOffersClient heading="Personal Loan Offers" />
+      <TrendingOffersClient heading="Business Loan Offers and Interest Rates" />
 
-      {/* Matched by AI */}
-      <MatchedByAiSection />
+      <MatchedByAiSection
+        sectionConfig={BUSINESS_AI_MATCHED_SECTION}
+        features={BUSINESS_AI_MATCHED_FEATURES}
+        questions={BUSINESS_AI_BORROWER_QUESTIONS}
+      />
 
-      {/* How to Apply Steps */}
-      <HowToApplySteps />
+      {/* <VideoSection config={BUSINESS_VIDEO_CONFIG} /> */}
 
-      {/* Eligibility List */}
-      <EligibilityList />
+      <HowToApplySteps
+        sectionTitle="How to Apply for a Business Loan on TrustFin"
+        steps={BUSINESS_HOW_TO_APPLY_STEPS}
+        StepsCtaComponent={BusinessStepsCta}
+      />
 
-      {/* Apply CTA shown right after the eligibility rules */}
-      <EligibilityCta />
+      <EligibilityList
+        title={BUSINESS_ELIGIBILITY_SECTION_INFO.title}
+        description={BUSINESS_ELIGIBILITY_DESCRIPTION}
+        criteria={BUSINESS_ELIGIBILITY_CRITERIA}
+      />
 
-      {/* Documents section shown right after the eligibility CTA */}
-      <DocumentsRequired />
+      <BusinessEligibilityCta />
 
-      {/* Personal Loan Info accordion (Interest Rates, Fees & Charges, Why TrustFin) */}
-      <PersonalLoanInfoAccordion />
+      <BusinessDocumentsRequired />
 
-      {/* Our Partners Section */}
+      <PersonalLoanInfoAccordion
+        items={BUSINESS_LOAN_INFO_ACCORDION_ITEMS}
+        defaultOpen={BUSINESS_LOAN_INFO_ACCORDION_DEFAULT_OPEN}
+      />
+
       <PartnersSection />
 
+      <FaqSection items={BUSINESS_LOAN_FAQS} />
 
-      {/* FAQ Section */}
-      <FaqSection />
-
-      {/* Ask AI CTA + legal disclaimer */}
       <FaqFooterSection />
 
-      {/* Personal Loan Content */}
-      <PersonalLoanContent />
-
-      {/* Sticky Apply Button */}
-      <StickyApplyButton />
+      <BusinessStickyApplyButton />
     </div>
   );
 };

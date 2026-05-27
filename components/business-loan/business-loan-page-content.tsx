@@ -14,7 +14,7 @@ const BusinessLoanPageContent = (): React.ReactNode => {
   const router = useRouter();
 
   const handleCloseModal = useCallback(() => {
-    router.push('/');
+    router.push('/business-loan');
   }, [router]);
 
   return (

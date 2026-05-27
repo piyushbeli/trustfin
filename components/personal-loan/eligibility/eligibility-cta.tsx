@@ -11,18 +11,30 @@ import { JSX } from 'react';
 import { ActionButton, SectionWrapper } from '@/components/shared';
 import { useLoanApplicationStore } from '@/stores/loan-application-store';
 
-const EligibilityCta = (): JSX.Element => {
+interface EligibilityCtaProps {
+  label?: string;
+  onClick?: () => void;
+  isLoading?: boolean;
+}
+
+const EligibilityCta = ({
+  label = 'Check If you are eligible',
+  onClick,
+  isLoading: isLoadingProp,
+}: EligibilityCtaProps): JSX.Element => {
   const { triggerApplyFlow, isApplyLoading } = useLoanApplicationStore();
+  const handleClick = onClick ?? triggerApplyFlow;
+  const isLoading = isLoadingProp ?? isApplyLoading;
 
   return (
-    <SectionWrapper>
+    <SectionWrapper className="flex justify-center">
       <ActionButton
         className="h-12 custom-cta-button bg-brand-primary text-base font-medium text-white hover:bg-brand-primary/90"
         size="lg"
-        onClick={triggerApplyFlow}
-        isLoading={isApplyLoading}
+        onClick={handleClick}
+        isLoading={isLoading}
       >
-        Check If you are eligible
+        {label}
       </ActionButton>
     </SectionWrapper>
   );

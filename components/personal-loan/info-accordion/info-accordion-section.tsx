@@ -9,8 +9,21 @@ import { JSX } from 'react';
 import { motion } from 'framer-motion';
 import { SectionWrapper } from '@/components/shared';
 import InfoAccordionList from './info-accordion-list';
+import {
+  PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN,
+  PERSONAL_LOAN_INFO_ACCORDION_ITEMS,
+  type PersonalLoanInfoAccordionItem,
+} from '../constants';
 
-const PersonalLoanInfoAccordion = (): JSX.Element => {
+interface PersonalLoanInfoAccordionProps {
+  items?: PersonalLoanInfoAccordionItem[];
+  defaultOpen?: string[];
+}
+
+const PersonalLoanInfoAccordion = ({
+  items = PERSONAL_LOAN_INFO_ACCORDION_ITEMS,
+  defaultOpen = PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN,
+}: PersonalLoanInfoAccordionProps): JSX.Element => {
   return (
     <SectionWrapper>
       <motion.div
@@ -19,7 +32,7 @@ const PersonalLoanInfoAccordion = (): JSX.Element => {
         viewport={{ once: true }}
         transition={{ duration: 0.4 }}
       >
-        <InfoAccordionList />
+        <InfoAccordionList items={items} defaultOpen={defaultOpen} />
       </motion.div>
     </SectionWrapper>
   );

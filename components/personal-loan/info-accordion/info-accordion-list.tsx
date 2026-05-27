@@ -19,14 +19,22 @@ import {
 } from '../constants';
 import InfoAccordionPanel from './info-accordion-panel';
 
-const InfoAccordionList = (): JSX.Element => {
+interface InfoAccordionListProps {
+  items?: PersonalLoanInfoAccordionItem[];
+  defaultOpen?: string[];
+}
+
+const InfoAccordionList = ({
+  items = PERSONAL_LOAN_INFO_ACCORDION_ITEMS,
+  defaultOpen = PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN,
+}: InfoAccordionListProps): JSX.Element => {
   return (
     <Accordion
       type="multiple"
       className="w-full"
-      defaultValue={PERSONAL_LOAN_INFO_ACCORDION_DEFAULT_OPEN}
+      defaultValue={defaultOpen}
     >
-      {PERSONAL_LOAN_INFO_ACCORDION_ITEMS.map(
+      {items.map(
         (item: PersonalLoanInfoAccordionItem) => (
           <AccordionItem
             key={item.id}

@@ -8,12 +8,16 @@
 
 import { JSX } from 'react';
 import AiFeatureCard from './ai-feature-card';
-import { AI_MATCHED_FEATURES } from '../constants';
+import { AI_MATCHED_FEATURES, type AiFeatureItem } from '../constants';
 
-const AiFeaturesGrid = (): JSX.Element => {
+interface AiFeaturesGridProps {
+  features?: AiFeatureItem[];
+}
+
+const AiFeaturesGrid = ({ features = AI_MATCHED_FEATURES }: AiFeaturesGridProps): JSX.Element => {
   return (
     <div className="grid grid-cols-2 gap-3">
-      {AI_MATCHED_FEATURES.map((feature, index) => (
+      {features.map((feature, index) => (
         <AiFeatureCard key={feature.id} feature={feature} index={index} />
       ))}
     </div>

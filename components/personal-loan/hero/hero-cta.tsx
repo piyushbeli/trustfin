@@ -10,7 +10,11 @@ import { ActionButton } from '@/components/shared';
 import { useLoanApplicationStore } from '@/stores/loan-application-store';
 import { HERO_COPY } from '../constants';
 
-const HeroCta = (): JSX.Element => {
+interface HeroCtaProps {
+  label?: string;
+}
+
+const HeroCta = ({ label = HERO_COPY.primaryCta }: HeroCtaProps): JSX.Element => {
   const { triggerApplyFlow, isApplyLoading } = useLoanApplicationStore();
 
   return (
@@ -21,7 +25,7 @@ const HeroCta = (): JSX.Element => {
       onClick={triggerApplyFlow}
       isLoading={isApplyLoading}
     >
-      {HERO_COPY.primaryCta}
+      {label}
     </ActionButton>
   );
 };

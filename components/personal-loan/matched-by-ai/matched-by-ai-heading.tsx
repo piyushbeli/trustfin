@@ -9,12 +9,20 @@ import { AI_MATCHED_SECTION } from '../constants';
 import Image from 'next/image';
 import { IMAGES } from '@/lib/constants/images';
 
-const MatchedByAiHeading = (): JSX.Element => {
+interface MatchedByAiHeadingProps {
+  titleLead?: string;
+  titleHighlight?: string;
+}
+
+const MatchedByAiHeading = ({
+  titleLead = AI_MATCHED_SECTION.titleLead,
+  titleHighlight = AI_MATCHED_SECTION.titleHighlight,
+}: MatchedByAiHeadingProps): JSX.Element => {
   return (
     <div className="flex items-center gap-2">
       <h2 className="text-base font-semibold custom-text-black leading-snug">
-        {AI_MATCHED_SECTION.titleLead}{' '}
-        <span className="text-brand-primary">{AI_MATCHED_SECTION.titleHighlight}</span>
+        {titleLead}{' '}
+        <span className="text-brand-primary">{titleHighlight}</span>
       </h2>
       <Image src={IMAGES.ai} alt="AI" width={30} height={30} className="shrink-0" />
     </div>

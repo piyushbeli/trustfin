@@ -57,6 +57,9 @@ const InfoAccordionPanel = ({ panel }: InfoAccordionPanelProps): JSX.Element => 
           {item.description}
         </p>
       ))}
+      {panel.closing && (
+        <p className="text-sm text-gray-600 leading-relaxed">{panel.closing}</p>
+      )}
     </div>
   );
 };

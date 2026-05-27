@@ -395,13 +395,33 @@ const TenureToggle = ({ mode, onModeChange }: TenureToggleProps): JSX.Element =>
  * EMI Calculator Section
  * Main component with sliders and calculation results
  */
-interface EmiCalculatorProps {
-  title: string;
+interface EmiCalculatorConfig {
+  loanAmount: {
+    min: number;
+    max: number;
+    step: number;
+    default: number;
+  };
+  tenure: {
+    minMonths: number;
+    maxMonths: number;
+    default: number;
+  };
+  interestRate: {
+    min: number;
+    max: number;
+    step: number;
+    default: number;
+  };
 }
 
-const EmiCalculator = ({ title }: EmiCalculatorProps): JSX.Element => {
+interface EmiCalculatorProps {
+  title: string;
+  config?: EmiCalculatorConfig;
+}
 
-  const { loanAmount: loanConfig, tenure: tenureConfig, interestRate: rateConfig } = EMI_CALCULATOR_CONFIG;
+const EmiCalculator = ({ title, config = EMI_CALCULATOR_CONFIG }: EmiCalculatorProps): JSX.Element => {
+  const { loanAmount: loanConfig, tenure: tenureConfig, interestRate: rateConfig } = config;
 
   const [loanAmount, setLoanAmount] = useState<number>(loanConfig.default);
   const [tenureMonths, setTenureMonths] = useState<number>(tenureConfig.default);
