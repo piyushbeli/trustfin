@@ -3,12 +3,14 @@
  * Copy sourced from the home loan content doc.
  */
 
-import type {
-  DocumentItem,
-  EligibilityItem,
-  HeroStatItem,
-  StepItem,
+import {
+  ELIGIBILITY_ICON_PLACEHOLDER,
+  type DocumentItem,
+  type EligibilityItem,
+  type HeroStatItem,
+  type StepItem,
 } from '@/components/personal-loan/constants';
+import { IMAGES } from '@/lib/constants/images';
 
 export const HOME_LOAN_APPLY_PATH = '/home-loan/apply' as const;
 
@@ -153,23 +155,27 @@ export const HOME_ELIGIBILITY_CRITERIA: EligibilityItem[] = [
     id: 'nationality',
     title: 'Nationality:',
     requirement: 'You should be an Indian citizen living in India.',
+    image: IMAGES.HOURGLASS.src,
   },
   {
     id: 'age',
     title: 'Age:',
     requirement:
       'You should fall within the age range set for home loan applicants. The upper age is considered at the time your loan ends.',
+    image: IMAGES.SALARY_WAGE.src,
   },
   {
     id: 'credit-score',
     title: 'Credit score:',
     requirement:
       'A good credit score improves your chances of getting a home loan with better terms.',
+    image: IMAGES.GRAPH.src,
   },
   {
     id: 'occupation',
     title: 'Occupation:',
     requirement: 'Both salaried and self-employed individuals can apply.',
+    image: IMAGES.SALARY_WAGE.src,
   },
 ];
 

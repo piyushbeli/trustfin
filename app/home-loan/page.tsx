@@ -32,7 +32,6 @@ const HomeLoanPage = (): React.ReactNode => {
         subtitle={HOME_HERO_COPY.subtitle}
         stats={HOME_HERO_STATS}
         secondaryCtaLabel={HOME_HERO_COPY.secondaryCta}
-        PrimaryCta={HomeHeroCta}
       />
 
       <HomeWhyChooseSection />

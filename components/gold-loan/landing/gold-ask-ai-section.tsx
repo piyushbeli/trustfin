@@ -33,11 +33,10 @@ const GoldAskAiSection = (): JSX.Element => {
 
         <BorrowerQuestionsList questions={GOLD_AI_BORROWER_QUESTIONS} />
 
-        <SectionDescription align="left" className="custom-text-black">
-          {GOLD_ASK_AI_SECTION.closing}
-        </SectionDescription>
+  
 
-        <AiChatCta label={GOLD_ASK_AI_SECTION.ctaLabel} variant="gradient" />
+        <AiChatCta label={GOLD_ASK_AI_SECTION.ctaLabel} variant="gradient" className="!custom-cta-button" />
+  
       </div>
     </SectionWrapper>
   );

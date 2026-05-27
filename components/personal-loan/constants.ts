@@ -154,7 +154,12 @@ export interface EligibilityItem {
   id: string;
   title: string;
   requirement: string;
+  /** Criterion icon — replace placeholder URLs with final assets */
+  image: string;
 }
+
+/** Shared placeholder until per-criterion icons are provided */
+export const ELIGIBILITY_ICON_PLACEHOLDER = IMAGES.ICONS.HOURGLASS;
 
 /** Eligibility criteria for personal loan */
 export const ELIGIBILITY_CRITERIA: EligibilityItem[] = [
@@ -162,26 +167,31 @@ export const ELIGIBILITY_CRITERIA: EligibilityItem[] = [
     id: 'age',
     title: 'Age :',
     requirement: '21 to 60 years, for self employed and pensioners it may go up to 70.',
+    image: IMAGES.HOURGLASS.src,
   },
   {
     id: 'employment',
     title: 'Employment:',
     requirement: 'You must be either a salaried or a self-employed.',
+    image: IMAGES.SALARY_WAGE.src,
   },
   {
     id: 'credit-score',
     title: 'Credit Score :',
     requirement: '720+ Recommended',
+    image: IMAGES.GRAPH.src,
   },
   {
     id: 'salary',
     title: 'Salary :',
     requirement: 'Usually Rs. 20,000 - 30,000 a month',
+    image: IMAGES.INCOME.src,
   },
   {
     id: 'income',
     title: 'Income :',
     requirement: '3 Lakhs annually (For self-employed person)',
+    image: IMAGES.VECTOR.src,
   },
 ];
 

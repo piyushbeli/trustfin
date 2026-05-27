@@ -5,6 +5,7 @@
 
 import {
   AI_CTA_COPY,
+  ELIGIBILITY_ICON_PLACEHOLDER,
   type AiFeatureItem,
   type BorrowerQuestionItem,
   type DocumentItem,
@@ -89,32 +90,38 @@ export const BUSINESS_ELIGIBILITY_CRITERIA: EligibilityItem[] = [
     id: 'age',
     title: 'Applicant Age:',
     requirement: '21 to 65 years',
+    image: ELIGIBILITY_ICON_PLACEHOLDER,
   },
   {
     id: 'vintage',
     title: 'Business Vintage:',
     requirement: 'Minimum 1 to 3 years (varies by lender)',
+    image: ELIGIBILITY_ICON_PLACEHOLDER,
   },
   {
     id: 'business-type',
     title: 'Business Type:',
     requirement:
       'Proprietorship, Partnership, Pvt. Ltd., LLP, Self-employed professionals',
+    image: ELIGIBILITY_ICON_PLACEHOLDER,
   },
   {
     id: 'turnover',
     title: 'Annual Turnover:',
     requirement: '₹10 lakh and above (varies by lender)',
+    image: ELIGIBILITY_ICON_PLACEHOLDER,
   },
   {
     id: 'credit-score',
     title: 'Credit Score:',
     requirement: '700 and above recommended',
+    image: ELIGIBILITY_ICON_PLACEHOLDER,
   },
   {
     id: 'gst',
     title: 'GST Registration:',
     requirement: 'Required by most lenders for higher loan amounts',
+    image: ELIGIBILITY_ICON_PLACEHOLDER,
   },
 ];
 

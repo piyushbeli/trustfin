@@ -43,7 +43,6 @@ const GoldLoanPage = (): React.ReactNode => {
         subtitle={GOLD_HERO_COPY.subtitle}
         stats={GOLD_HERO_STATS}
         secondaryCtaLabel={GOLD_HERO_COPY.secondaryCta}
-        PrimaryCta={GoldHeroCta}
       />
 
       <TrendingOffersClient heading="Gold Loan Offers and Interest Rates" />

@@ -1,5 +1,12 @@
 import ai from '@/public/assets/images/ai.png';
 import aiTransparent from '@/public/assets/images/ai-transparent.png';
+import overlayBorder from '@/public/assets/images/overlay-border.png';
+import aiBotFace from '@/public/assets/images/ai-bot-face.png';
+import graph from '@/public/assets/images/graph.png';
+import income from '@/public/assets/images/income.png';
+import hourglass from '@/public/assets/images/hourglass.png';
+import salaryWage from '@/public/assets/images/salary-wage.png';
+import vector from '@/public/assets/images/vector.png';
 
 /**
  * Centralized image and SVG paths for the entire project.
@@ -72,4 +79,11 @@ export const IMAGES = {
   },
   ai,
   aiTransparent,
+  OVERLAY_BORDER: overlayBorder,
+  AI_BOT_FACE: aiBotFace,
+  GRAPH: graph,
+  INCOME: income,
+  HOURGLASS: hourglass,
+  SALARY_WAGE: salaryWage,
+  VECTOR: vector,
 } as const;

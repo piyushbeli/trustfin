@@ -161,6 +161,7 @@ const AiChatCta = ({
       onClick={handleClick}
       className={cn(
         aiChatCtaVariants({ variant, size }),
+        // 'custom-cta-button',
         fullWidth && 'w-full',
         className,
       )}

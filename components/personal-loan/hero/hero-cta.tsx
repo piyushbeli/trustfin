@@ -19,8 +19,7 @@ const HeroCta = ({ label = HERO_COPY.primaryCta }: HeroCtaProps): JSX.Element =>
 
   return (
     <ActionButton
-      className="h-14 w-full rounded-md! text-base font-medium bg-brand-primary text-white hover:bg-brand-primary/90"
-      fullWidth
+      className="h-14 rounded-md! custom-cta-button text-base font-medium bg-brand-primary text-white hover:bg-brand-primary/90"
       size="lg"
       onClick={triggerApplyFlow}
       isLoading={isApplyLoading}

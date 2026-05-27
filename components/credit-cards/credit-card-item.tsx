@@ -18,7 +18,7 @@ export interface CreditCardItemProps {
 
 const CreditCardItem = ({ card }: CreditCardItemProps): React.ReactNode => {
   const { trackCreditCardClick } = useCreditCardTracking();
-  const cardImage = card.imageAsset ?? IMAGES.ICONS.CREDIT_CARD;
+  const cardImage = IMAGES.OVERLAY_BORDER;
 
   const handleApplyNow = (): void => {
     // Open URL first so user is never blocked
@@ -30,8 +30,8 @@ const CreditCardItem = ({ card }: CreditCardItemProps): React.ReactNode => {
   return (
     <article className="w-full rounded-xl border border-gray-200 bg-white p-4 shadow-sm" data-card-title={card.title}>
       <div className="flex items-start gap-3">
-        <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg border border-brand-200 bg-brand-50">
-          <img src={cardImage} alt="" className="h-8 w-8 object-contain" loading="lazy" />
+        <div className="flex h-14 w-24 shrink-0 relative items-center justify-center rounded-lg ">
+          <Image src={cardImage} alt="" fill className="object-contain" loading="lazy" />
         </div>
         <div className="min-w-0">
           <h2 className="text-2xl font-medium leading-7 text-gray-900">{card.title}</h2>
@@ -39,7 +39,7 @@ const CreditCardItem = ({ card }: CreditCardItemProps): React.ReactNode => {
         </div>
       </div>
 
-      <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2">
+      <ul className="mt-4 grid grid-cols-2 gap-x-3 gap-y-4">
         {card.features.map((feature) => {
           const FeatureIcon = CREDIT_CARD_FEATURE_ICONS[feature.icon];
           return (
@@ -53,10 +53,10 @@ const CreditCardItem = ({ card }: CreditCardItemProps): React.ReactNode => {
 
       <div className="mt-4 rounded-lg border border-brand-200 bg-brand-50/80 p-3">
         <div className="mb-1 flex items-center gap-1.5">
-          <Image src={IMAGES.aiTransparent} alt="" width={14} height={14} className="h-3.5 w-3.5" />
+          <Image src={IMAGES.AI_BOT_FACE} alt="" width={14} height={14} className="h-3.5 w-3.5" />
           <span className="text-[11px] font-semibold tracking-wide text-brand-primary">AI INSIGHT</span>
         </div>
-        <p className="text-sm leading-5 text-gray-600">{card.aiInsight}</p>
+        <p className="text-sm leading-5 text-gray-600 pl-4">{card.aiInsight}</p>
       </div>
 
       <div className="mt-4 flex items-end justify-between gap-3 border-t border-gray-200 pt-3">

@@ -140,7 +140,7 @@ export const GOLD_ASK_AI_SECTION = {
   questionsTitle: 'Borrowers commonly ask:',
   closing:
     'Get a direct, clear answer from the AI before you decide where to apply.',
-  ctaLabel: 'Chat with TrustFin AI',
+  ctaLabel: 'Ask AI',
 } as const;
 
 export const GOLD_AI_BORROWER_QUESTIONS: BorrowerQuestionItem[] = [
