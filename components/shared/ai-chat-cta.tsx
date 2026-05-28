@@ -21,6 +21,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 import { IMAGES } from '@/lib/constants/images';
 import { AI_CTA_COPY } from '@/components/personal-loan/constants';
+import { useAiChatStore } from '@/stores/ai-chat-store';
 
 const aiChatCtaVariants = cva(
   'flex items-center justify-center gap-2 font-medium transition-all duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-50',
@@ -120,15 +121,6 @@ export interface AiChatCtaProps
   className?: string;
 }
 
-/**
- * Shared placeholder until the AI chat modal ships. Kept inside the
- * component file so all current AI buttons funnel through one no-op
- * and can be swapped to the real opener in a single place.
- */
-const openAiChatPlaceholder = (prefillQuestion?: string): void => {
-  void prefillQuestion;
-};
-
 const AiChatCta = ({
   label,
   variant = 'gradient',
@@ -148,7 +140,7 @@ const AiChatCta = ({
       onClick();
       return;
     }
-    openAiChatPlaceholder(prefillQuestion);
+    useAiChatStore.getState().openModal({ prefillQuestion });
   };
 
   const iconDimension = size === 'compact' ? 28 : 32;

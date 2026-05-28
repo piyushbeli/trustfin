@@ -14,4 +14,5 @@ export {
   type AiChatCtaVariant,
   type AiChatCtaSize,
 } from './ai-chat-cta';
+export { AiChatModal } from './ai-chat';
 export { SectionWrapper, SectionTitle, SectionDescription } from './section';

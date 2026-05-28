@@ -418,6 +418,38 @@
     );
 }
 
+.wc-ai-chat-bubble {
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-brand-100) 65%, white) 0%,
+    color-mix(in srgb, #3bdcf9 10%, white) 100%
+  );
+}
+
+.wc-ai-chat-chip {
+  border: 1px solid transparent;
+  background-image: linear-gradient(#fff, #fff),
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, #38bdf8 85%, white) 0%,
+      var(--color-brand-primary) 100%
+    );
+  background-origin: border-box;
+  background-clip: padding-box, border-box;
+}
+
+.wc-ai-chat-chip:hover:not(:disabled) {
+  background-image: linear-gradient(
+      color-mix(in srgb, #ecfeff 40%, white),
+      color-mix(in srgb, #ecfeff 40%, white)
+    ),
+    linear-gradient(
+      90deg,
+      #38bdf8 0%,
+      var(--color-brand-primary) 100%
+    );
+}
+
 /* Concentric Circle Rings */
 .wc-circle-ring {
   position: absolute;
