@@ -88,23 +88,6 @@ function mapTurnsToMessages(turns: AiChatTurn[]): AiChatMessage[] {
   return mapped;
 }
 
-function getValidationRegex(nextFieldConfig: AiChatNextFieldConfig | null): RegExp | null {
-  const regex = nextFieldConfig?.validation?.regex;
-  if (!regex) return null;
-
-  try {
-    return new RegExp(regex);
-  } catch {
-    return null;
-  }
-}
-
-function isAllowedSelectValue(nextFieldConfig: AiChatNextFieldConfig | null, value: string): boolean {
-  const allowedValues = nextFieldConfig?.validation?.allowedValues;
-  if (!allowedValues?.length) return true;
-  return allowedValues.includes(value);
-}
-
 export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
@@ -352,16 +335,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       setInputError(null);
 
-      const clientValidationRegex = getValidationRegex(nextFieldConfig);
-      if (clientValidationRegex && !clientValidationRegex.test(trimmedValue)) {
-        setInputError(nextFieldConfig?.validation?.errorMessage ?? 'Please enter a valid value.');
-        return;
-      }
-      if (!isAllowedSelectValue(nextFieldConfig, trimmedValue)) {
-        setInputError(nextFieldConfig?.validation?.errorMessage ?? 'Please select a valid option.');
-        return;
-      }
-
       const optimisticMessage: AiChatMessage = {
         id: `local_user_${Date.now()}`,
         role: 'user',
@@ -401,11 +374,26 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         const data = response.data;
 
         if (data.validation && !data.validation.isValid) {
-          setMessages((prev) =>
-            prev.filter((message) => message.id !== optimisticMessageRef.current?.id),
-          );
-          setInputValue(trimmedValue);
-          setInputError(data.validation.errorMessage ?? 'Please enter a valid value.');
+          if (data.answer) {
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: `server_validation_${Date.now()}`,
+                role: 'assistant',
+                text: data.answer,
+              },
+            ]);
+          }
+
+          if (data.fieldCaptureStatus) {
+            setFieldCaptureStatus(data.fieldCaptureStatus);
+            setNextFieldConfig(
+              resolveNextFieldConfig({
+                fieldCaptureStatus: data.fieldCaptureStatus,
+                session,
+              }),
+            );
+          }
           return;
         }
 
@@ -539,8 +527,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     seedGuestWelcomeMessage,
   ]);
 
-  const progressCurrent = fieldCaptureStatus?.capturedFields.length ?? 0;
-  const progressTotal = fieldCaptureStatus?.requiredFields.length ?? 0;
+  const progressCurrent = fieldCaptureStatus?.capturedFields?.length ?? 0;
+  const progressTotal = fieldCaptureStatus?.requiredFields?.length ?? 0;
   const phaseLabel = useMemo(() => {
     if (fieldCaptureStatus?.nextField || session?.isFieldCaptureActive) return 'LOAN MATCHING';
     return 'CHAT';

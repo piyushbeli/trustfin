@@ -29,6 +29,8 @@ const AiChatInputBar = ({
   onSubmit,
   onSelectChip,
 }: AiChatInputBarProps): JSX.Element => {
+  const defaultPlaceholder = inputPlaceholder ?? AI_CHAT_COPY.fallbackPlaceholder;
+
   if (nextFieldConfig?.inputType === 'select') {
     const selectHint = nextFieldConfig.placeholder || AI_CHAT_COPY.chipsPlaceholder;
 
@@ -59,7 +61,7 @@ const AiChatInputBar = ({
           <AiChatDynamicInput
             value={inputValue}
             nextFieldConfig={nextFieldConfig}
-            placeholder={inputPlaceholder}
+            placeholder={defaultPlaceholder}
             disabled={isSubmitting || isCompleted}
             onChange={onChange}
             onSubmit={onSubmit}
@@ -76,7 +78,6 @@ const AiChatInputBar = ({
           <ArrowRight className="h-5 w-5" />
         </button>
       </div>
-      {inputError ? <p className="mt-2 text-sm text-red-500">{inputError}</p> : null}
     </div>
   );
 };

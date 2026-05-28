@@ -125,7 +125,7 @@ const AiChatModal = (): JSX.Element | null => {
             inputPlaceholder={authInputPlaceholder}
             nextFieldConfig={nextFieldConfig}
             isSubmitting={isInputDisabled}
-            isCompleted={isCompleted || isEscalated}
+            isCompleted={isEscalated}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
             onSelectChip={handleSelectChip}

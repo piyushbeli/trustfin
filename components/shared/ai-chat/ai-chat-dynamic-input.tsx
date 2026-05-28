@@ -1,9 +1,8 @@
 'use client';
 
 import { JSX } from 'react';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import type { AiChatNextFieldConfig } from '@/types/ai-chat';
-import DateInput from './inputs/date-input';
-import NumberInput from './inputs/number-input';
 import SelectChips from './inputs/select-chips';
 import TextInput from './inputs/text-input';
 
@@ -26,58 +25,25 @@ const AiChatDynamicInput = ({
   onSubmit,
   onSelectChip,
 }: AiChatDynamicInputProps): JSX.Element | null => {
-  if (!nextFieldConfig) {
+  if (nextFieldConfig?.inputType === 'select') {
     return (
-      <TextInput
-        value={value}
+      <SelectChips
+        options={nextFieldConfig.options}
         disabled={disabled}
-        placeholder={placeholder ?? 'Type your message...'}
-        onChange={onChange}
-        onSubmit={onSubmit}
+        onSelect={onSelectChip}
       />
     );
   }
 
-  switch (nextFieldConfig.inputType) {
-    case 'select':
-      return (
-        <SelectChips
-          options={nextFieldConfig.options}
-          disabled={disabled}
-          onSelect={onSelectChip}
-        />
-      );
-    case 'number':
-      return (
-        <NumberInput
-          value={value}
-          disabled={disabled}
-          placeholder={nextFieldConfig.placeholder}
-          onChange={onChange}
-          onSubmit={onSubmit}
-        />
-      );
-    case 'date':
-      return (
-        <DateInput
-          value={value}
-          disabled={disabled}
-          placeholder={nextFieldConfig.placeholder}
-          onChange={onChange}
-          onSubmit={onSubmit}
-        />
-      );
-    default:
-      return (
-        <TextInput
-          value={value}
-          disabled={disabled}
-          placeholder={nextFieldConfig.placeholder}
-          onChange={onChange}
-          onSubmit={onSubmit}
-        />
-      );
-  }
+  return (
+    <TextInput
+      value={value}
+      disabled={disabled}
+      placeholder={placeholder ?? AI_CHAT_COPY.fallbackPlaceholder}
+      onChange={onChange}
+      onSubmit={onSubmit}
+    />
+  );
 };
 
 export default AiChatDynamicInput;
