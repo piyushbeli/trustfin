@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
+import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
 import { maskPhoneNumber } from '@/lib/utils/mask-phone';
@@ -46,22 +47,6 @@ interface UseAiChatResult {
 
 const ORG_CODE = 'wecredit';
 const CHANNEL = 'wecredit_bot';
-const PENDING_FIELD_FALLBACKS: Record<string, AiChatNextFieldConfig> = {
-  requiredLoanAmount: {
-    field: 'requiredLoanAmount',
-    label: 'Required loan amount',
-    inputType: 'select',
-    uiType: 'chips',
-    required: true,
-    placeholder: 'Select loan amount',
-    options: [
-      { label: '₹1L—₹2L', value: '100000-200000' },
-      { label: '₹2L—₹5L', value: '200000-500000' },
-      { label: '₹5L—₹10L', value: '500000-1000000' },
-      { label: 'Above ₹10L', value: '1000000+' },
-    ],
-  },
-};
 
 function mapTurnsToMessages(turns: AiChatTurn[]): AiChatMessage[] {
   const mapped: AiChatMessage[] = [];
@@ -112,6 +97,12 @@ function getValidationRegex(nextFieldConfig: AiChatNextFieldConfig | null): RegE
   } catch {
     return null;
   }
+}
+
+function isAllowedSelectValue(nextFieldConfig: AiChatNextFieldConfig | null, value: string): boolean {
+  const allowedValues = nextFieldConfig?.validation?.allowedValues;
+  if (!allowedValues?.length) return true;
+  return allowedValues.includes(value);
 }
 
 export function useAiChat(isOpen: boolean): UseAiChatResult {
@@ -190,12 +181,26 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       setMessages(mappedMessages);
       setSession(history.session);
-      setFieldCaptureStatus(null);
-      setNextFieldConfig(
-        history.session.pendingField
-          ? PENDING_FIELD_FALLBACKS[history.session.pendingField] ?? null
-          : null,
-      );
+      setFieldCaptureStatus((previousStatus) => {
+        const nextField = history.session.pendingField ?? history.session.nextField ?? null;
+        if (!nextField) {
+          return null;
+        }
+
+        return {
+          requiredFields: previousStatus?.requiredFields ?? [],
+          optionalFields: previousStatus?.optionalFields ?? [],
+          capturedFields: previousStatus?.capturedFields ?? [],
+          missingFields: previousStatus?.missingFields ?? [],
+          nextField,
+          nextQuestion: history.session.pendingQuestion ?? previousStatus?.nextQuestion ?? null,
+          nextFieldConfig: resolveNextFieldConfig({
+            session: history.session,
+            fieldCaptureStatus: previousStatus,
+          }),
+        };
+      });
+      setNextFieldConfig(resolveNextFieldConfig({ session: history.session }));
       setIsEscalated(false);
     },
     [],
@@ -282,7 +287,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   }, [authError, isAuthenticated]);
 
   const submitValue = useCallback(
-    async (value: string): Promise<void> => {
+    async (value: string, displayValue?: string): Promise<void> => {
       const trimmedValue = value.trim();
       if (!trimmedValue || isSubmitting) return;
 
@@ -352,11 +357,15 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         setInputError(nextFieldConfig?.validation?.errorMessage ?? 'Please enter a valid value.');
         return;
       }
+      if (!isAllowedSelectValue(nextFieldConfig, trimmedValue)) {
+        setInputError(nextFieldConfig?.validation?.errorMessage ?? 'Please select a valid option.');
+        return;
+      }
 
       const optimisticMessage: AiChatMessage = {
         id: `local_user_${Date.now()}`,
         role: 'user',
-        text: trimmedValue,
+        text: displayValue ?? trimmedValue,
       };
       optimisticMessageRef.current = optimisticMessage;
       setMessages((prev) => [...prev, optimisticMessage]);
@@ -400,6 +409,16 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           return;
         }
 
+        if (data.fieldCaptureStatus) {
+          setFieldCaptureStatus(data.fieldCaptureStatus);
+          setNextFieldConfig(
+            resolveNextFieldConfig({
+              fieldCaptureStatus: data.fieldCaptureStatus,
+              session,
+            }),
+          );
+        }
+
         if (data.answer) {
           setMessages((prev) => [
             ...prev,
@@ -439,6 +458,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       refreshChatHistory,
       refreshChatHistoryAfterGuestAuth,
       sendOtp,
+      session,
       verifyOtp,
     ],
   );
@@ -546,7 +566,11 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     guestAuthStep,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
-    submitChip: async (value: string) => submitValue(value),
+    submitChip: async (value: string) =>
+      submitValue(
+        value,
+        nextFieldConfig?.options.find((option) => option.value === value)?.label ?? value,
+      ),
     resetInputError: () => setInputError(null),
   };
 }

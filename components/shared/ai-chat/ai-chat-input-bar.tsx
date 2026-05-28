@@ -30,6 +30,8 @@ const AiChatInputBar = ({
   onSelectChip,
 }: AiChatInputBarProps): JSX.Element => {
   if (nextFieldConfig?.inputType === 'select') {
+    const selectHint = nextFieldConfig.placeholder || AI_CHAT_COPY.chipsPlaceholder;
+
     return (
       <div className="border-t border-brand-100 pt-3">
         <AiChatDynamicInput
@@ -42,7 +44,7 @@ const AiChatInputBar = ({
         />
         <div className="px-4 pb-3">
           <div className="rounded-xl bg-brand-50 px-4 py-3 text-sm text-gray-400">
-            {AI_CHAT_COPY.chipsPlaceholder}
+            {selectHint}
           </div>
           {inputError ? <p className="mt-2 text-sm text-red-500">{inputError}</p> : null}
         </div>

@@ -1,7 +1,6 @@
 import type {
   AiChatFieldCaptureStatus,
   AiChatNextFieldConfig,
-  AiChatOption,
   AiChatSession,
   AiChatTurn,
   ChatHistoryParams,
@@ -9,6 +8,7 @@ import type {
   ChatQueryPayload,
   ChatQueryResponse,
 } from '@/types/ai-chat';
+import { AI_CHAT_FIELD_CONFIG_FALLBACKS } from '@/lib/ai-chat/resolve-next-field-config';
 
 interface MockSessionState {
   session: AiChatSession;
@@ -33,128 +33,7 @@ const OPTIONAL_FIELDS = ['email', 'addressType', 'salaryMode', 'hasCreditCard'] 
 
 const mockSessions = new Map<string, MockSessionState>();
 
-const selectOptions = (options: AiChatOption[]): AiChatOption[] => options;
-
-const fieldConfigs: Record<string, AiChatNextFieldConfig> = {
-  mobile: {
-    field: 'mobile',
-    label: 'Mobile Number',
-    inputType: 'number',
-    uiType: 'text_input',
-    required: true,
-    placeholder: 'Enter 10-digit mobile number',
-    options: [],
-    validation: {
-      errorMessage: 'Please enter a valid 10-digit mobile number.',
-      regex: '^[0-9]{10}$',
-    },
-  },
-  name: {
-    field: 'name',
-    label: 'Full name',
-    inputType: 'text',
-    uiType: 'text_input',
-    required: true,
-    placeholder: 'Enter your full name',
-    options: [],
-    validation: {
-      errorMessage: 'Please enter at least 2 characters.',
-      regex: '^.{2,}$',
-    },
-  },
-  dob: {
-    field: 'dob',
-    label: 'Date of birth',
-    inputType: 'date',
-    uiType: 'text_input',
-    required: true,
-    placeholder: 'DD-MM-YYYY / DD/MM/YYYY / YYYY-MM-DD',
-    options: [],
-    validation: {
-      errorMessage: 'Please enter a valid date.',
-      regex: '^([0-9]{2}[-/][0-9]{2}[-/][0-9]{4}|[0-9]{4}-[0-9]{2}-[0-9]{2})$',
-    },
-  },
-  gender: {
-    field: 'gender',
-    label: 'Gender',
-    inputType: 'select',
-    uiType: 'chips',
-    required: true,
-    placeholder: 'Select your gender',
-    options: selectOptions([
-      { label: 'Male', value: 'male' },
-      { label: 'Female', value: 'female' },
-      { label: 'Other', value: 'other' },
-    ]),
-  },
-  pincode: {
-    field: 'pincode',
-    label: 'Pincode',
-    inputType: 'number',
-    uiType: 'text_input',
-    required: true,
-    placeholder: 'Enter your pincode',
-    options: [],
-    validation: {
-      errorMessage: 'Please enter a valid 6-digit pincode.',
-      regex: '^[0-9]{6}$',
-    },
-  },
-  employmentType: {
-    field: 'employmentType',
-    label: 'Employment type',
-    inputType: 'select',
-    uiType: 'chips',
-    required: true,
-    placeholder: 'Select employment type',
-    options: selectOptions([
-      { label: 'Salaried', value: 'salaried' },
-      { label: 'Self-employed', value: 'self_employed' },
-      { label: 'Business owner', value: 'business_owner' },
-    ]),
-  },
-  salary: {
-    field: 'salary',
-    label: 'Monthly salary',
-    inputType: 'number',
-    uiType: 'text_input',
-    required: true,
-    placeholder: 'Enter monthly salary',
-    options: [],
-    validation: {
-      errorMessage: 'Please enter a valid salary amount.',
-      regex: '^[0-9]{4,}$',
-    },
-  },
-  requiredLoanAmount: {
-    field: 'requiredLoanAmount',
-    label: 'Required loan amount',
-    inputType: 'select',
-    uiType: 'chips',
-    required: true,
-    placeholder: 'Select loan amount',
-    options: selectOptions([
-      { label: '₹1L—₹2L', value: '100000-200000' },
-      { label: '₹2L—₹5L', value: '200000-500000' },
-      { label: '₹5L—₹10L', value: '500000-1000000' },
-      { label: 'Above ₹10L', value: '1000000+' },
-    ]),
-  },
-  pan: {
-    field: 'pan',
-    label: 'PAN',
-    inputType: 'text',
-    uiType: 'text_input',
-    required: true,
-    placeholder: 'ABCDE1234F',
-    options: [],
-    validation: {
-      errorMessage: 'Please enter a valid PAN.',
-      regex: '^[A-Z]{5}[0-9]{4}[A-Z]{1}$',
-    },
-  },
-};
+const fieldConfigs: Record<string, AiChatNextFieldConfig> = AI_CHAT_FIELD_CONFIG_FALLBACKS;
 
 function getSessionKey(params: ChatHistoryParams | ChatQueryPayload): string {
   return params.sessionId ?? `${params.userId}:${params.organizationCode}:${params.channel}`;
@@ -193,20 +72,19 @@ function getQuestionForField(field: string): string {
 }
 
 function createInitialState(params: ChatHistoryParams): MockSessionState {
-  const nextField = 'requiredLoanAmount';
   const session: AiChatSession = {
     userId: params.userId,
     organizationCode: params.organizationCode || ORGANIZATION_CODE,
     channel: params.channel || CHANNEL_CODE,
-    stage: `field_capture:${nextField}`,
+    stage: 'chat',
     intent: 'greeting',
-    nextField,
+    nextField: null,
     pendingQuestion:
-      "Hi! I'm Finn 👋 I'll find your best personalised personal loan offer in 60 seconds. What amount are you looking for?",
-    pendingField: nextField,
-    isFieldCaptureActive: true,
+      "Hi, I’m Finn 👋 I’ll quickly check the best loan offer available for you.",
+    pendingField: null,
+    isFieldCaptureActive: false,
     isCompleted: false,
-    shouldAskNextQuestion: true,
+    shouldAskNextQuestion: false,
     updatedAt: new Date().toISOString(),
   };
 

@@ -8,6 +8,7 @@ export interface AiChatOption {
 export interface AiChatValidationConfig {
   errorMessage?: string | null;
   regex?: string | null;
+  allowedValues?: string[] | null;
 }
 
 export interface AiChatNextFieldConfig {
