@@ -6,6 +6,7 @@ import { satoshi } from '@/lib/fonts';
 import ConditionalMobileHeader from '@/components/layout/conditional-mobile-header';
 import ConditionalFooter from '@/components/layout/conditional-footer';
 import { AuthModal } from '@/components/auth';
+import { AiChatModal } from '@/components/shared';
 import { AuthProvider } from '@/providers/auth-provider';
 import { ToastProvider } from '@/providers/toast-provider';
 import { FeatureFlagProvider } from '@/providers/feature-flag-provider';
@@ -82,6 +83,7 @@ export default async function RootLayout({
               <main className="min-w-0 flex-1 overflow-x-clip">{children}</main>
               <ConditionalFooter />
               <AuthModal />
+              <AiChatModal />
               <LoadingScreen />
             </AuthProvider>
           </Suspense>

@@ -14,6 +14,7 @@ import { ENDPOINTS } from '@/lib/constants/api-keys';
 export const wecreditApi = {
   /** Gateway URL for WeCredit public API */
   gatewayUrl: wecreditConfig.gatewayUrl,
+  aiChatUrl: wecreditConfig.aiChatUrl,
 
   /**
    * Endpoint identifiers (passed in request body)

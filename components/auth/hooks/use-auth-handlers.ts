@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useAuthStore } from '@/stores/auth-store';
-import { authService, setAuthToken, setMobile } from '@/lib/api';
 import { useLoading } from '@/hooks/use-loading';
+import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
 
 /**
  * Return type for useAuthHandlers hook
@@ -28,23 +28,35 @@ interface UseAuthHandlersReturn {
  */
 export const useAuthHandlers = (): UseAuthHandlersReturn => {
   const {
-    phoneNumber,
+    phoneNumber: storePhoneNumber,
     isModalOpen,
     currentStep,
     shouldAutoSendOtp,
-    isLoading,
-    error,
     setStep,
-    setPhoneNumber,
+    setPhoneNumber: setStorePhoneNumber,
     setUser,
-    setLoading,
-    setError,
     clearShouldAutoSendOtp,
+    setError,
   } = useAuthStore();
   const { showLoading, hideLoading } = useLoading();
-
-  const [otpValue, setOtpValue] = useState('');
-  const isVerifyingOtpRef = useRef<boolean>(false);
+  const {
+    phoneNumber,
+    otpValue,
+    isPhoneValid,
+    isLoading,
+    error,
+    setPhoneNumber,
+    setOtpValue,
+    clearError,
+    sendOtp,
+    verifyOtp,
+    resendOtp,
+  } = useOtpAuthFlow({
+    initialPhoneNumber: storePhoneNumber,
+    onAuthenticated: (user, token) => {
+      setUser(user, token);
+    },
+  });
 
   /**
    * Upswing / OTP-first entry: modal opens on OTP with phone pre-filled; we must still
@@ -67,16 +79,15 @@ export const useAuthHandlers = (): UseAuthHandlersReturn => {
 
     clearShouldAutoSendOtp();
 
-    setLoading(true);
-    setError(null);
+    clearError();
     showLoading('Sending OTP...', 'We are verifying your phone number.');
     void (async () => {
       try {
-        const result = await authService.sendOtp(trimmed);
-        if (result.success) {
-          setLoading(false);
-        } else {
-          setError(result.error || 'Failed to send OTP. Please try again.');
+        setPhoneNumber(trimmed);
+        setStorePhoneNumber(trimmed);
+        const isOtpSent = await sendOtp();
+        if (!isOtpSent) {
+          setError('Failed to send OTP. Please try again.');
         }
       } finally {
         hideLoading();
@@ -88,8 +99,11 @@ export const useAuthHandlers = (): UseAuthHandlersReturn => {
     currentStep,
     phoneNumber,
     clearShouldAutoSendOtp,
+    clearError,
+    sendOtp,
+    setPhoneNumber,
+    setStorePhoneNumber,
     setError,
-    setLoading,
     showLoading,
     hideLoading,
   ]);
@@ -98,27 +112,23 @@ export const useAuthHandlers = (): UseAuthHandlersReturn => {
   const handlePhoneChange = useCallback(
     (value: string, _isValid: boolean): void => {
       setPhoneNumber(value);
-      setError(null);
+      setStorePhoneNumber(value);
+      clearError();
     },
-    [setPhoneNumber, setError]
+    [clearError, setPhoneNumber, setStorePhoneNumber]
   );
-
-  /** Check if phone number is valid */
-  const isPhoneValid = phoneNumber.length === 10 && /^[6-9]/.test(phoneNumber);
 
   /** Handle continue button click - send OTP */
   const handleSendOtp = async (): Promise<void> => {
-    if (!isPhoneValid || isLoading) return;
-    setLoading(true);
-    setError(null);
+    if (!isPhoneValid || isLoading) {
+      return;
+    }
+    clearError();
     showLoading('Sending OTP...', 'We are verifying your phone number.');
     try {
-      const result = await authService.sendOtp(phoneNumber);
-      if (result.success) {
+      const isOtpSent = await sendOtp();
+      if (isOtpSent) {
         setStep('otp');
-        setLoading(false);
-      } else {
-        setError(result.error || 'Failed to send OTP. Please try again.');
       }
     } finally {
       hideLoading();
@@ -128,43 +138,27 @@ export const useAuthHandlers = (): UseAuthHandlersReturn => {
   /** Handle OTP change */
   const handleOtpChange = (otp: string): void => {
     setOtpValue(otp);
-    setError(null);
+    clearError();
   };
 
   /** Handle OTP verification */
   const handleVerifyOtp = async (otpOverride?: string): Promise<void> => {
-    const otpToVerify = otpOverride ?? otpValue;
-    if (otpToVerify.length !== 6 || isLoading || isVerifyingOtpRef.current) return;
-    isVerifyingOtpRef.current = true;
-    setLoading(true);
-    setError(null);
+    if (isLoading) return;
+    clearError();
     try {
       showLoading('Please wait...', "We're preparing your WeCredit experience.");
-      const result = await authService.verifyOtp(phoneNumber, otpToVerify);
-      if (result.success && result.data) {
-        setAuthToken(result.data.token);
-        setMobile(phoneNumber);
-        setUser(result.data.user, result.data.token);
-        setOtpValue('');
-        return;
-      }
-      setError(result.error || 'Invalid OTP. Please try again.');
+      await verifyOtp(otpOverride ?? otpValue);
     } finally {
-      isVerifyingOtpRef.current = false;
       hideLoading();
     }
   };
 
   /** Handle OTP resend */
   const handleResendOtp = async (): Promise<void> => {
-    setError(null);
-    setOtpValue('');
+    clearError();
     showLoading('Resending OTP...', 'Please wait a moment.');
     try {
-      const result = await authService.resendOtp(phoneNumber);
-      if (!result.success) {
-        setError(result.error || 'Failed to resend OTP. Please try again.');
-      }
+      await resendOtp();
     } finally {
       hideLoading();
     }

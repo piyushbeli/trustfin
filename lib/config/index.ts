@@ -158,6 +158,8 @@ export const wecreditConfig = {
   partnerCode: PARTNER_CODE,
   /** Headers for API requests */
   headers: environment.wecreditHeaders,
+  /** AI Assistant API base URL */
+  aiChatUrl: `${environment.apiUrl}/api/ai-assistant`,
 } as const;
 
 /** Strapi API Configuration */
