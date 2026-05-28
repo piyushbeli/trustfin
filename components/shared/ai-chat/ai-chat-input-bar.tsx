@@ -29,7 +29,8 @@ const AiChatInputBar = ({
   onSubmit,
   onSelectChip,
 }: AiChatInputBarProps): JSX.Element => {
-  const defaultPlaceholder = inputPlaceholder ?? AI_CHAT_COPY.fallbackPlaceholder;
+  const defaultPlaceholder =
+    inputPlaceholder ?? nextFieldConfig?.placeholder ?? AI_CHAT_COPY.fallbackPlaceholder;
 
   if (nextFieldConfig?.inputType === 'select') {
     const selectHint = nextFieldConfig.placeholder || AI_CHAT_COPY.chipsPlaceholder;

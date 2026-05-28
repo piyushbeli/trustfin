@@ -54,7 +54,8 @@ const AiChatModal = (): JSX.Element | null => {
 
   const systemMessage = useMemo(() => {
     if (isEscalated) return AI_CHAT_COPY.escalateMessage;
-    if (isCompleted) return AI_CHAT_COPY.completedMessage;
+    // if (isCompleted) return AI_CHAT_COP
+    // Y.completedMessage;
     return null;
   }, [isCompleted, isEscalated]);
 

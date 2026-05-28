@@ -29,7 +29,7 @@ const TextInput = ({
           onSubmit();
         }
       }}
-      className="w-full rounded-xl bg-brand-50 px-3 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-brand-200"
+      className="w-full border-0 bg-transparent px-3 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
       placeholder={placeholder}
     />
   );

@@ -68,6 +68,7 @@ export interface AiChatFieldTurn extends BaseAiChatTurn {
   field: string;
   askedQuestion?: string;
   userAnswer?: string;
+  userQuery?: string;
   normalizedValue?: string;
   assistantResponse?: string;
   validation?: {

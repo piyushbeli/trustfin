@@ -2,6 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
+import { applyChatQueryResponseState } from '@/lib/ai-chat/apply-chat-query-response';
+import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
 import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
@@ -73,8 +75,9 @@ function mapTurnsToMessages(turns: AiChatTurn[]): AiChatMessage[] {
         text: turn.askedQuestion,
       });
     }
-    if (turn.userAnswer) {
-      mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: turn.userAnswer });
+    const userText = turn.userAnswer ?? turn.userQuery;
+    if (userText) {
+      mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: userText });
     }
     if (turn.assistantResponse) {
       mapped.push({
@@ -372,6 +375,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         }
 
         const data = response.data;
+        const userId = context.userId;
 
         if (data.validation && !data.validation.isValid) {
           if (data.answer) {
@@ -385,40 +389,32 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
             ]);
           }
 
-          if (data.fieldCaptureStatus) {
-            setFieldCaptureStatus(data.fieldCaptureStatus);
-            setNextFieldConfig(
-              resolveNextFieldConfig({
-                fieldCaptureStatus: data.fieldCaptureStatus,
-                session,
-              }),
-            );
-          }
+          applyChatQueryResponseState({
+            data,
+            currentSession: session,
+            userId,
+            setSession,
+            setFieldCaptureStatus,
+            setNextFieldConfig,
+            setIsEscalated,
+          });
           return;
         }
 
-        if (data.fieldCaptureStatus) {
-          setFieldCaptureStatus(data.fieldCaptureStatus);
-          setNextFieldConfig(
-            resolveNextFieldConfig({
-              fieldCaptureStatus: data.fieldCaptureStatus,
-              session,
-            }),
-          );
-        }
+        applyChatQueryResponseState({
+          data,
+          currentSession: session,
+          userId,
+          setSession,
+          setFieldCaptureStatus,
+          setNextFieldConfig,
+          setIsEscalated,
+        });
 
-        if (data.answer) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `server_assistant_${Date.now()}`,
-              role: 'assistant',
-              text: data.answer,
-            },
-          ]);
+        const assistantMessages = getChatQueryAssistantMessages(data);
+        if (assistantMessages.length > 0) {
+          setMessages((prev) => [...prev, ...assistantMessages]);
         }
-
-        await refreshChatHistory(controller.signal, AI_CHAT_COPY.historyRefreshErrorMessage);
       } catch (error) {
         setMessages((prev) =>
           prev.filter((message) => message.id !== optimisticMessageRef.current?.id),
@@ -443,7 +439,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       isAuthenticated,
       isSubmitting,
       nextFieldConfig,
-      refreshChatHistory,
       refreshChatHistoryAfterGuestAuth,
       sendOtp,
       session,
