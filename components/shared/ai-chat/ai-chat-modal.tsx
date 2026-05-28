@@ -5,16 +5,17 @@ import { usePathname } from 'next/navigation';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
 import { useAiChat } from '@/hooks/use-ai-chat';
+import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import AiChatHeader from './ai-chat-header';
 import AiChatModalBody from './ai-chat-modal-body';
 import AiChatModalFooter from './ai-chat-modal-footer';
-import AiChatProgress from './ai-chat-progress';
 import AiChatSecureBadge from './ai-chat-secure-badge';
 import { getAiChatViewMode } from './ai-chat-view';
 
 const AiChatModal = (): JSX.Element | null => {
   const { isOpen, closeModal } = useAiChatStore();
+  const { isAuthenticated } = useAuthStore();
   const pathname = usePathname();
   const previousPathnameRef = useRef<string | null>(null);
   const {
@@ -30,13 +31,11 @@ const AiChatModal = (): JSX.Element | null => {
     progressTotal,
     isCompleted,
     isEscalated,
-    requiresLogin,
-    pendingFirstMessage,
+    guestAuthStep,
     setInputValue,
     submitInput,
     submitChip,
     resetInputError,
-    clearRequiresLogin,
   } = useAiChat(isOpen);
 
   useBodyScrollLock(isOpen);
@@ -68,11 +67,21 @@ const AiChatModal = (): JSX.Element | null => {
   );
 
   const viewMode = getAiChatViewMode({
-    requiresLogin,
     isInitialLoading: isLoadingHistory && !isSubmitting,
   });
 
   const isInputDisabled = isSubmitting;
+  const authInputPlaceholder = useMemo(() => {
+    if (isAuthenticated || viewMode === 'initialLoading') {
+      return undefined;
+    }
+
+    if (guestAuthStep === 'phone') {
+      return AI_CHAT_COPY.loginPhonePlaceholder;
+    }
+
+    return AI_CHAT_COPY.loginOtpPlaceholder;
+  }, [guestAuthStep, isAuthenticated, viewMode]);
 
   const handleInputChange = (value: string): void => {
     resetInputError();
@@ -106,22 +115,20 @@ const AiChatModal = (): JSX.Element | null => {
           ) : null} */}
           <AiChatModalBody
             viewMode={viewMode}
-            pendingFirstMessage={pendingFirstMessage}
             messages={displayMessages}
             showTypingIndicator={isSubmitting}
           />
           <AiChatModalFooter
-            viewMode={viewMode}
             errorMessage={errorMessage}
             inputValue={inputValue}
             inputError={inputError}
+            inputPlaceholder={authInputPlaceholder}
             nextFieldConfig={nextFieldConfig}
             isSubmitting={isInputDisabled}
             isCompleted={isCompleted || isEscalated}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
             onSelectChip={handleSelectChip}
-            onBackToChat={clearRequiresLogin}
           />
           <AiChatSecureBadge />
         </div>

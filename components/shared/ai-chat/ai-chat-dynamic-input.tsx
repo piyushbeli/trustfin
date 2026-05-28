@@ -10,6 +10,7 @@ import TextInput from './inputs/text-input';
 interface AiChatDynamicInputProps {
   nextFieldConfig: AiChatNextFieldConfig | null;
   value: string;
+  placeholder?: string;
   disabled?: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
@@ -19,6 +20,7 @@ interface AiChatDynamicInputProps {
 const AiChatDynamicInput = ({
   nextFieldConfig,
   value,
+  placeholder,
   disabled,
   onChange,
   onSubmit,
@@ -29,7 +31,7 @@ const AiChatDynamicInput = ({
       <TextInput
         value={value}
         disabled={disabled}
-        placeholder="Type your message..."
+        placeholder={placeholder ?? 'Type your message...'}
         onChange={onChange}
         onSubmit={onSubmit}
       />

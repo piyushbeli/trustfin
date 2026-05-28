@@ -24,8 +24,8 @@ interface UseOtpAuthFlowResult {
   setPhoneNumber: (value: string) => void;
   setOtpValue: (value: string) => void;
   clearError: () => void;
-  sendOtp: () => Promise<boolean>;
-  verifyOtp: (otpOverride?: string) => Promise<boolean>;
+  sendOtp: (phoneOverride?: string) => Promise<boolean>;
+  verifyOtp: (otpOverride?: string, phoneOverride?: string) => Promise<boolean>;
   resendOtp: () => Promise<boolean>;
 }
 
@@ -57,16 +57,23 @@ export const useOtpAuthFlow = ({
     setError(null);
   };
 
-  const sendOtp = async (): Promise<boolean> => {
-    if (!isPhoneValid || isLoading) {
+  const sendOtp = async (phoneOverride?: string): Promise<boolean> => {
+    const resolvedPhoneNumber = (phoneOverride ?? phoneNumber).trim();
+    const isResolvedPhoneValid =
+      resolvedPhoneNumber.length === 10 &&
+      /^[6-9]/.test(resolvedPhoneNumber) &&
+      /^\d{10}$/.test(resolvedPhoneNumber);
+
+    if (!isResolvedPhoneValid || isLoading) {
       return false;
     }
 
     setIsLoading(true);
     setError(null);
     try {
-      const result = await authService.sendOtp(phoneNumber);
+      const result = await authService.sendOtp(resolvedPhoneNumber);
       if (result.success) {
+        setPhoneNumberState(resolvedPhoneNumber);
         return true;
       }
       setError(result.error || 'Failed to send OTP. Please try again.');
@@ -76,8 +83,9 @@ export const useOtpAuthFlow = ({
     }
   };
 
-  const verifyOtp = async (otpOverride?: string): Promise<boolean> => {
+  const verifyOtp = async (otpOverride?: string, phoneOverride?: string): Promise<boolean> => {
     const otpToVerify = (otpOverride ?? otpValue).trim();
+    const resolvedPhoneNumber = (phoneOverride ?? phoneNumber).trim();
     if (otpToVerify.length !== 6 || isLoading || isVerifyingOtpRef.current) {
       return false;
     }
@@ -86,10 +94,10 @@ export const useOtpAuthFlow = ({
     setIsLoading(true);
     setError(null);
     try {
-      const result = await authService.verifyOtp(phoneNumber, otpToVerify);
+      const result = await authService.verifyOtp(resolvedPhoneNumber, otpToVerify);
       if (result.success && result.data) {
         setAuthToken(result.data.token);
-        setMobile(phoneNumber);
+        setMobile(resolvedPhoneNumber);
         onAuthenticated(result.data.user, result.data.token);
         setOtpValueState('');
         return true;

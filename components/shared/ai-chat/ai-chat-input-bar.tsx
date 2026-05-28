@@ -9,6 +9,7 @@ import AiChatDynamicInput from './ai-chat-dynamic-input';
 interface AiChatInputBarProps {
   inputValue: string;
   inputError: string | null;
+  inputPlaceholder?: string;
   nextFieldConfig: AiChatNextFieldConfig | null;
   isSubmitting: boolean;
   isCompleted: boolean;
@@ -20,6 +21,7 @@ interface AiChatInputBarProps {
 const AiChatInputBar = ({
   inputValue,
   inputError,
+  inputPlaceholder,
   nextFieldConfig,
   isSubmitting,
   isCompleted,
@@ -55,6 +57,7 @@ const AiChatInputBar = ({
           <AiChatDynamicInput
             value={inputValue}
             nextFieldConfig={nextFieldConfig}
+            placeholder={inputPlaceholder}
             disabled={isSubmitting || isCompleted}
             onChange={onChange}
             onSubmit={onSubmit}

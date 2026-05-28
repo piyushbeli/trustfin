@@ -3,6 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
+import { maskPhoneNumber } from '@/lib/utils/mask-phone';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import { getErrorMessage, isAbortError } from '@/lib/utils/error-helpers';
@@ -35,13 +37,11 @@ interface UseAiChatResult {
   progressTotal: number;
   isCompleted: boolean;
   isEscalated: boolean;
-  requiresLogin: boolean;
-  pendingFirstMessage: string | null;
+  guestAuthStep: 'phone' | 'otp';
   setInputValue: (value: string) => void;
   submitInput: () => Promise<void>;
   submitChip: (value: string) => Promise<void>;
   resetInputError: () => void;
-  clearRequiresLogin: () => void;
 }
 
 const ORG_CODE = 'wecredit';
@@ -118,11 +118,10 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
   const hasInitialHistoryLoadedRef = useRef<boolean>(false);
-  const pendingFirstMessageRef = useRef<string | null>(null);
   const prefillQuestionRef = useRef<string | null>(null);
   const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
   const optimisticMessageRef = useRef<AiChatMessage | null>(null);
-  const { user, isAuthenticated } = useAuthStore();
+  const { user, isAuthenticated, setUser } = useAuthStore();
   const { prefillQuestion, sessionId } = useAiChatStore();
 
   const [messages, setMessages] = useState<AiChatMessage[]>([]);
@@ -135,8 +134,19 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [nextFieldConfig, setNextFieldConfig] = useState<AiChatNextFieldConfig | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
-  const [requiresLogin, setRequiresLogin] = useState<boolean>(false);
-  const [pendingFirstMessage, setPendingFirstMessage] = useState<string | null>(null);
+  const [guestAuthStep, setGuestAuthStep] = useState<'phone' | 'otp'>('phone');
+  const [guestAuthPhone, setGuestAuthPhone] = useState<string>('');
+
+  const {
+    error: authError,
+    sendOtp,
+    verifyOtp,
+  } = useOtpAuthFlow({
+    initialPhoneNumber: '',
+    onAuthenticated: (authenticatedUser, token) => {
+      setUser(authenticatedUser, token);
+    },
+  });
 
   const clearHistoryRequest = useCallback((): void => {
     if (!historyAbortRef.current) return;
@@ -225,13 +235,51 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [applyHistoryResponse, buildRequestContext],
   );
 
-  useEffect(() => {
-    pendingFirstMessageRef.current = pendingFirstMessage;
-  }, [pendingFirstMessage]);
+  const refreshChatHistoryAfterGuestAuth = useCallback(
+    async (mobileNumber: string): Promise<void> => {
+      const normalizedMobile = mobileNumber.trim();
+      if (!normalizedMobile) {
+        return;
+      }
+
+      // Force immediate history hydration after OTP success so guests see the
+      // initial/pending AI question without reopening the modal.
+      hasInitialHistoryLoadedRef.current = true;
+      setIsLoadingHistory(true);
+      setErrorMessage(null);
+      setInputError(null);
+
+      const response = await fetchChatHistory({
+        userId: normalizedMobile,
+        organizationCode: ORG_CODE,
+        channel: CHANNEL,
+        sessionId: sessionId ?? undefined,
+        mobile: normalizedMobile,
+      });
+
+      if (!response.success || !response.data) {
+        setErrorMessage(response.error ?? AI_CHAT_COPY.historyRefreshErrorMessage);
+        setIsLoadingHistory(false);
+        return;
+      }
+
+      applyHistoryResponse(response.data);
+      setGuestAuthStep('phone');
+      setGuestAuthPhone('');
+      setIsLoadingHistory(false);
+    },
+    [applyHistoryResponse, sessionId],
+  );
 
   useEffect(() => {
     prefillQuestionRef.current = prefillQuestion;
   }, [prefillQuestion]);
+
+  useEffect(() => {
+    if (!isAuthenticated && authError) {
+      setInputError(authError);
+    }
+  }, [authError, isAuthenticated]);
 
   const submitValue = useCallback(
     async (value: string): Promise<void> => {
@@ -239,8 +287,61 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       if (!trimmedValue || isSubmitting) return;
 
       if (!isAuthenticated) {
-        setPendingFirstMessage(trimmedValue);
-        setRequiresLogin(true);
+        setInputError(null);
+
+        // Keep guest auth fully conversational: first capture phone, then OTP.
+        if (guestAuthStep === 'phone') {
+          const isPhoneValid = trimmedValue.length === 10 && /^[6-9]/.test(trimmedValue) && /^\d{10}$/.test(trimmedValue);
+          if (!isPhoneValid) {
+            setInputError(AI_CHAT_COPY.loginPhoneInvalid);
+            return;
+          }
+
+          setIsSubmitting(true);
+          setErrorMessage(null);
+          setInputValue('');
+          setMessages((prev) => [...prev, { id: `guest_phone_${Date.now()}`, role: 'user', text: trimmedValue }]);
+          setGuestAuthPhone(trimmedValue);
+
+          const isOtpSent = await sendOtp(trimmedValue);
+          if (!isOtpSent) {
+            setInputError(authError ?? 'Failed to send OTP. Please try again.');
+            setIsSubmitting(false);
+            return;
+          }
+
+          setGuestAuthStep('otp');
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `guest_otp_prompt_${Date.now()}`,
+              role: 'assistant',
+              text: AI_CHAT_COPY.loginOtpPrompt.replace('{phone}', maskPhoneNumber(trimmedValue)),
+            },
+          ]);
+          setIsSubmitting(false);
+          return;
+        }
+
+        const isOtpValid = /^\d{6}$/.test(trimmedValue);
+        if (!isOtpValid) {
+          setInputError(AI_CHAT_COPY.loginOtpInvalid);
+          return;
+        }
+
+        setIsSubmitting(true);
+        setErrorMessage(null);
+        setInputValue('');
+        setMessages((prev) => [...prev, { id: `guest_otp_${Date.now()}`, role: 'user', text: '••••••' }]);
+
+        const isOtpVerified = await verifyOtp(trimmedValue, guestAuthPhone);
+        if (!isOtpVerified) {
+          setInputError(authError ?? 'Invalid OTP. Please try again.');
+          setIsSubmitting(false);
+          return;
+        }
+        await refreshChatHistoryAfterGuestAuth(guestAuthPhone);
+        setIsSubmitting(false);
         return;
       }
 
@@ -329,10 +430,16 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [
       buildRequestContext,
       clearSubmitRequest,
+      authError,
+      guestAuthPhone,
+      guestAuthStep,
       isAuthenticated,
       isSubmitting,
       nextFieldConfig,
       refreshChatHistory,
+      refreshChatHistoryAfterGuestAuth,
+      sendOtp,
+      verifyOtp,
     ],
   );
 
@@ -353,9 +460,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setNextFieldConfig(null);
       setFieldCaptureStatus(null);
       setIsEscalated(false);
-      setRequiresLogin(false);
-      setPendingFirstMessage(null);
-      pendingFirstMessageRef.current = null;
+      setGuestAuthStep('phone');
+      setGuestAuthPhone('');
       return;
     }
 
@@ -366,16 +472,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setErrorMessage(null);
       setInputError(null);
       setIsLoadingHistory(false);
+      setGuestAuthStep('phone');
+      setGuestAuthPhone('');
       seedGuestWelcomeMessage();
-      return;
-    }
-
-    const queuedPendingMessage = pendingFirstMessageRef.current?.trim();
-    if (queuedPendingMessage) {
-      pendingFirstMessageRef.current = null;
-      setPendingFirstMessage(null);
-      setRequiresLogin(false);
-      void submitValueRef.current(queuedPendingMessage);
       return;
     }
 
@@ -444,12 +543,10 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     progressTotal,
     isCompleted,
     isEscalated,
-    requiresLogin,
-    pendingFirstMessage,
+    guestAuthStep,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
     submitChip: async (value: string) => submitValue(value),
     resetInputError: () => setInputError(null),
-    clearRequiresLogin: () => setRequiresLogin(false),
   };
 }
