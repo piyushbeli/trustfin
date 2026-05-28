@@ -6,13 +6,14 @@ import { cn } from '@/lib/utils';
 interface AiChatMessageProps {
   text: string;
   role: 'assistant' | 'user';
+  className?: string;
 }
 
-const AiChatMessage = ({ text, role }: AiChatMessageProps): JSX.Element => {
+const AiChatMessage = ({ text, role, className }: AiChatMessageProps): JSX.Element => {
   const isAssistant = role === 'assistant';
 
   return (
-    <div className={cn('flex w-full', isAssistant ? 'justify-start' : 'justify-end')}>
+    <div className={cn('flex w-full', isAssistant ? 'justify-start' : 'justify-end', className)}>
       <div
         className={cn(
           'max-w-[85%] rounded-2xl px-4 py-3 text-[15px] leading-relaxed',

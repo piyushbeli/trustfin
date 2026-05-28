@@ -7,10 +7,11 @@ import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
 import { useAiChat } from '@/hooks/use-ai-chat';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import AiChatHeader from './ai-chat-header';
-import AiChatInputBar from './ai-chat-input-bar';
-import AiChatMessageList from './ai-chat-message-list';
+import AiChatModalBody from './ai-chat-modal-body';
+import AiChatModalFooter from './ai-chat-modal-footer';
 import AiChatProgress from './ai-chat-progress';
 import AiChatSecureBadge from './ai-chat-secure-badge';
+import { getAiChatViewMode } from './ai-chat-view';
 
 const AiChatModal = (): JSX.Element | null => {
   const { isOpen, closeModal } = useAiChatStore();
@@ -29,10 +30,13 @@ const AiChatModal = (): JSX.Element | null => {
     progressTotal,
     isCompleted,
     isEscalated,
+    requiresLogin,
+    pendingFirstMessage,
     setInputValue,
     submitInput,
     submitChip,
     resetInputError,
+    clearRequiresLogin,
   } = useAiChat(isOpen);
 
   useBodyScrollLock(isOpen);
@@ -55,10 +59,38 @@ const AiChatModal = (): JSX.Element | null => {
     return null;
   }, [isCompleted, isEscalated]);
 
+  const displayMessages = useMemo(
+    () =>
+      systemMessage
+        ? [...messages, { id: 'system_message', role: 'assistant' as const, text: systemMessage }]
+        : messages,
+    [messages, systemMessage],
+  );
+
+  const viewMode = getAiChatViewMode({
+    requiresLogin,
+    isInitialLoading: isLoadingHistory && !isSubmitting,
+  });
+
+  const isInputDisabled = isSubmitting;
+
+  const handleInputChange = (value: string): void => {
+    resetInputError();
+    setInputValue(value);
+  };
+
+  const handleSubmit = (): void => {
+    void submitInput();
+  };
+
+  const handleSelectChip = (value: string): void => {
+    void submitChip(value);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex items-end justify-center bg-black/35 sm:items-center">
+    <div className="fixed inset-0 z-100 flex justify-center bg-black/35 items-center">
       <div
         className="absolute inset-0"
         onClick={closeModal}
@@ -66,42 +98,30 @@ const AiChatModal = (): JSX.Element | null => {
         aria-label="Close chat overlay"
         tabIndex={-1}
       />
-      <div className="relative z-10 h-[92vh] w-full max-w-md rounded-t-3xl border border-brand-200 bg-white shadow-2xl sm:h-[86vh] sm:rounded-3xl">
+      <div className="relative z-10 h-full md:h-[92vh] w-full md:w-4/5 lg:w-1/2 md:rounded-t-3xl border border-brand-200 bg-white shadow-2xl md:rounded-3xl">
         <div className="flex h-full flex-col overflow-hidden">
           <AiChatHeader onClose={closeModal} />
-          <AiChatProgress current={progressCurrent} total={progressTotal} phaseLabel={phaseLabel} />
-          {isLoadingHistory ? (
-            <div className="flex flex-1 items-center justify-center px-4 text-sm text-gray-500">
-              {AI_CHAT_COPY.loadingMessage}
-            </div>
-          ) : (
-            <AiChatMessageList
-              messages={
-                systemMessage
-                  ? [...messages, { id: 'system_message', role: 'assistant', text: systemMessage }]
-                  : messages
-              }
-            />
-          )}
-          {errorMessage ? (
-            <p className="px-4 pb-2 text-sm text-red-500">{errorMessage}</p>
-          ) : null}
-          <AiChatInputBar
+          {/* {viewMode !== 'login' ? (
+            <AiChatProgress current={progressCurrent} total={progressTotal} phaseLabel={phaseLabel} />
+          ) : null} */}
+          <AiChatModalBody
+            viewMode={viewMode}
+            pendingFirstMessage={pendingFirstMessage}
+            messages={displayMessages}
+            showTypingIndicator={isSubmitting}
+          />
+          <AiChatModalFooter
+            viewMode={viewMode}
+            errorMessage={errorMessage}
             inputValue={inputValue}
             inputError={inputError}
             nextFieldConfig={nextFieldConfig}
-            isSubmitting={isSubmitting}
+            isSubmitting={isInputDisabled}
             isCompleted={isCompleted || isEscalated}
-            onChange={(value) => {
-              resetInputError();
-              setInputValue(value);
-            }}
-            onSubmit={() => {
-              void submitInput();
-            }}
-            onSelectChip={(value) => {
-              void submitChip(value);
-            }}
+            onChange={handleInputChange}
+            onSubmit={handleSubmit}
+            onSelectChip={handleSelectChip}
+            onBackToChat={clearRequiresLogin}
           />
           <AiChatSecureBadge />
         </div>

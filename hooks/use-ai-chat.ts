@@ -35,13 +35,15 @@ interface UseAiChatResult {
   progressTotal: number;
   isCompleted: boolean;
   isEscalated: boolean;
+  requiresLogin: boolean;
+  pendingFirstMessage: string | null;
   setInputValue: (value: string) => void;
   submitInput: () => Promise<void>;
   submitChip: (value: string) => Promise<void>;
   resetInputError: () => void;
+  clearRequiresLogin: () => void;
 }
 
-const FALLBACK_USER_ID = 'guest-user';
 const ORG_CODE = 'wecredit';
 const CHANNEL = 'wecredit_bot';
 const PENDING_FIELD_FALLBACKS: Record<string, AiChatNextFieldConfig> = {
@@ -113,9 +115,14 @@ function getValidationRegex(nextFieldConfig: AiChatNextFieldConfig | null): RegE
 }
 
 export function useAiChat(isOpen: boolean): UseAiChatResult {
-  const abortRef = useRef<AbortController | null>(null);
+  const historyAbortRef = useRef<AbortController | null>(null);
+  const submitAbortRef = useRef<AbortController | null>(null);
+  const hasInitialHistoryLoadedRef = useRef<boolean>(false);
+  const pendingFirstMessageRef = useRef<string | null>(null);
+  const prefillQuestionRef = useRef<string | null>(null);
+  const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
   const optimisticMessageRef = useRef<AiChatMessage | null>(null);
-  const { user } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { prefillQuestion, sessionId } = useAiChatStore();
 
   const [messages, setMessages] = useState<AiChatMessage[]>([]);
@@ -128,15 +135,23 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [nextFieldConfig, setNextFieldConfig] = useState<AiChatNextFieldConfig | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
+  const [requiresLogin, setRequiresLogin] = useState<boolean>(false);
+  const [pendingFirstMessage, setPendingFirstMessage] = useState<string | null>(null);
 
-  const clearInFlightRequest = useCallback((): void => {
-    if (!abortRef.current) return;
-    abortRef.current.abort();
-    abortRef.current = null;
+  const clearHistoryRequest = useCallback((): void => {
+    if (!historyAbortRef.current) return;
+    historyAbortRef.current.abort();
+    historyAbortRef.current = null;
+  }, []);
+
+  const clearSubmitRequest = useCallback((): void => {
+    if (!submitAbortRef.current) return;
+    submitAbortRef.current.abort();
+    submitAbortRef.current = null;
   }, []);
 
   const buildRequestContext = useCallback((): ChatHistoryParams => {
-    const userId = user?.phoneNumber ?? FALLBACK_USER_ID;
+    const userId = user?.phoneNumber || '';
     return {
       userId,
       organizationCode: ORG_CODE,
@@ -176,10 +191,58 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [],
   );
 
+  const seedGuestWelcomeMessage = useCallback((): void => {
+    setMessages([
+      {
+        id: 'guest_welcome',
+        role: 'assistant',
+        text: AI_CHAT_COPY.guestWelcomeMessage,
+      },
+    ]);
+    setSession(null);
+    setFieldCaptureStatus(null);
+    setNextFieldConfig(null);
+    setIsEscalated(false);
+  }, []);
+
+  const refreshChatHistory = useCallback(
+    async (
+      signal: AbortSignal,
+      fallbackMessage: string = AI_CHAT_COPY.genericError,
+    ): Promise<boolean> => {
+      const context = buildRequestContext();
+      const response = await fetchChatHistory(context, signal);
+      if (!response.success || !response.data) {
+        if (response.error !== 'aborted') {
+          setErrorMessage(response.error ?? fallbackMessage);
+        }
+        return false;
+      }
+
+      applyHistoryResponse(response.data);
+      return true;
+    },
+    [applyHistoryResponse, buildRequestContext],
+  );
+
+  useEffect(() => {
+    pendingFirstMessageRef.current = pendingFirstMessage;
+  }, [pendingFirstMessage]);
+
+  useEffect(() => {
+    prefillQuestionRef.current = prefillQuestion;
+  }, [prefillQuestion]);
+
   const submitValue = useCallback(
     async (value: string): Promise<void> => {
       const trimmedValue = value.trim();
       if (!trimmedValue || isSubmitting) return;
+
+      if (!isAuthenticated) {
+        setPendingFirstMessage(trimmedValue);
+        setRequiresLogin(true);
+        return;
+      }
 
       setInputError(null);
 
@@ -200,9 +263,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setIsSubmitting(true);
       setErrorMessage(null);
 
-      clearInFlightRequest();
+      clearSubmitRequest();
       const controller = new AbortController();
-      abortRef.current = controller;
+      submitAbortRef.current = controller;
 
       try {
         const context = buildRequestContext();
@@ -247,9 +310,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           ]);
         }
 
-        setFieldCaptureStatus(data.fieldCaptureStatus ?? null);
-        setNextFieldConfig(data.fieldCaptureStatus?.nextFieldConfig ?? null);
-        setIsEscalated(data.escalateToHuman);
+        await refreshChatHistory(controller.signal, AI_CHAT_COPY.historyRefreshErrorMessage);
       } catch (error) {
         setMessages((prev) =>
           prev.filter((message) => message.id !== optimisticMessageRef.current?.id),
@@ -258,16 +319,32 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           setErrorMessage(getErrorMessage(error, AI_CHAT_COPY.genericError));
         }
       } finally {
+        if (submitAbortRef.current === controller) {
+          submitAbortRef.current = null;
+        }
         optimisticMessageRef.current = null;
         setIsSubmitting(false);
       }
     },
-    [buildRequestContext, clearInFlightRequest, isSubmitting, nextFieldConfig],
+    [
+      buildRequestContext,
+      clearSubmitRequest,
+      isAuthenticated,
+      isSubmitting,
+      nextFieldConfig,
+      refreshChatHistory,
+    ],
   );
 
   useEffect(() => {
+    submitValueRef.current = submitValue;
+  }, [submitValue]);
+
+  useEffect(() => {
     if (!isOpen) {
-      clearInFlightRequest();
+      clearHistoryRequest();
+      clearSubmitRequest();
+      hasInitialHistoryLoadedRef.current = false;
       setMessages([]);
       setSession(null);
       setErrorMessage(null);
@@ -276,38 +353,72 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setNextFieldConfig(null);
       setFieldCaptureStatus(null);
       setIsEscalated(false);
+      setRequiresLogin(false);
+      setPendingFirstMessage(null);
+      pendingFirstMessageRef.current = null;
       return;
     }
 
+    if (!isAuthenticated) {
+      clearHistoryRequest();
+      clearSubmitRequest();
+      hasInitialHistoryLoadedRef.current = false;
+      setErrorMessage(null);
+      setInputError(null);
+      setIsLoadingHistory(false);
+      seedGuestWelcomeMessage();
+      return;
+    }
+
+    const queuedPendingMessage = pendingFirstMessageRef.current?.trim();
+    if (queuedPendingMessage) {
+      pendingFirstMessageRef.current = null;
+      setPendingFirstMessage(null);
+      setRequiresLogin(false);
+      void submitValueRef.current(queuedPendingMessage);
+      return;
+    }
+
+    if (hasInitialHistoryLoadedRef.current) {
+      return;
+    }
+
+    hasInitialHistoryLoadedRef.current = true;
+    clearHistoryRequest();
     const controller = new AbortController();
-    abortRef.current = controller;
+    historyAbortRef.current = controller;
     setIsLoadingHistory(true);
     setErrorMessage(null);
     setInputError(null);
 
     const loadHistory = async (): Promise<void> => {
-      const context = buildRequestContext();
-      const response = await fetchChatHistory(context, controller.signal);
-      if (!response.success || !response.data) {
-        if (response.error !== 'aborted') {
-          setErrorMessage(response.error ?? AI_CHAT_COPY.genericError);
-        }
-        setIsLoadingHistory(false);
+      const didRefresh = await refreshChatHistory(controller.signal);
+      setIsLoadingHistory(false);
+
+      if (!didRefresh) {
         return;
       }
 
-      applyHistoryResponse(response.data);
-      setIsLoadingHistory(false);
-      if (prefillQuestion?.trim()) {
-        void submitValue(prefillQuestion.trim());
+      if (prefillQuestionRef.current?.trim()) {
+        void submitValueRef.current(prefillQuestionRef.current.trim());
       }
     };
 
     void loadHistory();
     return () => {
-      controller.abort();
+      if (historyAbortRef.current === controller) {
+        controller.abort();
+        historyAbortRef.current = null;
+      }
     };
-  }, [applyHistoryResponse, buildRequestContext, clearInFlightRequest, isOpen, prefillQuestion, submitValue]);
+  }, [
+    clearHistoryRequest,
+    clearSubmitRequest,
+    isAuthenticated,
+    isOpen,
+    refreshChatHistory,
+    seedGuestWelcomeMessage,
+  ]);
 
   const progressCurrent = fieldCaptureStatus?.capturedFields.length ?? 0;
   const progressTotal = fieldCaptureStatus?.requiredFields.length ?? 0;
@@ -333,9 +444,12 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     progressTotal,
     isCompleted,
     isEscalated,
+    requiresLogin,
+    pendingFirstMessage,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
     submitChip: async (value: string) => submitValue(value),
     resetInputError: () => setInputError(null),
+    clearRequiresLogin: () => setRequiresLogin(false),
   };
 }

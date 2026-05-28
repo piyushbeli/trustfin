@@ -1,6 +1,6 @@
 import { getCookie } from 'cookies-next';
 import { wecreditConfig } from '@/lib/config';
-import { STORAGE_AUTH_TOKEN } from '@/lib/constants/api-keys';
+import { ENDPOINTS, HEADER_AGENT_HOST, STORAGE_AUTH_TOKEN } from '@/lib/constants/api-keys';
 import { getErrorMessage, isAbortError } from '@/lib/utils/error-helpers';
 import type {
   ChatHistoryParams,
@@ -10,7 +10,12 @@ import type {
 } from '@/types/ai-chat';
 import { fetchMockChatHistory, submitMockChatQuery } from './ai-chat-mock';
 
-const AI_CHAT_BASE = process.env.NEXT_PUBLIC_AI_CHAT_API_URL ?? `${wecreditConfig.apiUrl}/api/ai-chat`;
+const AI_CHAT_ENV_BASE = wecreditConfig.aiChatUrl;
+
+// TODO: Remove this once we have the env URL
+const SHOULD_USE_STATIC_POSTMAN_FLOW = true
+
+const AI_CHAT_BASE = AI_CHAT_ENV_BASE;
 const SHOULD_USE_MOCK = process.env.NEXT_PUBLIC_AI_CHAT_MOCK === 'true';
 
 interface ChatServiceResult<T> {
@@ -34,6 +39,8 @@ function buildHeaders(mobile?: string): Record<string, string> {
     headers.Authorization = `Bearer ${token}`;
   }
 
+  delete headers[HEADER_AGENT_HOST];
+
   return headers;
 }
 
@@ -46,10 +53,9 @@ async function parseResponse<T>(response: Response): Promise<T | null> {
 }
 
 async function requestWithFallback<T>(
-  endpoint: string,
-  body: Record<string, unknown>,
+  request: RequestInfo | URL,
+  requestInit: RequestInit,
   mockResolver: () => Promise<T>,
-  signal?: AbortSignal,
 ): Promise<ChatServiceResult<T>> {
   if (SHOULD_USE_MOCK) {
     const data = await mockResolver();
@@ -57,12 +63,7 @@ async function requestWithFallback<T>(
   }
 
   try {
-    const response = await fetch(`${AI_CHAT_BASE}/${endpoint}`, {
-      method: 'POST',
-      headers: buildHeaders(typeof body.mobile === 'string' ? body.mobile : undefined),
-      body: JSON.stringify(body),
-      signal,
-    });
+    const response = await fetch(request, requestInit);
 
     const responseData = await parseResponse<T>(response);
 
@@ -95,11 +96,36 @@ export async function fetchChatHistory(
   params: ChatHistoryParams,
   signal?: AbortSignal,
 ): Promise<ChatServiceResult<ChatHistoryResponse>> {
+  if (SHOULD_USE_STATIC_POSTMAN_FLOW) {
+    const historyUrl = new URL(AI_CHAT_BASE);
+    historyUrl.searchParams.set('userId', params.userId);
+    historyUrl.searchParams.set('organizationCode', params.organizationCode);
+    historyUrl.searchParams.set('channel', params.channel);
+    historyUrl.searchParams.set('endpoint', ENDPOINTS.AI_ASSISTANT.CHAT_HISTORY);
+    if (params.sessionId) {
+      historyUrl.searchParams.set('sessionId', params.sessionId);
+    }
+
+    return requestWithFallback<ChatHistoryResponse>(
+      historyUrl.toString(),
+      {
+        method: 'GET',
+        headers: buildHeaders(params.mobile),
+        signal,
+      },
+      () => fetchMockChatHistory(params),
+    );
+  }
+
   return requestWithFallback<ChatHistoryResponse>(
-    'chat-history',
-    params as unknown as Record<string, unknown>,
+    `${AI_CHAT_BASE}/${ENDPOINTS.AI_ASSISTANT.CHAT_HISTORY}`,
+    {
+      method: 'POST',
+      headers: buildHeaders(params.mobile),
+      body: JSON.stringify(params),
+      signal,
+    },
     () => fetchMockChatHistory(params),
-    signal,
   );
 }
 
@@ -107,10 +133,37 @@ export async function submitChatQuery(
   payload: ChatQueryPayload,
   signal?: AbortSignal,
 ): Promise<ChatServiceResult<ChatQueryResponse>> {
+  if (SHOULD_USE_STATIC_POSTMAN_FLOW) {
+    const staticQueryPayload = {
+      endpoint: ENDPOINTS.AI_ASSISTANT.CHAT_QUERY,
+      userId: payload.userId,
+      organizationCode: payload.organizationCode,
+      channel: payload.channel,
+      query: payload.query,
+      ...(payload.field ? { field: payload.field } : {}),
+      ...(payload.sessionId ? { sessionId: payload.sessionId } : {}),
+    };
+
+    return requestWithFallback<ChatQueryResponse>(
+      AI_CHAT_BASE,
+      {
+        method: 'POST',
+        headers: buildHeaders(payload.mobile),
+        body: JSON.stringify(staticQueryPayload),
+        signal,
+      },
+      () => submitMockChatQuery(payload),
+    );
+  }
+
   return requestWithFallback<ChatQueryResponse>(
-    'chat-query',
-    payload as unknown as Record<string, unknown>,
+    `${AI_CHAT_BASE}/${ENDPOINTS.AI_ASSISTANT.CHAT_QUERY}`,
+    {
+      method: 'POST',
+      headers: buildHeaders(payload.mobile),
+      body: JSON.stringify(payload),
+      signal,
+    },
     () => submitMockChatQuery(payload),
-    signal,
   );
 }

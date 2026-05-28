@@ -34,6 +34,8 @@ interface OTPInputProps {
   phoneNumber?: string;
   /** Variant for styling - default white boxes, blue for blue background */
   variant?: 'default' | 'blue';
+  /** Compact sizing for narrow containers (e.g. AI chat side panel) */
+  size?: 'default' | 'compact';
 }
 
 /**
@@ -52,7 +54,9 @@ const OTPInput = ({
   showResend = true,
   phoneNumber = '',
   variant = 'default',
+  size = 'default',
 }: OTPInputProps): React.ReactNode => {
+  const isCompact = size === 'compact';
   const [otp, setOtp] = useState(controlledValue || '');
   const [resendTimer, setResendTimer] = useState(RESEND_TIMER_SECONDS);
   const [canResend, setCanResend] = useState(false);
@@ -108,36 +112,56 @@ const OTPInput = ({
     onResend?.();
   };
 
+  const sizeClasses = isCompact
+    ? 'h-11 w-full min-w-0 text-lg'
+    : 'h-12 w-12 text-xl sm:h-14 sm:w-14 sm:text-2xl md:h-16 md:w-16';
+
   /** Get input class based on variant and state */
   const getInputClass = (hasValue: boolean): string => {
     // Consistent styling for all states - matching Figma design
     if (variant === 'blue') {
       return cn(
-        'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 border-2 rounded text-center text-xl sm:text-2xl font-bold transition-all duration-200',
+        sizeClasses,
+        'rounded border-2 text-center font-bold transition-all duration-200',
         'border-white/30 bg-white/20 text-white placeholder:text-white/40',
         'backdrop-blur-sm ',
-        disabled && 'opacity-50 cursor-not-allowed', 'focus:outline-none'
+        disabled && 'opacity-50 cursor-not-allowed',
+        'focus:outline-none',
       );
     }
 
     // Default variant - matching Figma: #045CCF at 15% opacity, corner radius 4
     return cn(
-      'w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 border-b-2 border-brand-primary rounded text-center text-xl sm:text-2xl font-bold transition-all duration-200',
+      sizeClasses,
+      'rounded border-b-2 border-brand-primary text-center font-bold transition-all duration-200',
       error
         ? 'border-b-red-400 bg-red-50 text-gray-900'
         : 'bg-[#045CCF]/15 text-gray-900 placeholder:text-gray-400',
-      disabled && 'opacity-50 cursor-not-allowed', 'focus:outline-none'
+      disabled && 'opacity-50 cursor-not-allowed',
+      'focus:outline-none',
     );
   };
+
+  const otpContainerStyle: React.CSSProperties = isCompact
+    ? {
+        display: 'grid',
+        gridTemplateColumns: 'repeat(6, minmax(0, 1fr))',
+        gap: '0.375rem',
+        width: '100%',
+      }
+    : {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.5rem',
+      };
 
   return (
     <div
       className={cn('w-full flex flex-col items-center', className)}
     >
       {/* OTP Input */}
-      <div
-        className="mb-6 px-4 sm:px-0"
-      >
+      <div className={cn('w-full', isCompact ? 'mb-4' : 'mb-6 px-4 sm:px-0')}>
         <OtpInput
           value={otp}
           onChange={handleOtpChange}
@@ -156,12 +180,7 @@ const OTPInput = ({
             );
           }}
           shouldAutoFocus
-          containerStyle={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '0.5rem',
-          }}
+          containerStyle={otpContainerStyle}
         />
       </div>
 
@@ -215,7 +234,10 @@ const OTPInput = ({
           {/* Phone number and change link */}
           {phoneNumber && (
             <p
-              className="text-sm text-gray-600 mb-6 text-center"
+              className={cn(
+                'mb-6 text-center text-sm text-gray-600',
+                isCompact && 'px-1 leading-relaxed',
+              )}
             >
               we have sent OTP on {phoneNumber}{' '}
               <button

@@ -92,6 +92,10 @@ export const ENDPOINTS = {
     APPLY: '/api/loans/apply',
     STATUS: '/api/loans/status',
   },
+  AI_ASSISTANT: {
+    CHAT_HISTORY: 'chat-history',
+    CHAT_QUERY: 'chat-query',
+  },
 } as const;
 
 /** Partner code for API authentication */
