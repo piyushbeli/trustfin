@@ -4,6 +4,7 @@
  */
 
 export interface CreditCard {
+  id: string;
   title: string;
   link: string;
   intro: string;

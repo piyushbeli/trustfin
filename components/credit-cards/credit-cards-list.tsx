@@ -19,7 +19,7 @@ const CreditCardsList = (): React.ReactNode => {
   return (
     <div className="mx-auto flex w-full max-w-xl flex-col gap-4">
       {CREDIT_CARDS.map((card) => (
-        <CreditCardItem key={card.title} card={card} />
+        <CreditCardItem key={card.id} card={card} />
       ))}
     </div>
   );

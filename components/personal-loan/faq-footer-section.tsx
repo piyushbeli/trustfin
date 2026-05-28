@@ -22,7 +22,7 @@ const FaqFooterSection = ({
 			<div
 				className="space-y-4"
 			>
-				<AiChatCta label={AI_CTA_COPY.askAiLabel} variant="gradient" />
+				<AiChatCta label={AI_CTA_COPY.askAiLabel} variant="gradient" className="custom-cta-button" />
 				{!hideDisclaimer && (
 					<p className="text-sm italic leading-relaxed text-muted-foreground">
 						{disclaimer}

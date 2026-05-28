@@ -8,6 +8,7 @@ import type { CreditCard } from '@/types/credit-card';
 
 export const CREDIT_CARDS: CreditCard[] = [
   {
+    id: 'sbi-simply-click',
     title: 'SBI Simply Click',
     link: '#',
     intro: 'SBI presents, SimplyClick! Best for online shopping and e-commerce rewards.',
@@ -23,6 +24,7 @@ export const CREDIT_CARDS: CreditCard[] = [
     annualFeePeriod: '/Year',
   },
   {
+    id: 'sbi-simply-click-2',
     title: 'SBI Simply Click',
     link: '#',
     intro: 'SBI presents, SimplyClick! Best for online shopping and e-commerce rewards.',
