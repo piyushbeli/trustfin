@@ -150,16 +150,14 @@ export function RecentlyClickedOffersCarousel({
             slidesToScroll: 1,
           }}
         >
-          <CarouselContent className="max-w-xl">
+          <CarouselContent className="max-w-xl gap-3 pl-4 pr-4">
             {offers.map((offer, index) => {
-              const isFirst = index === 0;
-              const isLast = index === offers.length - 1;
-              const singleOffer = isFirst && isLast;
+              const singleOffer = offers.length === 1;
 
               return (
                 <CarouselSlide
                   key={`${offer.lenderName}-${index}`}
-                  className={`${isLast ? 'pr-4' : ''} ${singleOffer ? 'basis-full' : 'basis-[85%]'} sm:basis-[70%] md:basis-[50%]`}
+                  className={`${singleOffer ? 'basis-full' : 'basis-[85%]'} sm:basis-[70%] md:basis-[50%]`}
                 >
                   <RecentlyClickedOfferCard
                     offer={offer}
