@@ -9,7 +9,7 @@ const GrievanceContactContent = (): React.ReactNode => {
     <div className="w-full space-y-6">
       {/* Welcome Title */}
       <h1 className="text-zinc-800 text-base font-medium">
-        Welcome to WeCredit Customer Services
+        Welcome to Trustfin Customer Services
       </h1>
 
       {/* Introduction Paragraph 1 */}

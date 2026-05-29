@@ -20,7 +20,7 @@ const config = {
   theme: {
     extend: {
       colors: {
-        // WeCredit Design System — synced from lib/constants/colors.ts
+        // Trustfin Design System — synced from lib/constants/colors.ts
         brand: {
           primary: brand.primary,
           50: brand[50],
@@ -49,7 +49,7 @@ const config = {
           100: COLORS.gray[100],
         },
 
-        // Legacy wc.blue — same values as brand scale
+        // Legacy trustfin.blue — same values as brand scale
         wc: {
           blue: {
             heading: brand[600],

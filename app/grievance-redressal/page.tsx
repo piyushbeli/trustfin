@@ -13,7 +13,7 @@ export const revalidate = 3600; // 1 hour
  */
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Grievance Redressal | WeCredit',
+    title: 'Grievance Redressal | Trustfin',
     description: 'Contact our grievance officer to resolve your complaints and grievances. We are committed to resolving issues within a reasonable time frame.',
     keywords: 'grievance redressal, customer service, complaints, contact',
   };

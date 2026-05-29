@@ -8,6 +8,7 @@ import TextInput from './inputs/text-input';
 
 interface AiChatDynamicInputProps {
   nextFieldConfig: AiChatNextFieldConfig | null;
+  showSelectChips?: boolean;
   value: string;
   placeholder?: string;
   disabled?: boolean;
@@ -18,6 +19,7 @@ interface AiChatDynamicInputProps {
 
 const AiChatDynamicInput = ({
   nextFieldConfig,
+  showSelectChips = false,
   value,
   placeholder,
   disabled,
@@ -25,7 +27,7 @@ const AiChatDynamicInput = ({
   onSubmit,
   onSelectChip,
 }: AiChatDynamicInputProps): JSX.Element | null => {
-  if (nextFieldConfig?.inputType === 'select') {
+  if (nextFieldConfig?.inputType === 'select' && showSelectChips) {
     return (
       <SelectChips
         options={nextFieldConfig.options}

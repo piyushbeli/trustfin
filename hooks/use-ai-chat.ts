@@ -2,7 +2,10 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
-import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
+import { applyChatQueryResponseState } from '@/lib/ai-chat/apply-chat-query-response';
+import { buildFieldCaptureFromHistory } from '@/lib/ai-chat/build-field-capture-from-history';
+import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
+import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
 import { maskPhoneNumber } from '@/lib/utils/mask-phone';
@@ -13,7 +16,6 @@ import type {
   AiChatFieldCaptureStatus,
   AiChatNextFieldConfig,
   AiChatSession,
-  AiChatTurn,
   ChatHistoryParams,
 } from '@/types/ai-chat';
 
@@ -32,6 +34,7 @@ interface UseAiChatResult {
   inputValue: string;
   inputError: string | null;
   nextFieldConfig: AiChatNextFieldConfig | null;
+  showSelectChips: boolean;
   fieldCaptureStatus: AiChatFieldCaptureStatus | null;
   phaseLabel: string;
   progressCurrent: number;
@@ -47,46 +50,6 @@ interface UseAiChatResult {
 
 const ORG_CODE = 'wecredit';
 const CHANNEL = 'wecredit_bot';
-
-function mapTurnsToMessages(turns: AiChatTurn[]): AiChatMessage[] {
-  const mapped: AiChatMessage[] = [];
-
-  turns.forEach((turn) => {
-    if (turn.turnType === 'chat') {
-      if (turn.userQuery) {
-        mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: turn.userQuery });
-      }
-      if (turn.assistantResponse) {
-        mapped.push({
-          id: `${turn.turnId}_assistant`,
-          role: 'assistant',
-          text: turn.assistantResponse,
-        });
-      }
-      return;
-    }
-
-    if (turn.askedQuestion) {
-      mapped.push({
-        id: `${turn.turnId}_asked`,
-        role: 'assistant',
-        text: turn.askedQuestion,
-      });
-    }
-    if (turn.userAnswer) {
-      mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: turn.userAnswer });
-    }
-    if (turn.assistantResponse) {
-      mapped.push({
-        id: `${turn.turnId}_assistant`,
-        role: 'assistant',
-        text: turn.assistantResponse,
-      });
-    }
-  });
-
-  return mapped;
-}
 
 export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
@@ -106,6 +69,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [inputValue, setInputValue] = useState<string>('');
   const [inputError, setInputError] = useState<string | null>(null);
   const [nextFieldConfig, setNextFieldConfig] = useState<AiChatNextFieldConfig | null>(null);
+  const [dismissedSelectField, setDismissedSelectField] = useState<string | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
   const [guestAuthStep, setGuestAuthStep] = useState<'phone' | 'otp'>('phone');
@@ -149,12 +113,16 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     (history: Awaited<ReturnType<typeof fetchChatHistory>>['data']): void => {
       if (!history) return;
 
-      const mappedMessages = mapTurnsToMessages(history.turns ?? []);
-      const hasPendingQuestion =
-        Boolean(history.session?.pendingQuestion) &&
+      const turns = history.turns ?? [];
+      const mappedMessages = mapHistoryTurnsToMessages(turns);
+
+      const shouldAppendPendingQuestion =
+        history.session.shouldAskNextQuestion &&
+        !history.session.isCompleted &&
+        Boolean(history.session.pendingQuestion) &&
         !mappedMessages.some((message) => message.text === history.session.pendingQuestion);
 
-      if (hasPendingQuestion && history.session.pendingQuestion) {
+      if (shouldAppendPendingQuestion && history.session.pendingQuestion) {
         mappedMessages.push({
           id: `pending_${history.session.updatedAt}`,
           role: 'assistant',
@@ -164,26 +132,13 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       setMessages(mappedMessages);
       setSession(history.session);
-      setFieldCaptureStatus((previousStatus) => {
-        const nextField = history.session.pendingField ?? history.session.nextField ?? null;
-        if (!nextField) {
-          return null;
-        }
 
-        return {
-          requiredFields: previousStatus?.requiredFields ?? [],
-          optionalFields: previousStatus?.optionalFields ?? [],
-          capturedFields: previousStatus?.capturedFields ?? [],
-          missingFields: previousStatus?.missingFields ?? [],
-          nextField,
-          nextQuestion: history.session.pendingQuestion ?? previousStatus?.nextQuestion ?? null,
-          nextFieldConfig: resolveNextFieldConfig({
-            session: history.session,
-            fieldCaptureStatus: previousStatus,
-          }),
-        };
-      });
-      setNextFieldConfig(resolveNextFieldConfig({ session: history.session }));
+      const { fieldCaptureStatus, nextFieldConfig } = buildFieldCaptureFromHistory(
+        history.session,
+        turns,
+      );
+      setFieldCaptureStatus(fieldCaptureStatus);
+      setNextFieldConfig(nextFieldConfig);
       setIsEscalated(false);
     },
     [],
@@ -372,6 +327,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         }
 
         const data = response.data;
+        const userId = context.userId;
 
         if (data.validation && !data.validation.isValid) {
           if (data.answer) {
@@ -385,40 +341,32 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
             ]);
           }
 
-          if (data.fieldCaptureStatus) {
-            setFieldCaptureStatus(data.fieldCaptureStatus);
-            setNextFieldConfig(
-              resolveNextFieldConfig({
-                fieldCaptureStatus: data.fieldCaptureStatus,
-                session,
-              }),
-            );
-          }
+          applyChatQueryResponseState({
+            data,
+            currentSession: session,
+            userId,
+            setSession,
+            setFieldCaptureStatus,
+            setNextFieldConfig,
+            setIsEscalated,
+          });
           return;
         }
 
-        if (data.fieldCaptureStatus) {
-          setFieldCaptureStatus(data.fieldCaptureStatus);
-          setNextFieldConfig(
-            resolveNextFieldConfig({
-              fieldCaptureStatus: data.fieldCaptureStatus,
-              session,
-            }),
-          );
-        }
+        applyChatQueryResponseState({
+          data,
+          currentSession: session,
+          userId,
+          setSession,
+          setFieldCaptureStatus,
+          setNextFieldConfig,
+          setIsEscalated,
+        });
 
-        if (data.answer) {
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `server_assistant_${Date.now()}`,
-              role: 'assistant',
-              text: data.answer,
-            },
-          ]);
+        const assistantMessages = getChatQueryAssistantMessages(data);
+        if (assistantMessages.length > 0) {
+          setMessages((prev) => [...prev, ...assistantMessages]);
         }
-
-        await refreshChatHistory(controller.signal, AI_CHAT_COPY.historyRefreshErrorMessage);
       } catch (error) {
         setMessages((prev) =>
           prev.filter((message) => message.id !== optimisticMessageRef.current?.id),
@@ -443,7 +391,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       isAuthenticated,
       isSubmitting,
       nextFieldConfig,
-      refreshChatHistory,
       refreshChatHistoryAfterGuestAuth,
       sendOtp,
       session,
@@ -466,6 +413,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setInputValue('');
       setInputError(null);
       setNextFieldConfig(null);
+      setDismissedSelectField(null);
       setFieldCaptureStatus(null);
       setIsEscalated(false);
       setGuestAuthStep('phone');
@@ -536,6 +484,15 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
   const isCompleted = Boolean(session?.isCompleted) || Boolean(fieldCaptureStatus && !fieldCaptureStatus.nextField);
 
+  const showSelectChips = useMemo(() => {
+    if (isCompleted || nextFieldConfig?.inputType !== 'select') {
+      return false;
+    }
+
+    const activeField = nextFieldConfig.field;
+    return dismissedSelectField !== activeField;
+  }, [dismissedSelectField, isCompleted, nextFieldConfig]);
+
   return {
     messages,
     session,
@@ -545,6 +502,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     inputValue,
     inputError,
     nextFieldConfig,
+    showSelectChips,
     fieldCaptureStatus,
     phaseLabel,
     progressCurrent,
@@ -554,11 +512,16 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     guestAuthStep,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
-    submitChip: async (value: string) =>
-      submitValue(
+    submitChip: async (value: string) => {
+      if (nextFieldConfig?.field) {
+        setDismissedSelectField(nextFieldConfig.field);
+      }
+
+      await submitValue(
         value,
         nextFieldConfig?.options.find((option) => option.value === value)?.label ?? value,
-      ),
+      );
+    },
     resetInputError: () => setInputError(null),
   };
 }

@@ -13,8 +13,8 @@ export const revalidate = 3600; // 1 hour
  */
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Contact Us | WeCredit',
-    description: 'Get in touch with WeCredit customer services. Contact our grievance officer for assistance with your queries and complaints.',
+    title: 'Contact Us | Trustfin',
+    description: 'Get in touch with Trustfin customer services. Contact our grievance officer for assistance with your queries and complaints.',
     keywords: 'contact us, customer service, support, help',
   };
 }

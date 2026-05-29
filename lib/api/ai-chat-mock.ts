@@ -8,6 +8,7 @@ import type {
   ChatQueryPayload,
   ChatQueryResponse,
 } from '@/types/ai-chat';
+import { getQuestionForField } from '@/lib/ai-chat/field-questions';
 import { AI_CHAT_FIELD_CONFIG_FALLBACKS } from '@/lib/ai-chat/resolve-next-field-config';
 
 interface MockSessionState {
@@ -30,6 +31,9 @@ const REQUIRED_FIELDS = [
   'pan',
 ] as const;
 const OPTIONAL_FIELDS = ['email', 'addressType', 'salaryMode', 'hasCreditCard'] as const;
+
+const GREETING_MESSAGE =
+  "Hi, I'm Finn 👋 I'll quickly check the best loan offer available for you.";
 
 const mockSessions = new Map<string, MockSessionState>();
 
@@ -56,39 +60,35 @@ function buildCaptureStatus(captured: Record<string, string>): AiChatFieldCaptur
   };
 }
 
-function getQuestionForField(field: string): string {
-  const questions: Record<string, string> = {
-    mobile: 'Please share your mobile number to check your loan offer.',
-    name: 'Please enter your full name as shown on your ID.',
-    dob: 'Please share your date of birth.',
-    gender: 'Please select your gender.',
-    pincode: 'Please share your pincode.',
-    employmentType: 'Please select your employment type.',
-    salary: 'What is your monthly salary in hand?',
-    requiredLoanAmount: 'What loan amount are you looking for?',
-    pan: 'Please share your PAN card number.',
-  };
-  return questions[field] ?? 'Please share the next detail.';
+function isFieldHelpQuery(query: string): boolean {
+  const lower = query.toLowerCase();
+  return lower.includes('why') || lower.includes('kyu') || lower.includes('kya');
 }
 
 function createInitialState(params: ChatHistoryParams): MockSessionState {
+  const now = new Date().toISOString();
   const session: AiChatSession = {
     userId: params.userId,
     organizationCode: params.organizationCode || ORGANIZATION_CODE,
     channel: params.channel || CHANNEL_CODE,
     stage: 'chat',
     intent: 'greeting',
-    nextField: null,
-    pendingQuestion:
-      "Hi, I’m Finn 👋 I’ll quickly check the best loan offer available for you.",
-    pendingField: null,
     isFieldCaptureActive: false,
     isCompleted: false,
     shouldAskNextQuestion: false,
-    updatedAt: new Date().toISOString(),
+    updatedAt: now,
   };
 
-  return { session, turns: [], captured: {} };
+  const turns: AiChatTurn[] = [
+    {
+      turnId: 'turn_001',
+      turnType: 'chat',
+      assistantResponse: GREETING_MESSAGE,
+      createdAt: now,
+    },
+  ];
+
+  return { session, turns, captured: {} };
 }
 
 function getOrCreateState(params: ChatHistoryParams | ChatQueryPayload): MockSessionState {
@@ -137,7 +137,7 @@ export async function fetchMockChatHistory(params: ChatHistoryParams): Promise<C
 export async function submitMockChatQuery(payload: ChatQueryPayload): Promise<ChatQueryResponse> {
   const state = getOrCreateState(payload);
   const now = new Date().toISOString();
-  const nextField = getNextField(state.captured) ?? payload.field ?? 'requiredLoanAmount';
+  const nextField = getNextField(state.captured) ?? payload.field ?? null;
   const activeField = payload.field ?? nextField;
   const userValue = payload.query.trim();
   const validation = activeField ? validateFieldValue(activeField, userValue) : { isValid: true };
@@ -159,35 +159,54 @@ export async function submitMockChatQuery(payload: ChatQueryPayload): Promise<Ch
     };
   }
 
+  const captureBefore = buildCaptureStatus(state.captured);
+  const currentQuestion = activeField
+    ? getQuestionForField(activeField)
+    : captureBefore.nextQuestion ?? getQuestionForField('name');
+
   if (activeField) {
-    state.captured[activeField] = userValue;
-    appendTurn(state, {
-      turnId: makeTurnId(state),
-      turnType: 'field',
-      field: activeField,
-      askedQuestion: getQuestionForField(activeField),
-      userAnswer: userValue,
-      normalizedValue: userValue,
-      assistantResponse: '',
-      intent: `submit_${activeField}`,
-      stageBefore: state.session.stage,
-      stageAfter: state.session.stage,
-      fieldValueStored: true,
-      validation: { isValid: true, errorMessage: null },
-      createdAt: now,
-    });
+    if (isFieldHelpQuery(userValue)) {
+      appendTurn(state, {
+        turnId: makeTurnId(state),
+        turnType: 'field_help',
+        userQuery: userValue,
+        assistantResponse:
+          'This information is required to verify your eligibility. Your data is kept secure.',
+        askedQuestion: currentQuestion,
+        createdAt: now,
+      });
+    } else {
+      state.captured[activeField] = userValue;
+      const captureAfter = buildCaptureStatus(state.captured);
+      const nextQuestion = captureAfter.nextQuestion;
+      const isComplete = !captureAfter.nextField;
+
+      appendTurn(state, {
+        turnId: makeTurnId(state),
+        turnType: 'field',
+        userQuery: userValue,
+        assistantResponse: isComplete
+          ? 'Thanks, we have received your details. We are checking your loan offer now.'
+          : '',
+        askedQuestion: nextQuestion ?? undefined,
+        createdAt: now,
+      });
+    }
   } else {
+    const firstCaptureField = captureBefore.nextField ?? 'name';
+    const firstQuestion = getQuestionForField(firstCaptureField);
+
     appendTurn(state, {
       turnId: makeTurnId(state),
       turnType: 'chat',
       userQuery: userValue,
-      assistantResponse: 'Sure, I can help you with that.',
-      intent: 'loan_request',
-      stageBefore: state.session.stage,
-      stageAfter: state.session.stage,
-      fieldValueStored: false,
+      assistantResponse: 'I can help check your loan offer',
+      askedQuestion: firstQuestion,
       createdAt: now,
     });
+
+    state.session.isFieldCaptureActive = true;
+    state.session.shouldAskNextQuestion = true;
   }
 
   const captureStatus = buildCaptureStatus(state.captured);
@@ -195,10 +214,16 @@ export async function submitMockChatQuery(payload: ChatQueryPayload): Promise<Ch
   state.session.stage = nextCaptureField ? `field_capture:${nextCaptureField}` : 'completed';
   state.session.nextField = nextCaptureField;
   state.session.pendingField = nextCaptureField;
-  state.session.pendingQuestion = captureStatus.nextQuestion ?? 'Thanks! We are matching your best offer.';
+  state.session.pendingQuestion = captureStatus.nextQuestion ?? undefined;
   state.session.isCompleted = !nextCaptureField;
   state.session.shouldAskNextQuestion = Boolean(nextCaptureField);
   state.session.isFieldCaptureActive = Boolean(nextCaptureField);
+
+  if (state.session.isCompleted) {
+    delete state.session.nextField;
+    delete state.session.pendingField;
+    delete state.session.pendingQuestion;
+  }
 
   return {
     intent: 'loan_request',

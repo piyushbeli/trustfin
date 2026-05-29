@@ -4,9 +4,9 @@ import EligibilityCheckPageContent from '@/components/eligibility-check/eligibil
 import { PageLoader } from '@/components/shared/page-loader';
 
 export const metadata: Metadata = {
-  title: 'Eligibility Check | WeCredit',
+  title: 'Eligibility Check | Trustfin',
   description:
-    'Fill your details to get your credit report. Check your credit eligibility with WeCredit.',
+    'Fill your details to get your credit report. Check your credit eligibility with Trustfin.',
 };
 
 const EligibilityCheckPage = (): React.ReactNode => {

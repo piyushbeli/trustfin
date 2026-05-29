@@ -10,6 +10,7 @@ interface AiChatModalFooterProps {
   inputError: string | null;
   inputPlaceholder?: string;
   nextFieldConfig: AiChatNextFieldConfig | null;
+  showSelectChips: boolean;
   isSubmitting: boolean;
   isCompleted: boolean;
   onChange: (value: string) => void;
@@ -23,6 +24,7 @@ const AiChatModalFooter = ({
   inputError,
   inputPlaceholder,
   nextFieldConfig,
+  showSelectChips,
   isSubmitting,
   isCompleted,
   onChange,
@@ -37,6 +39,7 @@ const AiChatModalFooter = ({
         inputError={inputError}
         inputPlaceholder={inputPlaceholder}
         nextFieldConfig={nextFieldConfig}
+        showSelectChips={showSelectChips}
         isSubmitting={isSubmitting}
         isCompleted={isCompleted}
         onChange={onChange}

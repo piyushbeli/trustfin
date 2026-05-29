@@ -47,36 +47,37 @@ export interface AiChatSession {
   updatedAt: string;
 }
 
-interface BaseAiChatTurn {
+export type AiChatTurnType = 'chat' | 'field' | 'field_help';
+
+/** Unified chat-history turn shape (API + mock). */
+export interface AiChatHistoryTurn {
   turnId: string;
-  turnType: 'chat' | 'field';
+  turnType: AiChatTurnType;
+  userQuery?: string;
+  assistantResponse?: string;
+  askedQuestion?: string;
+  createdAt: string;
+  // Legacy / optional metadata
+  field?: string;
+  userAnswer?: string;
+  normalizedValue?: string;
   intent?: string | null;
   stageBefore?: string | null;
   stageAfter?: string | null;
   fieldValueStored?: boolean;
-  createdAt: string;
-}
-
-export interface AiChatConversationTurn extends BaseAiChatTurn {
-  turnType: 'chat';
-  userQuery: string;
-  assistantResponse: string;
-}
-
-export interface AiChatFieldTurn extends BaseAiChatTurn {
-  turnType: 'field';
-  field: string;
-  askedQuestion?: string;
-  userAnswer?: string;
-  normalizedValue?: string;
-  assistantResponse?: string;
   validation?: {
     isValid: boolean;
     errorMessage?: string | null;
   };
 }
 
-export type AiChatTurn = AiChatConversationTurn | AiChatFieldTurn;
+export type AiChatTurn = AiChatHistoryTurn;
+
+/** @deprecated Use AiChatHistoryTurn */
+export type AiChatConversationTurn = AiChatHistoryTurn;
+
+/** @deprecated Use AiChatHistoryTurn */
+export type AiChatFieldTurn = AiChatHistoryTurn;
 
 export interface ChatHistoryResponse {
   session: AiChatSession;

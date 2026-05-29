@@ -15,11 +15,11 @@ const PARTNERS_URL ='https://wecredit-main-website-assets.s3.ap-south-1.amazonaw
  */
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Our Partners | WeCredit',
+    title: 'Our Partners | Trustfin',
     description:
       'View our trusted personal loan partners. Get detailed information about our partner companies including contact details and grievance officer information.',
     keywords:
-      'partners, personal loans, lenders, loan partners, WeCredit partners',
+      'partners, personal loans, lenders, loan partners, Trustfin partners',
   };
 }
 
