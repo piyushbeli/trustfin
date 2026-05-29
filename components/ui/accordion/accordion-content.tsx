@@ -7,6 +7,7 @@
 
 import { JSX, ReactNode } from 'react';
 import { cn } from '@/lib/utils';
+import { CollapsiblePanel } from '@/components/ui/collapsible-panel';
 import { useAccordionItemContext } from './accordion-item-context';
 
 interface AccordionContentProps {
@@ -17,21 +18,16 @@ interface AccordionContentProps {
 const AccordionContent = ({ children, className }: AccordionContentProps): JSX.Element => {
   const { isExpanded, contentId, triggerId } = useAccordionItemContext();
 
-  if (!isExpanded) {
-    return <></>;
-  }
-
   return (
-    <div
+    <CollapsiblePanel
       id={contentId}
-      role="region"
       aria-labelledby={triggerId}
-      className="overflow-hidden"
+      isExpanded={isExpanded}
     >
       <div className={cn('pb-4 pr-8 text-sm text-gray-600 leading-relaxed', className)}>
         {children}
       </div>
-    </div>
+    </CollapsiblePanel>
   );
 };
 

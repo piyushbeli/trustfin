@@ -558,11 +558,10 @@
  * Sticky Header Styles - Scroll-aware transitions
  * ============================================================================= */
 
-/* Base transition for smooth property changes */
+/* Base transition — avoid animating backdrop-filter on fixed header (jitter on Safari) */
 .wc-header-pill-transition {
   transition: background-color 300ms ease,
-    box-shadow 300ms ease,
-    backdrop-filter 300ms ease;
+    box-shadow 300ms ease;
 }
 
 /* Header pill — solid white for contrast on light hero backgrounds */
@@ -574,12 +573,13 @@
   border: 1px solid rgba(255, 255, 255, 0.8);
 }
 
-/* Scrolled state — slightly stronger shadow */
+/* Scrolled state — slightly stronger shadow; same border width to prevent layout shift */
 .wc-header-pill-scrolled {
   background-color: #ffffff;
   box-shadow: 0 2px 20px rgba(0, 0, 0, 0.12);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  border: 1px solid transparent;
 }
 
 /* Menu/user button on header — light tint, icons stay brand-primary */

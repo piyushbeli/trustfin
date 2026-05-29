@@ -4,6 +4,7 @@ import { useState, JSX } from 'react';
 import Image from 'next/image';
 import { ChevronRight } from 'lucide-react';
 import type { PartnerDetail } from '@/lib/constants/partners-data';
+import { CollapsiblePanel } from '@/components/ui/collapsible-panel';
 
 interface PartnerCardProps {
   /** Partner information to display */
@@ -97,7 +98,7 @@ const PartnerCard = ({ partner }: PartnerCardProps): JSX.Element => {
             More Info
           </span>
           <ChevronRight
-            className={`h-5 text-blue-500 transition-transform duration-200 origin-center ${isExpanded ? 'rotate-0' : 'rotate-90'
+            className={`h-5 text-blue-500 transition-transform duration-300 ease-in-out origin-center ${isExpanded ? 'rotate-0' : 'rotate-90'
               }`}
             strokeWidth={1}
           />
@@ -111,16 +112,13 @@ const PartnerCard = ({ partner }: PartnerCardProps): JSX.Element => {
       </div>
 
       {/* Expandable Details */}
-      <div
-        className={`transition-all duration-200 ease-in-out overflow-hidden ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-          }`}
-      >
+      <CollapsiblePanel isExpanded={isExpanded}>
         <div className="w-full">
           <DetailRow label="Officer" value={partner.officer} />
           <DetailRow label="Email" value={partner.email} />
           <DetailRow label="Link" value={partner.websiteLink} isLink />
         </div>
-      </div>
+      </CollapsiblePanel>
     </div>
   );
 };

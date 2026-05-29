@@ -34,6 +34,13 @@ export const OTPStepScreen = ({
   const resolvedHeaderHeight: HeaderHeightPreset | undefined =
     headerHeightPercent ? undefined : headerHeight;
 
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
+    event.preventDefault();
+    if (isOtpComplete && !isLoading) {
+      void onVerify();
+    }
+  };
+
   return (
     <div
       className="relative flex flex-col bg-white"
@@ -69,7 +76,10 @@ export const OTPStepScreen = ({
       />
 
       {/* White Content Section - fills remaining space */}
-      <div className="flex-1 bg-white rounded-t-3xl -mt-6 px-6 pb-8 pt-6 flex flex-col relative z-10">
+      <form
+        onSubmit={handleSubmit}
+        className="flex-1 bg-white rounded-t-3xl -mt-6 px-6 pb-8 pt-6 flex flex-col relative z-10"
+      >
         {/* Title */}
         <h1
           className="text-2xl font-bold text-gray-900 mb-6 text-center"
@@ -101,10 +111,7 @@ export const OTPStepScreen = ({
 
         {/* Continue Button */}
         <button
-          type="button"
-          onClick={() => {
-            void onVerify();
-          }}
+          type="submit"
           disabled={!isOtpComplete || isLoading}
           className={cn(
             'w-full max-w-sm mx-auto py-4 rounded-md font-semibold text-base transition-all duration-300 block',
@@ -122,7 +129,7 @@ export const OTPStepScreen = ({
             'Continue'
           )}
         </button>
-      </div>
+      </form>
     </div>
   );
 };

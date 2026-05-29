@@ -483,6 +483,13 @@ export interface TrustFinFeatureItem {
   description: string;
 }
 
+/** Document group used in documents-required accordion panels */
+export interface DocumentGroupItem {
+  id: string;
+  title: string;
+  bullets: readonly string[];
+}
+
 /** Exact copy for the "Why Customers Choose TrustFin" accordion panel */
 export const WHY_TRUSTFIN_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
   {
@@ -599,7 +606,20 @@ export const AFTER_LOAN_CLOSED_ACCORDION_FEATURES: TrustFinFeatureItem[] = [
 export type PersonalLoanInfoAccordionPanel =
   | { type: 'text'; paragraphs: readonly string[] }
   | { type: 'fees-table'; rows: FeeChargeItem[]; intro?: string; closing?: string }
-  | { type: 'feature-list'; items: TrustFinFeatureItem[]; intro?: string; closing?: string };
+  | { type: 'feature-list'; items: TrustFinFeatureItem[]; intro?: string; closing?: string }
+  | {
+      type: 'document-groups';
+      intro: readonly string[];
+      groups: readonly DocumentGroupItem[];
+      footerNotes?: readonly string[];
+    }
+  | {
+      type: 'lavender-card-list';
+      items: TrustFinFeatureItem[];
+      intro?: string;
+      closingCallout?: { title: string; description: string };
+    }
+  | { type: 'prose-tip-list'; items: TrustFinFeatureItem[] };
 
 export interface PersonalLoanInfoAccordionItem {
   id: string;

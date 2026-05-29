@@ -1,6 +1,7 @@
 import { Partner } from "@/types/wecredit";
 import { IMAGES } from "./images";
 import { Testimonial } from "@/components/home/testimonials-section";
+import { GlobalLink } from "@/types/strapi";
 
 /**
  * Cache revalidation times for different data types
@@ -111,3 +112,10 @@ export const UNITY_CONSENT = `I hereby give my consent to Unity Small Finance Ba
 // Dedicated partner terms route for multi-lender consent UI.
 export const MULTILENDER_PARTNER_TERMS_HREF = '/partner-terms-and-conditions';
 export const BRAND_NAME = 'TrustFin.ai';
+
+
+export const HEADER_LINKS: GlobalLink[] = [
+  { id: 1, order: 1, label: 'Home', url: '/', openInNewTab: false, children: [] },
+  { id: 2, order: 2, label: 'About Us', url: '/about-us', openInNewTab: false, children: [] },
+  { id: 3, order: 3, label: 'Credit Cards', url: '/credit-cards', openInNewTab: false, children: [] },
+];

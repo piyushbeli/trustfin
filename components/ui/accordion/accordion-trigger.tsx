@@ -50,7 +50,7 @@ const AccordionTrigger = ({
       </span>
       <ChevronDown
         className={cn(
-          'w-5 h-5 shrink-0 text-brand-primary transition-transform duration-300',
+          'w-5 h-5 shrink-0 text-brand-primary transition-transform duration-300 ease-in-out',
           isExpanded && 'rotate-180',
         )}
       />

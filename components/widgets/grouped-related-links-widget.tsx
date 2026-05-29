@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { CategoryRelatedLink, GroupedLinks } from '@/types/strapi';
+import { CollapsiblePanel } from '@/components/ui/collapsible-panel';
 import LinkItem from './shared/link-item';
 
 /** Props for GroupedRelatedLinksWidget component */
@@ -47,7 +48,7 @@ const AccordionGroup = ({ group, isExpanded, onToggle }: AccordionGroupProps) =>
       >
         <span className="text-sm font-semibold text-gray-800">{group.groupName}</span>
         <svg
-          className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+          className={`w-4 h-4 text-gray-500 transition-transform duration-300 ease-in-out ${
             isExpanded ? 'rotate-180' : ''
           }`}
           fill="none"
@@ -62,11 +63,7 @@ const AccordionGroup = ({ group, isExpanded, onToggle }: AccordionGroupProps) =>
           />
         </svg>
       </button>
-      <div
-        className={`transition-all duration-200 ease-in-out ${
-          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        } overflow-hidden`}
-      >
+      <CollapsiblePanel isExpanded={isExpanded}>
         <ul className="px-4 pb-3 space-y-1.5">
           {group.links.map((link) => (
             <li key={link.id}>
@@ -79,7 +76,7 @@ const AccordionGroup = ({ group, isExpanded, onToggle }: AccordionGroupProps) =>
             </li>
           ))}
         </ul>
-      </div>
+      </CollapsiblePanel>
     </div>
   );
 };
