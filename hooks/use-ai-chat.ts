@@ -34,6 +34,7 @@ interface UseAiChatResult {
   inputValue: string;
   inputError: string | null;
   nextFieldConfig: AiChatNextFieldConfig | null;
+  showSelectChips: boolean;
   fieldCaptureStatus: AiChatFieldCaptureStatus | null;
   phaseLabel: string;
   progressCurrent: number;
@@ -68,6 +69,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [inputValue, setInputValue] = useState<string>('');
   const [inputError, setInputError] = useState<string | null>(null);
   const [nextFieldConfig, setNextFieldConfig] = useState<AiChatNextFieldConfig | null>(null);
+  const [dismissedSelectField, setDismissedSelectField] = useState<string | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
   const [guestAuthStep, setGuestAuthStep] = useState<'phone' | 'otp'>('phone');
@@ -411,6 +413,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setInputValue('');
       setInputError(null);
       setNextFieldConfig(null);
+      setDismissedSelectField(null);
       setFieldCaptureStatus(null);
       setIsEscalated(false);
       setGuestAuthStep('phone');
@@ -481,6 +484,15 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
   const isCompleted = Boolean(session?.isCompleted) || Boolean(fieldCaptureStatus && !fieldCaptureStatus.nextField);
 
+  const showSelectChips = useMemo(() => {
+    if (isCompleted || nextFieldConfig?.inputType !== 'select') {
+      return false;
+    }
+
+    const activeField = nextFieldConfig.field;
+    return dismissedSelectField !== activeField;
+  }, [dismissedSelectField, isCompleted, nextFieldConfig]);
+
   return {
     messages,
     session,
@@ -490,6 +502,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     inputValue,
     inputError,
     nextFieldConfig,
+    showSelectChips,
     fieldCaptureStatus,
     phaseLabel,
     progressCurrent,
@@ -499,11 +512,16 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     guestAuthStep,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
-    submitChip: async (value: string) =>
-      submitValue(
+    submitChip: async (value: string) => {
+      if (nextFieldConfig?.field) {
+        setDismissedSelectField(nextFieldConfig.field);
+      }
+
+      await submitValue(
         value,
         nextFieldConfig?.options.find((option) => option.value === value)?.label ?? value,
-      ),
+      );
+    },
     resetInputError: () => setInputError(null),
   };
 }

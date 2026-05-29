@@ -11,6 +11,7 @@ interface AiChatInputBarProps {
   inputError: string | null;
   inputPlaceholder?: string;
   nextFieldConfig: AiChatNextFieldConfig | null;
+  showSelectChips: boolean;
   isSubmitting: boolean;
   isCompleted: boolean;
   onChange: (value: string) => void;
@@ -23,6 +24,7 @@ const AiChatInputBar = ({
   inputError,
   inputPlaceholder,
   nextFieldConfig,
+  showSelectChips,
   isSubmitting,
   isCompleted,
   onChange,
@@ -32,7 +34,7 @@ const AiChatInputBar = ({
   const defaultPlaceholder =
     inputPlaceholder ?? nextFieldConfig?.placeholder ?? AI_CHAT_COPY.fallbackPlaceholder;
 
-  if (nextFieldConfig?.inputType === 'select') {
+  if (showSelectChips && nextFieldConfig) {
     const selectHint = nextFieldConfig.placeholder || AI_CHAT_COPY.chipsPlaceholder;
 
     return (
@@ -40,7 +42,8 @@ const AiChatInputBar = ({
         <AiChatDynamicInput
           value={inputValue}
           nextFieldConfig={nextFieldConfig}
-          disabled={isSubmitting || isCompleted}
+          showSelectChips
+          disabled={isCompleted}
           onChange={onChange}
           onSubmit={onSubmit}
           onSelectChip={onSelectChip}
@@ -62,6 +65,7 @@ const AiChatInputBar = ({
           <AiChatDynamicInput
             value={inputValue}
             nextFieldConfig={nextFieldConfig}
+            showSelectChips={false}
             placeholder={defaultPlaceholder}
             disabled={isSubmitting || isCompleted}
             onChange={onChange}

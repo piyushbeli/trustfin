@@ -26,6 +26,7 @@ const AiChatModal = (): JSX.Element | null => {
     inputValue,
     inputError,
     nextFieldConfig,
+    showSelectChips,
     phaseLabel,
     progressCurrent,
     progressTotal,
@@ -125,6 +126,7 @@ const AiChatModal = (): JSX.Element | null => {
             inputError={inputError}
             inputPlaceholder={authInputPlaceholder}
             nextFieldConfig={nextFieldConfig}
+            showSelectChips={showSelectChips}
             isSubmitting={isInputDisabled}
             isCompleted={isEscalated}
             onChange={handleInputChange}
