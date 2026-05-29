@@ -16,3 +16,7 @@ export {
 } from './ai-chat-cta';
 export { AiChatModal } from './ai-chat';
 export { SectionWrapper, SectionTitle, SectionDescription } from './section';
+export {
+  default as MultiColumnTable,
+  type MultiColumnTableRow,
+} from './multi-column-table';
