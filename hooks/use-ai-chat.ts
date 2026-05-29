@@ -3,8 +3,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
 import { applyChatQueryResponseState } from '@/lib/ai-chat/apply-chat-query-response';
+import { buildFieldCaptureFromHistory } from '@/lib/ai-chat/build-field-capture-from-history';
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
-import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
+import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
 import { maskPhoneNumber } from '@/lib/utils/mask-phone';
@@ -15,7 +16,6 @@ import type {
   AiChatFieldCaptureStatus,
   AiChatNextFieldConfig,
   AiChatSession,
-  AiChatTurn,
   ChatHistoryParams,
 } from '@/types/ai-chat';
 
@@ -49,47 +49,6 @@ interface UseAiChatResult {
 
 const ORG_CODE = 'wecredit';
 const CHANNEL = 'wecredit_bot';
-
-function mapTurnsToMessages(turns: AiChatTurn[]): AiChatMessage[] {
-  const mapped: AiChatMessage[] = [];
-
-  turns.forEach((turn) => {
-    if (turn.turnType === 'chat') {
-      if (turn.userQuery) {
-        mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: turn.userQuery });
-      }
-      if (turn.assistantResponse) {
-        mapped.push({
-          id: `${turn.turnId}_assistant`,
-          role: 'assistant',
-          text: turn.assistantResponse,
-        });
-      }
-      return;
-    }
-
-    if (turn.askedQuestion) {
-      mapped.push({
-        id: `${turn.turnId}_asked`,
-        role: 'assistant',
-        text: turn.askedQuestion,
-      });
-    }
-    const userText = turn.userAnswer ?? turn.userQuery;
-    if (userText) {
-      mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: userText });
-    }
-    if (turn.assistantResponse) {
-      mapped.push({
-        id: `${turn.turnId}_assistant`,
-        role: 'assistant',
-        text: turn.assistantResponse,
-      });
-    }
-  });
-
-  return mapped;
-}
 
 export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
@@ -152,12 +111,16 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     (history: Awaited<ReturnType<typeof fetchChatHistory>>['data']): void => {
       if (!history) return;
 
-      const mappedMessages = mapTurnsToMessages(history.turns ?? []);
-      const hasPendingQuestion =
-        Boolean(history.session?.pendingQuestion) &&
+      const turns = history.turns ?? [];
+      const mappedMessages = mapHistoryTurnsToMessages(turns);
+
+      const shouldAppendPendingQuestion =
+        history.session.shouldAskNextQuestion &&
+        !history.session.isCompleted &&
+        Boolean(history.session.pendingQuestion) &&
         !mappedMessages.some((message) => message.text === history.session.pendingQuestion);
 
-      if (hasPendingQuestion && history.session.pendingQuestion) {
+      if (shouldAppendPendingQuestion && history.session.pendingQuestion) {
         mappedMessages.push({
           id: `pending_${history.session.updatedAt}`,
           role: 'assistant',
@@ -167,26 +130,13 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       setMessages(mappedMessages);
       setSession(history.session);
-      setFieldCaptureStatus((previousStatus) => {
-        const nextField = history.session.pendingField ?? history.session.nextField ?? null;
-        if (!nextField) {
-          return null;
-        }
 
-        return {
-          requiredFields: previousStatus?.requiredFields ?? [],
-          optionalFields: previousStatus?.optionalFields ?? [],
-          capturedFields: previousStatus?.capturedFields ?? [],
-          missingFields: previousStatus?.missingFields ?? [],
-          nextField,
-          nextQuestion: history.session.pendingQuestion ?? previousStatus?.nextQuestion ?? null,
-          nextFieldConfig: resolveNextFieldConfig({
-            session: history.session,
-            fieldCaptureStatus: previousStatus,
-          }),
-        };
-      });
-      setNextFieldConfig(resolveNextFieldConfig({ session: history.session }));
+      const { fieldCaptureStatus, nextFieldConfig } = buildFieldCaptureFromHistory(
+        history.session,
+        turns,
+      );
+      setFieldCaptureStatus(fieldCaptureStatus);
+      setNextFieldConfig(nextFieldConfig);
       setIsEscalated(false);
     },
     [],
