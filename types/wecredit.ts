@@ -50,7 +50,7 @@ export interface Partner {
 // ============================================
 
 /**
- * WeCredit Status values for loan applications
+ * Trustfin Status values for loan applications
  * Per PDF Step 7 - Clicked Lender Handling
  */
 export type WcStatus =
@@ -76,7 +76,7 @@ export interface LenderOfferStatus {
   lenderName: string;
   /** Lender name/identifier */
   uptoAmount?: string;
-  /** WeCredit application status */
+  /** Trustfin application status */
   wcStatus: WcStatus;
   /**
    * When false, lender-led outcomes (e.g. REJECTED / NOT_PROCESSED) surface in Unmatched UI.

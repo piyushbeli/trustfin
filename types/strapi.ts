@@ -1,6 +1,6 @@
 /**
  * Strapi API Type Definitions (Strapi v5 format)
- * Complete TypeScript interfaces for WeCredit CMS
+ * Complete TypeScript interfaces for Trustfin CMS
  */
 
 // ============================================

@@ -28,7 +28,7 @@ interface LoadingActions {
 
 /** Default messages */
 const DEFAULT_MESSAGE = 'Please wait...';
-const DEFAULT_SUBTEXT = "We're preparing your WeCredit experience.";
+const DEFAULT_SUBTEXT = "We're preparing your Trustfin experience.";
 
 /**
  * Zustand store for global loading state

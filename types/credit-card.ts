@@ -1,5 +1,5 @@
 /**
- * Credit card data structure for WeCredit credit card offers.
+ * Credit card data structure for Trustfin credit card offers.
  * Used by credit card list and item components.
  */
 

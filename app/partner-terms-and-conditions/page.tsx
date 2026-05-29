@@ -10,9 +10,9 @@ export const revalidate = 1800; // 30 minutes
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: 'Partner Terms & Conditions | WeCredit',
-    description: 'Read and understand partner terms and conditions for WeCredit lending partners.',
-    keywords: 'partner terms, terms and conditions, WeCredit',
+    title: 'Partner Terms & Conditions | Trustfin',
+    description: 'Read and understand partner terms and conditions for Trustfin lending partners.',
+    keywords: 'partner terms, terms and conditions, Trustfin',
   };
 }
 

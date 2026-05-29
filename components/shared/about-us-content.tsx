@@ -94,13 +94,13 @@ const AboutUsContent = (): React.ReactNode => {
         </div>
 
         <h2 className="font-medium text-2xl leading-[1] tracking-normal text-zinc-800">
-          About WeCredit
+          About Trustfin
         </h2>
 
         <div className="h-4" />
 
         <p className="font-normal text-sm leading-[1.2] tracking-normal text-zinc-600">
-          At WeCredit, we believe that managing credit should be easy and transparent without confusion or hidden details.
+          At Trustfin, we believe that managing credit should be easy and transparent without confusion or hidden details.
         </p>
       </div>
 
@@ -110,17 +110,17 @@ const AboutUsContent = (): React.ReactNode => {
         <div className="w-full overflow-hidden mb-8">
           <img
             src="https://wecredit-main-website-assets.s3.ap-south-1.amazonaws.com/Heroimage.png"
-            alt="About WeCredit"
+            alt="About Trustfin"
             className="w-full h-auto object-cover"
           />
         </div>
 
         <h3 className="font-medium text-base leading-[1] tracking-normal text-zinc-800 mb-4">
-          We make personal finance simple and transparent.
+          Trustfin makes personal finance simple and transparent.
         </h3>
 
         <p className="font-normal text-sm leading-[1.2] tracking-normal text-[#7F7F7F] mb-8">
-          With the help of data and technology, WeCredit lets you view and compare multiple loan and card offers in one place. We share clear and unbiased information to help you make better decisions and support you throughout your credit journey.
+          With the help of data and technology, Trustfin lets you view and compare multiple loan and card offers in one place. We share clear and unbiased information to help you make better decisions and support you throughout your credit journey.
         </p>
 
         {/* Team */}
