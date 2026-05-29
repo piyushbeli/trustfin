@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { AccordionMenuWidget } from '@/types/strapi';
+import { CollapsiblePanel } from '@/components/ui/collapsible-panel';
 import LinkItem from './shared/link-item';
 
 /** Props for AccordionMenuWidget component */
@@ -36,7 +37,7 @@ const AccordionMenuWidgetComponent = ({ widget }: AccordionMenuWidgetProps) => {
       >
         <h3 className="text-lg font-bold text-gray-900">{title}</h3>
         <svg
-          className={`w-5 h-5 text-gray-600 transition-transform duration-200 ${
+          className={`w-5 h-5 text-gray-600 transition-transform duration-300 ease-in-out ${
             isExpanded ? 'rotate-180' : ''
           }`}
           fill="none"
@@ -52,11 +53,7 @@ const AccordionMenuWidgetComponent = ({ widget }: AccordionMenuWidgetProps) => {
         </svg>
       </button>
 
-      <div
-        className={`transition-all duration-200 ease-in-out ${
-          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        } overflow-hidden`}
-      >
+      <CollapsiblePanel isExpanded={isExpanded}>
         <div className="px-6 pb-4">
           <ul className="space-y-2">
             {sortedGroups.map((item) => (
@@ -71,7 +68,7 @@ const AccordionMenuWidgetComponent = ({ widget }: AccordionMenuWidgetProps) => {
             ))}
           </ul>
         </div>
-      </div>
+      </CollapsiblePanel>
     </div>
   );
 };

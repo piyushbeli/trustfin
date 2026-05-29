@@ -25,9 +25,17 @@ const MobileHeader = ({ headerLinks, logo, siteName }: MobileHeaderProps): JSX.E
   const [isScrolled, setIsScrolled] = useState(false);
   const { isAuthenticated, user, openAuthModal, logout } = useAuth();
 
-  /** Stronger shadow after scroll for separation from content */
+  /** Hysteresis avoids flicker when scrolling slowly around the threshold */
+  const SCROLL_ENTER_THRESHOLD = 60;
+  const SCROLL_EXIT_THRESHOLD = 40;
+
   const handleScroll = useCallback((): void => {
-    setIsScrolled(window.scrollY > 50);
+    const scrollY = window.scrollY;
+    setIsScrolled((prev) => {
+      if (!prev && scrollY > SCROLL_ENTER_THRESHOLD) return true;
+      if (prev && scrollY < SCROLL_EXIT_THRESHOLD) return false;
+      return prev;
+    });
   }, []);
 
   useEffect(() => {

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Link from 'next/link';
 import type { GlobalLink } from '@/types/strapi';
 import { cn } from '@/lib/utils';
+import { CollapsiblePanel } from '@/components/ui/collapsible-panel';
 import { hasLinkChildren, sortHeaderLinks } from '@/lib/navigation/header-links';
 
 /** Props for MenuLink component */
@@ -36,7 +37,10 @@ export const MenuLink = ({ link, onNavigate }: MenuLinkProps) => {
         >
           <span>{link.label}</span>
           <svg
-            className={cn('w-4 h-4 shrink-0 transition-transform', isExpanded && 'rotate-180')}
+            className={cn(
+              'w-4 h-4 shrink-0 transition-transform duration-300 ease-in-out',
+              isExpanded && 'rotate-180',
+            )}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -45,8 +49,8 @@ export const MenuLink = ({ link, onNavigate }: MenuLinkProps) => {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
           </svg>
         </button>
-        {isExpanded && (
-          <ul className="ml-4 mt-1 space-y-1 overflow-hidden">
+        <CollapsiblePanel isExpanded={isExpanded}>
+          <ul className="ml-4 mt-1 space-y-1">
             {children.map((child) => (
               <li key={child.id}>
                 <Link
@@ -55,13 +59,14 @@ export const MenuLink = ({ link, onNavigate }: MenuLinkProps) => {
                   rel={child.openInNewTab ? 'noopener noreferrer' : undefined}
                   className={drawerChildLinkClassName}
                   onClick={onNavigate}
+                  tabIndex={isExpanded ? undefined : -1}
                 >
                   {child.label}
                 </Link>
               </li>
             ))}
           </ul>
-        )}
+        </CollapsiblePanel>
       </div>
     );
   }
