@@ -11,8 +11,8 @@ import { AuthProvider } from '@/providers/auth-provider';
 import { ToastProvider } from '@/providers/toast-provider';
 import { FeatureFlagProvider } from '@/providers/feature-flag-provider';
 import { LoadingScreen } from '@/components/shared/loading-screen';
-import { getGlobal } from '@/lib/strapi';
 import Script from 'next/script';
+import { HEADER_LINKS } from '@/lib/constants/common';
 
 const geistMono = Geist_Mono({
   variable: '--font-geist-mono',
@@ -48,7 +48,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const globalData = await getGlobal();
 
   return (
     <html lang="en" className="overscroll-y-none">
@@ -76,9 +75,9 @@ export default async function RootLayout({
             <AuthProvider>
               <ToastProvider />
               <ConditionalMobileHeader
-                headerLinks={globalData.headerLinks}
-                logo={globalData.logo}
-                siteName={globalData.siteName}
+                headerLinks={HEADER_LINKS}
+                logo={null}
+                siteName="Trustfin"
               />
               <main className="min-w-0 flex-1 overflow-x-clip">{children}</main>
               <ConditionalFooter />
