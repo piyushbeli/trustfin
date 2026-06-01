@@ -21,6 +21,18 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  async rewrites() {
+    // const sheetRules = await getRewriteRules();
+    return [
+      // ...sheetRules,
+      {
+        source: '/blog/testing-rewrite/',
+        // destination: 'https://www.eauctiondekho.com',
+        destination: 'https://blog.wecredit.co.in/blog/highest-fixed-deposit-interest-rates-in-india/',
+      },
+    ];
+  },
+
   images: {
     remotePatterns: [
       {
