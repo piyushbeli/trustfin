@@ -1,4 +1,4 @@
-/** Canonical field prompts — used by mock, inference, and fallbacks. */
+/** Canonical field prompts — used by inference and fallbacks. */
 export const AI_CHAT_FIELD_QUESTIONS: Record<string, string> = {
   mobile: 'Please share your mobile number to check your loan offer.',
   name: 'Please enter your full name as shown on your ID.',
