@@ -1,7 +1,7 @@
 'use client';
 
 import { JSX, useEffect, useMemo, useRef } from 'react';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import type { AiChatMessage as AiChatMessageType } from '@/hooks/use-ai-chat';
 import AiChatMessage from './ai-chat-message';
 

@@ -2,7 +2,7 @@
 
 import { JSX, useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
 import { useAiChat } from '@/hooks/use-ai-chat';
 import { useAiChatStore } from '@/stores/ai-chat-store';

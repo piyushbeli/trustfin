@@ -3,7 +3,7 @@
 import { JSX } from 'react';
 import Image from 'next/image';
 import { X } from 'lucide-react';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import { IMAGES } from '@/lib/constants/images';
 
 interface AiChatHeaderProps {

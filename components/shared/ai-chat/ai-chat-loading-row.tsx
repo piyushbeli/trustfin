@@ -1,7 +1,7 @@
 'use client';
 
 import { JSX } from 'react';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 
 const AiChatLoadingRow = (): JSX.Element => {
   return (

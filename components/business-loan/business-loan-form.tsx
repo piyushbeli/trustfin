@@ -6,7 +6,7 @@ import {
   ApplicationFormIntro,
   ApplicationProgress,
 } from '@/components/shared';
-import { getLoanApplicationIntro } from '@/lib/constants/loan-application-copy';
+import { getLoanApplicationIntro } from '@/lib/constants/loan-application';
 import BusinessLoanFields from './business-loan-fields';
 import { buildBusinessLoanPayload } from './business-loan-form.config';
 import { useBusinessLoanForm } from './use-business-loan-form';

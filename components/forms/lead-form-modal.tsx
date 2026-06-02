@@ -20,7 +20,7 @@ import {
   ActionButton,
   ApplicationFormIntro,
 } from '@/components/shared';
-import { getLoanApplicationIntro } from '@/lib/constants/loan-application-copy';
+import { getLoanApplicationIntro } from '@/lib/constants/loan-application';
 import { getLeadFormControlClassName } from '@/lib/utils/form-field-styles';
 import { PARTNER_CODE } from '@/lib/constants/api-keys';
 import { fetchUserIp, getCurrentDateTime } from '@/lib/api/lead-service';

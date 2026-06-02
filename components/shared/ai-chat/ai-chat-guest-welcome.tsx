@@ -3,7 +3,7 @@
 import { JSX } from 'react';
 import Image from 'next/image';
 import { IMAGES } from '@/lib/constants/images';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 
 const AiChatGuestWelcome = (): JSX.Element => {
   return (

@@ -6,7 +6,7 @@ import {
   ApplicationFormIntro,
   ApplicationProgress,
 } from '@/components/shared';
-import { getLoanApplicationIntro } from '@/lib/constants/loan-application-copy';
+import { getLoanApplicationIntro } from '@/lib/constants/loan-application';
 import HomeLoanFields from './home-loan-fields';
 import { useHomeLoanForm } from './use-home-loan-form';
 import { useRouter } from 'next/navigation';

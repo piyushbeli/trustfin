@@ -8,7 +8,7 @@ import { resolveChatUserId, getEffectiveChatUserId } from '@/lib/ai-chat/chat-id
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
 import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
 import { promoteChatAuthFromResponse } from '@/lib/ai-chat/promote-chat-auth-from-response';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import { getErrorMessage, isAbortError } from '@/lib/utils/error-helpers';
