@@ -1,5 +1,10 @@
 import { getCookie } from 'cookies-next';
 import { wecreditConfig } from '@/lib/config';
+import {
+  getChatApiErrorMessage,
+  parseChatHistoryResponse,
+  parseChatQueryResponse,
+} from '@/lib/ai-chat/parse-chat-api-response';
 import { ENDPOINTS, HEADER_AGENT_HOST, STORAGE_AUTH_TOKEN } from '@/lib/constants/api-keys';
 import { getErrorMessage, isAbortError } from '@/lib/utils/error-helpers';
 import type {
@@ -8,21 +13,20 @@ import type {
   ChatQueryPayload,
   ChatQueryResponse,
 } from '@/types/ai-chat';
+import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { fetchUserIp } from './auth-service';
-import { fetchMockChatHistory, submitMockChatQuery } from './ai-chat-mock';
 
-const AI_CHAT_ENV_BASE = wecreditConfig.aiChatUrl;
-
-// TODO: Remove this once we have the env URL
-const SHOULD_USE_STATIC_POSTMAN_FLOW = true
-
-const AI_CHAT_BASE = AI_CHAT_ENV_BASE;
-const SHOULD_USE_MOCK = process.env.NEXT_PUBLIC_AI_CHAT_MOCK === 'true';
+const AI_CHAT_BASE = wecreditConfig.aiChatUrl;
+const CHAT_HISTORY_NOT_FOUND_ERROR = 'chat_history_not_found';
 
 interface ChatServiceResult<T> {
   success: boolean;
   data?: T;
   error?: string;
+}
+
+interface RequestChatApiOptions {
+  notFoundError?: string;
 }
 
 function buildHeaders(mobile?: string, consentIp?: string): Record<string, string> {
@@ -49,51 +53,89 @@ function buildHeaders(mobile?: string, consentIp?: string): Record<string, strin
   return headers;
 }
 
-async function parseResponse<T>(response: Response): Promise<T | null> {
+async function parseResponseJson(response: Response): Promise<unknown | null> {
   try {
-    return (await response.json()) as T;
+    return await response.json();
   } catch {
     return null;
   }
 }
 
-async function requestWithFallback<T>(
+function isChatHistoryNotFoundResponse(responseData: unknown, status: number): boolean {
+  if (status === 404) {
+    return true;
+  }
+
+  const message = getChatApiErrorMessage(responseData, '').toLowerCase();
+  return message.includes('chat history not found') || message.includes('history not found');
+}
+
+async function requestChatApi<T>(
   request: RequestInfo | URL,
   requestInit: RequestInit,
-  mockResolver: () => Promise<T>,
+  parseData: (raw: unknown) => T | null,
+  options?: RequestChatApiOptions,
 ): Promise<ChatServiceResult<T>> {
-  if (SHOULD_USE_MOCK) {
-    const data = await mockResolver();
-    return { success: true, data };
-  }
+  const requestUrl = String(request);
+  const requestMethod = requestInit.method ?? 'GET';
+
+  logAiChat('service', 'request started', {
+    method: requestMethod,
+    url: requestUrl,
+  });
 
   try {
     const response = await fetch(request, requestInit);
+    const responseData = await parseResponseJson(response);
+    const parsedData = responseData ? parseData(responseData) : null;
+    const isHistoryNotFound = isChatHistoryNotFoundResponse(responseData, response.status);
 
-    const responseData = await parseResponse<T>(response);
+    logAiChat('service', 'response received', {
+      method: requestMethod,
+      url: requestUrl,
+      status: response.status,
+      ok: response.ok,
+      hasResponseBody: responseData !== null,
+      parseSucceeded: parsedData !== null,
+      isHistoryNotFound,
+      apiMessage: getChatApiErrorMessage(responseData, ''),
+    });
 
-    if (response.ok && responseData) {
-      return { success: true, data: responseData };
+    if (response.ok && parsedData) {
+      return { success: true, data: parsedData };
     }
 
-    if (response.status === 404) {
-      const data = await mockResolver();
-      return { success: true, data };
+    if (options?.notFoundError && isHistoryNotFound) {
+      logAiChat('service', 'mapped to chat_history_not_found', {
+        method: requestMethod,
+        url: requestUrl,
+        status: response.status,
+      });
+      return { success: false, error: options.notFoundError };
     }
 
-    const error = `AI chat request failed with status ${response.status}`;
+    const error = getChatApiErrorMessage(
+      responseData,
+      `AI chat request failed with status ${response.status}`,
+    );
     return { success: false, error };
   } catch (error) {
     if (isAbortError(error)) {
+      logAiChat('service', 'request aborted', { method: requestMethod, url: requestUrl });
       return { success: false, error: 'aborted' };
     }
 
-    if (!SHOULD_USE_MOCK) {
-      const data = await mockResolver();
-      return { success: true, data };
-    }
+    const errorMessage = getErrorMessage(error, 'Failed to connect to AI chat service.');
+    logAiChat('service', 'request failed', {
+      method: requestMethod,
+      url: requestUrl,
+      error: errorMessage,
+    });
 
-    return { success: false, error: getErrorMessage(error, 'Failed to connect to AI chat service.') };
+    return {
+      success: false,
+      error: errorMessage,
+    };
   }
 }
 
@@ -101,36 +143,24 @@ export async function fetchChatHistory(
   params: ChatHistoryParams,
   signal?: AbortSignal,
 ): Promise<ChatServiceResult<ChatHistoryResponse>> {
-  if (SHOULD_USE_STATIC_POSTMAN_FLOW) {
-    const historyUrl = new URL(AI_CHAT_BASE);
-    historyUrl.searchParams.set('userId', params.userId);
-    historyUrl.searchParams.set('organizationCode', params.organizationCode);
-    historyUrl.searchParams.set('channel', params.channel);
-    historyUrl.searchParams.set('endpoint', ENDPOINTS.AI_ASSISTANT.CHAT_HISTORY);
-    if (params.sessionId) {
-      historyUrl.searchParams.set('sessionId', params.sessionId);
-    }
-
-    return requestWithFallback<ChatHistoryResponse>(
-      historyUrl.toString(),
-      {
-        method: 'GET',
-        headers: buildHeaders(params.mobile),
-        signal,
-      },
-      () => fetchMockChatHistory(params),
-    );
+  const historyUrl = new URL(AI_CHAT_BASE);
+  historyUrl.searchParams.set('userId', params.userId);
+  historyUrl.searchParams.set('organizationCode', params.organizationCode);
+  historyUrl.searchParams.set('channel', params.channel);
+  historyUrl.searchParams.set('endpoint', ENDPOINTS.AI_ASSISTANT.CHAT_HISTORY);
+  if (params.sessionId) {
+    historyUrl.searchParams.set('sessionId', params.sessionId);
   }
 
-  return requestWithFallback<ChatHistoryResponse>(
-    `${AI_CHAT_BASE}/${ENDPOINTS.AI_ASSISTANT.CHAT_HISTORY}`,
+  return requestChatApi<ChatHistoryResponse>(
+    historyUrl.toString(),
     {
-      method: 'POST',
+      method: 'GET',
       headers: buildHeaders(params.mobile),
-      body: JSON.stringify(params),
       signal,
     },
-    () => fetchMockChatHistory(params),
+    parseChatHistoryResponse,
+    { notFoundError: CHAT_HISTORY_NOT_FOUND_ERROR },
   );
 }
 
@@ -140,37 +170,24 @@ export async function submitChatQuery(
 ): Promise<ChatServiceResult<ChatQueryResponse>> {
   const consentIp = await fetchUserIp();
 
-  if (SHOULD_USE_STATIC_POSTMAN_FLOW) {
-    const staticQueryPayload = {
-      endpoint: ENDPOINTS.AI_ASSISTANT.CHAT_QUERY,
-      userId: payload.userId,
-      organizationCode: payload.organizationCode,
-      channel: payload.channel,
-      query: payload.query,
-      ...(payload.field ? { field: payload.field } : {}),
-      ...(payload.sessionId ? { sessionId: payload.sessionId } : {}),
-    };
+  const queryPayload = {
+    endpoint: ENDPOINTS.AI_ASSISTANT.CHAT_QUERY,
+    userId: payload.userId,
+    organizationCode: payload.organizationCode,
+    channel: payload.channel,
+    query: payload.query,
+    ...(payload.field ? { field: payload.field } : {}),
+    ...(payload.sessionId ? { sessionId: payload.sessionId } : {}),
+  };
 
-    return requestWithFallback<ChatQueryResponse>(
-      AI_CHAT_BASE,
-      {
-        method: 'POST',
-        headers: buildHeaders(payload.mobile, consentIp),
-        body: JSON.stringify(staticQueryPayload),
-        signal,
-      },
-      () => submitMockChatQuery(payload),
-    );
-  }
-
-  return requestWithFallback<ChatQueryResponse>(
-    `${AI_CHAT_BASE}/${ENDPOINTS.AI_ASSISTANT.CHAT_QUERY}`,
+  return requestChatApi<ChatQueryResponse>(
+    AI_CHAT_BASE,
     {
       method: 'POST',
       headers: buildHeaders(payload.mobile, consentIp),
-      body: JSON.stringify(payload),
+      body: JSON.stringify(queryPayload),
       signal,
     },
-    () => submitMockChatQuery(payload),
+    parseChatQueryResponse,
   );
 }

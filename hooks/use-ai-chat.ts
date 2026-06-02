@@ -4,9 +4,14 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
 import { applyChatQueryResponseState } from '@/lib/ai-chat/apply-chat-query-response';
 import { buildFieldCaptureFromHistory } from '@/lib/ai-chat/build-field-capture-from-history';
-import { resolveChatUserId, getEffectiveChatUserId } from '@/lib/ai-chat/chat-identity';
+import {
+  getEffectiveChatUserId,
+  isGuestChatUserId,
+  resolveChatUserId,
+} from '@/lib/ai-chat/chat-identity';
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
 import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
+import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { promoteChatAuthFromResponse } from '@/lib/ai-chat/promote-chat-auth-from-response';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import { useAuthStore } from '@/stores/auth-store';
@@ -50,12 +55,15 @@ interface UseAiChatResult {
 
 const ORG_CODE = 'wecredit';
 const CHANNEL = 'wecredit_bot';
+const CHAT_HISTORY_NOT_FOUND_ERROR = 'chat_history_not_found';
 
 export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
   const hasInitialHistoryLoadedRef = useRef<boolean>(false);
-  const hasGuestStartedChatRef = useRef<boolean>(false);
+  const [hasGuestStartedChat, setHasGuestStartedChat] = useState<boolean>(false);
+  /** True when history is empty / not found — drives Trustfin welcome for guests and new signed-in users. */
+  const [showWelcomeScreen, setShowWelcomeScreen] = useState<boolean>(false);
   const prefillQuestionRef = useRef<string | null>(null);
   const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
   const optimisticMessageRef = useRef<AiChatMessage | null>(null);
@@ -100,6 +108,50 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       mobile: user?.phoneNumber,
     };
   }, [isAuthenticated, sessionId, user?.phoneNumber]);
+
+  const chatUserId = useMemo(
+    () =>
+      resolveChatUserId({
+        isAuthenticated,
+        phoneNumber: user?.phoneNumber,
+      }),
+    [isAuthenticated, user?.phoneNumber],
+  );
+
+  const isGuestChatUser = isGuestChatUserId(chatUserId);
+
+  const logGuestWelcomeState = useCallback(
+    (scope: string, extra?: Record<string, unknown>): void => {
+      logAiChat('hook', scope, {
+        isOpen,
+        isAuthenticated,
+        chatUserId,
+        effectiveChatUserId: getEffectiveChatUserId(),
+        isGuestChatUser,
+        hasGuestStartedChat,
+        showWelcomeScreen,
+        isLoadingHistory,
+        messageCount: messages.length,
+        hasSession: session !== null,
+        errorMessage,
+        prefillQuestion: prefillQuestion ?? null,
+        ...extra,
+      });
+    },
+    [
+      chatUserId,
+      errorMessage,
+      hasGuestStartedChat,
+      showWelcomeScreen,
+      isAuthenticated,
+      isGuestChatUser,
+      isLoadingHistory,
+      isOpen,
+      messages.length,
+      prefillQuestion,
+      session,
+    ],
+  );
 
   const applyHistoryResponse = useCallback(
     (
@@ -148,15 +200,51 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       options?: { suppressMessages?: boolean },
     ): Promise<boolean> => {
       const context = buildRequestContext();
+      logAiChat('hook', 'refreshChatHistory started', {
+        userId: context.userId,
+        sessionId: context.sessionId ?? null,
+        suppressMessages: options?.suppressMessages ?? false,
+      });
+
       const response = await fetchChatHistory(context, signal);
+
       if (!response.success || !response.data) {
+        logAiChat('hook', 'refreshChatHistory failed', {
+          userId: context.userId,
+          error: response.error ?? null,
+          isNotFound: response.error === CHAT_HISTORY_NOT_FOUND_ERROR,
+        });
+
+        if (response.error === CHAT_HISTORY_NOT_FOUND_ERROR) {
+          // Backend uses "chat history not found" for brand new users.
+          // Treat this as an empty chat so the Trustfin guest welcome is shown.
+          setMessages([]);
+          setSession(null);
+          setFieldCaptureStatus(null);
+          setNextFieldConfig(null);
+          setIsEscalated(false);
+          setErrorMessage(null);
+          setHasGuestStartedChat(false);
+          setShowWelcomeScreen(true);
+          logAiChat('hook', 'refreshChatHistory not_found → show welcome screen');
+          return true;
+        }
+
         if (response.error !== 'aborted') {
           setErrorMessage(response.error ?? fallbackMessage);
         }
         return false;
       }
 
+      logAiChat('hook', 'refreshChatHistory success', {
+        userId: context.userId,
+        turnCount: response.data.turns.length,
+        suppressMessages: options?.suppressMessages ?? false,
+      });
       applyHistoryResponse(response.data, options);
+      const turnCount = response.data.turns?.length ?? 0;
+      setShowWelcomeScreen(turnCount === 0);
+      logAiChat('hook', 'refreshChatHistory empty turns', { turnCount, showWelcome: turnCount === 0 });
       return true;
     },
     [applyHistoryResponse, buildRequestContext],
@@ -246,9 +334,10 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       if (!trimmedValue || isSubmitting) return;
 
       // Guest welcome should remain until the guest sends their first message.
-      if (!isAuthenticated && !hasGuestStartedChatRef.current) {
-        hasGuestStartedChatRef.current = true;
+      if (isGuestChatUserId(buildRequestContext().userId)) {
+        setHasGuestStartedChat(true);
       }
+      setShowWelcomeScreen(false);
 
       setInputError(null);
 
@@ -313,10 +402,12 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
   useEffect(() => {
     if (!isOpen) {
+      logAiChat('hook', 'modal closed → reset chat state');
       clearHistoryRequest();
       clearSubmitRequest();
       hasInitialHistoryLoadedRef.current = false;
-      hasGuestStartedChatRef.current = false;
+      setHasGuestStartedChat(false);
+      setShowWelcomeScreen(false);
       setMessages([]);
       setSession(null);
       setErrorMessage(null);
@@ -330,10 +421,12 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     }
 
     if (hasInitialHistoryLoadedRef.current) {
+      logAiChat('hook', 'initial history load skipped (already loaded)');
       return;
     }
 
     hasInitialHistoryLoadedRef.current = true;
+    logAiChat('hook', 'initial history load started');
     clearHistoryRequest();
     const controller = new AbortController();
     historyAbortRef.current = controller;
@@ -342,8 +435,14 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     setInputError(null);
 
     const loadHistory = async (): Promise<void> => {
-      const shouldSuppressGuestMessages =
-        !isAuthenticated && !hasGuestStartedChatRef.current;
+      // Initial load after open always runs before the guest sends a message.
+      const loadContext = buildRequestContext();
+      const shouldSuppressGuestMessages = isGuestChatUserId(loadContext.userId);
+
+      logAiChat('hook', 'loadHistory', {
+        userId: loadContext.userId,
+        shouldSuppressGuestMessages,
+      });
 
       const didRefresh = await refreshChatHistory(
         controller.signal,
@@ -352,13 +451,19 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       );
       setIsLoadingHistory(false);
 
+      logAiChat('hook', 'loadHistory finished', { didRefresh });
+
       if (!didRefresh) {
         return;
       }
 
       if (prefillQuestionRef.current?.trim()) {
         // Prefill counts as the first guest message, so hide the guest welcome.
-        hasGuestStartedChatRef.current = true;
+        logAiChat('hook', 'prefill question → hide guest welcome', {
+          prefillQuestion: prefillQuestionRef.current,
+        });
+        setHasGuestStartedChat(true);
+        setShowWelcomeScreen(false);
         void submitValueRef.current(prefillQuestionRef.current.trim());
       }
     };
@@ -370,7 +475,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         historyAbortRef.current = null;
       }
     };
-  }, [clearHistoryRequest, clearSubmitRequest, isOpen, refreshChatHistory]);
+  }, [buildRequestContext, clearHistoryRequest, clearSubmitRequest, isOpen, refreshChatHistory]);
 
   const progressCurrent = fieldCaptureStatus?.capturedFields?.length ?? 0;
   const progressTotal = fieldCaptureStatus?.requiredFields?.length ?? 0;
@@ -390,7 +495,32 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     return dismissedSelectField !== activeField;
   }, [dismissedSelectField, isCompleted, nextFieldConfig]);
 
-  const showGuestWelcome = !isAuthenticated && !hasGuestStartedChatRef.current && !isLoadingHistory;
+  const showGuestWelcome =
+    showWelcomeScreen && !hasGuestStartedChat && !isLoadingHistory;
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    logGuestWelcomeState('guest welcome state', {
+      showGuestWelcome,
+      showGuestWelcomeReason: {
+        showWelcomeScreen,
+        hasGuestStartedChat,
+        isLoadingHistory,
+        isGuestChatUser,
+      },
+    });
+  }, [
+    hasGuestStartedChat,
+    isGuestChatUser,
+    isLoadingHistory,
+    isOpen,
+    logGuestWelcomeState,
+    showGuestWelcome,
+    showWelcomeScreen,
+  ]);
 
   return {
     messages,

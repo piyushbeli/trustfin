@@ -54,6 +54,11 @@ export function clearChatIdentityStorage(): void {
   removeStorage(STORAGE_EFFECTIVE_CHAT_USER_ID);
 }
 
+/** Guest sessions use a UUID; promoted/authenticated sessions use a 10-digit mobile. */
+export function isGuestChatUserId(userId: string): boolean {
+  return !/^\d{10}$/.test(userId.trim());
+}
+
 /** Reads or creates a stable anonymous chat id for guest sessions. */
 export function getOrCreateChatUniqueId(): string {
   const existing = readStorage(STORAGE_CHAT_UNIQUE_ID);

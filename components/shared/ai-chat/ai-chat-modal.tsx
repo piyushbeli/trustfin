@@ -10,6 +10,7 @@ import AiChatHeader from './ai-chat-header';
 import AiChatModalBody from './ai-chat-modal-body';
 import AiChatModalFooter from './ai-chat-modal-footer';
 import AiChatSecureBadge from './ai-chat-secure-badge';
+import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { getAiChatViewMode } from './ai-chat-view';
 
 const AiChatModal = (): JSX.Element | null => {
@@ -70,6 +71,20 @@ const AiChatModal = (): JSX.Element | null => {
     isInitialLoading: isLoadingHistory && !isSubmitting,
     showGuestWelcome,
   });
+
+  useEffect(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    logAiChat('modal', 'view mode resolved', {
+      viewMode,
+      isLoadingHistory,
+      isSubmitting,
+      showGuestWelcome,
+      messageCount: messages.length,
+    });
+  }, [isOpen, isLoadingHistory, isSubmitting, messages.length, showGuestWelcome, viewMode]);
 
   const isInputDisabled = isSubmitting;
 

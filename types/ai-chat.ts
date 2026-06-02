@@ -49,7 +49,7 @@ export interface AiChatSession {
 
 export type AiChatTurnType = 'chat' | 'field' | 'field_help';
 
-/** Unified chat-history turn shape (API + mock). */
+/** Unified chat-history turn shape from the AI assistant API. */
 export interface AiChatHistoryTurn {
   turnId: string;
   turnType: AiChatTurnType;
