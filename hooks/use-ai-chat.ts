@@ -435,9 +435,10 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     setInputError(null);
 
     const loadHistory = async (): Promise<void> => {
-      // Initial load after open always runs before the guest sends a message.
+      // Always render server history when it exists.
+      // Welcome screen is now controlled by turnCount === 0 and not-found handling.
       const loadContext = buildRequestContext();
-      const shouldSuppressGuestMessages = isGuestChatUserId(loadContext.userId);
+      const shouldSuppressGuestMessages = false;
 
       logAiChat('hook', 'loadHistory', {
         userId: loadContext.userId,
