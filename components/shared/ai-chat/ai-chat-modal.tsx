@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
 import { useAiChat } from '@/hooks/use-ai-chat';
-import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import AiChatHeader from './ai-chat-header';
 import AiChatModalBody from './ai-chat-modal-body';
@@ -15,7 +14,6 @@ import { getAiChatViewMode } from './ai-chat-view';
 
 const AiChatModal = (): JSX.Element | null => {
   const { isOpen, closeModal } = useAiChatStore();
-  const { isAuthenticated } = useAuthStore();
   const pathname = usePathname();
   const previousPathnameRef = useRef<string | null>(null);
   const {
@@ -32,7 +30,7 @@ const AiChatModal = (): JSX.Element | null => {
     progressTotal,
     isCompleted,
     isEscalated,
-    guestAuthStep,
+    showGuestWelcome,
     setInputValue,
     submitInput,
     submitChip,
@@ -70,20 +68,10 @@ const AiChatModal = (): JSX.Element | null => {
 
   const viewMode = getAiChatViewMode({
     isInitialLoading: isLoadingHistory && !isSubmitting,
+    showGuestWelcome,
   });
 
   const isInputDisabled = isSubmitting;
-  const authInputPlaceholder = useMemo(() => {
-    if (isAuthenticated || viewMode === 'initialLoading') {
-      return undefined;
-    }
-
-    if (guestAuthStep === 'phone') {
-      return AI_CHAT_COPY.loginPhonePlaceholder;
-    }
-
-    return AI_CHAT_COPY.loginOtpPlaceholder;
-  }, [guestAuthStep, isAuthenticated, viewMode]);
 
   const handleInputChange = (value: string): void => {
     resetInputError();
@@ -124,7 +112,7 @@ const AiChatModal = (): JSX.Element | null => {
             errorMessage={errorMessage}
             inputValue={inputValue}
             inputError={inputError}
-            inputPlaceholder={authInputPlaceholder}
+            inputPlaceholder={undefined}
             nextFieldConfig={nextFieldConfig}
             showSelectChips={showSelectChips}
             isSubmitting={isInputDisabled}

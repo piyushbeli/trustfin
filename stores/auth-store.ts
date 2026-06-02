@@ -293,7 +293,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
         },
       }),
       {
-        name: 'auth-storage',
+        name: 'trustfin-auth-storage',
         // Only persist user data for display; isAuthenticated is derived from cookies at runtime.
         // This ensures localStorage and cookies stay in sync - cookies are the source of truth.
         // pendingAction is NOT persisted - it's session-only
@@ -312,7 +312,7 @@ export const useAuthStore = create<AuthState & AuthActions>()(
       }
     ),
     {
-      name: 'auth-store',
+      name: 'trustfin-auth-store',
     }
   )
 );

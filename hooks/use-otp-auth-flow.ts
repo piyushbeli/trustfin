@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { authService, setAuthToken, setMobile } from '@/lib/api';
+import { authService } from '@/lib/api';
+import { completeAppLogin } from '@/lib/auth/complete-app-login';
 
 interface AuthenticatedUser {
   id: string;
@@ -96,9 +97,25 @@ export const useOtpAuthFlow = ({
     try {
       const result = await authService.verifyOtp(resolvedPhoneNumber, otpToVerify);
       if (result.success && result.data) {
-        setAuthToken(result.data.token);
-        setMobile(resolvedPhoneNumber);
-        onAuthenticated(result.data.user, result.data.token);
+        const token = result.data.token;
+        const userId = result.data.user.id;
+
+        // Single source of truth for how we sync cookies + Zustand auth state.
+        completeAppLogin({
+          token,
+          mobile: resolvedPhoneNumber,
+          userId,
+        });
+
+        // Notify caller (e.g. auth modal) after login state is updated.
+        // Strip optional fields so we don't set `name` on the client.
+        onAuthenticated(
+          {
+            id: userId,
+            phoneNumber: resolvedPhoneNumber,
+          },
+          token,
+        );
         setOtpValueState('');
         return true;
       }

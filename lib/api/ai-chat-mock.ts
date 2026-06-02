@@ -79,14 +79,20 @@ function createInitialState(params: ChatHistoryParams): MockSessionState {
     updatedAt: now,
   };
 
-  const turns: AiChatTurn[] = [
-    {
-      turnId: 'turn_001',
-      turnType: 'chat',
-      assistantResponse: GREETING_MESSAGE,
-      createdAt: now,
-    },
-  ];
+  const isGuest = !/^\d{10}$/.test(params.userId.trim());
+
+  // For guest sessions, return no assistant turns on initial history load.
+  // The UI shows a dedicated Trustfin welcome until the guest sends their first message.
+  const turns: AiChatTurn[] = isGuest
+    ? []
+    : [
+        {
+          turnId: 'turn_001',
+          turnType: 'chat',
+          assistantResponse: GREETING_MESSAGE,
+          createdAt: now,
+        },
+      ];
 
   return { session, turns, captured: {} };
 }
@@ -134,12 +140,38 @@ export async function fetchMockChatHistory(params: ChatHistoryParams): Promise<C
   };
 }
 
+function isGuestChatUserId(userId: string): boolean {
+  return !/^\d{10}$/.test(userId.trim());
+}
+
+function isValidPhoneQuery(value: string): boolean {
+  return value.length === 10 && /^[6-9]/.test(value) && /^\d{10}$/.test(value);
+}
+
 export async function submitMockChatQuery(payload: ChatQueryPayload): Promise<ChatQueryResponse> {
   const state = getOrCreateState(payload);
   const now = new Date().toISOString();
+  const userValue = payload.query.trim();
+
+  // Dev-only: guest sessions promote when user sends a valid 10-digit mobile number.
+  if (isGuestChatUserId(payload.userId) && isValidPhoneQuery(userValue)) {
+    return {
+      intent: 'auth_promotion',
+      answer: 'Thanks! You are signed in. How can I help with your loan?',
+      organizationCode: state.session.organizationCode,
+      lenderCode: null,
+      channel: state.session.channel,
+      captureFields: false,
+      shouldAskNextQuestion: false,
+      escalateToHuman: false,
+      effectiveUserId: userValue,
+      authToken: 'mock-chat-auth-token',
+      mobile: userValue,
+    };
+  }
+
   const nextField = getNextField(state.captured) ?? payload.field ?? null;
   const activeField = payload.field ?? nextField;
-  const userValue = payload.query.trim();
   const validation = activeField ? validateFieldValue(activeField, userValue) : { isValid: true };
 
   if (activeField && !validation.isValid) {

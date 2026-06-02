@@ -21,6 +21,7 @@ import {
   STORAGE_MOBILE,
   AUTH_COOKIE_OPTIONS,
 } from '@/lib/constants/api-keys';
+import { clearChatIdentityStorage } from '@/lib/ai-chat/chat-identity';
 
 /** Default timeout based on environment */
 const DEFAULT_TIMEOUT = environment.isDevelopment ? TIMEOUT_DEVELOPMENT : TIMEOUT_PRODUCTION;
@@ -105,6 +106,10 @@ export function clearAuthData(): void {
     localStorage.removeItem('fingerprint');
     localStorage.removeItem('ip');
     localStorage.removeItem('device');
+
+    // Ensure guest chat identity and any effective-id promotion are cleared too.
+    // This prevents the next guest session from inheriting a previous user's chat identity.
+    clearChatIdentityStorage();
   }
 }
 

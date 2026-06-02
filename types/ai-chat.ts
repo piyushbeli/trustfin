@@ -111,6 +111,10 @@ export interface ChatQueryResponse {
   captureFields: boolean;
   shouldAskNextQuestion: boolean;
   escalateToHuman: boolean;
+  /** Returned when guest chat promotes to authenticated user */
+  effectiveUserId?: string | null;
+  authToken?: string | null;
+  mobile?: string | null;
   fieldCaptureStatus?: AiChatFieldCaptureStatus | null;
   validation?: {
     isValid: boolean;

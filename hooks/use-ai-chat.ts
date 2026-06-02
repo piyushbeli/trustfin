@@ -4,11 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
 import { applyChatQueryResponseState } from '@/lib/ai-chat/apply-chat-query-response';
 import { buildFieldCaptureFromHistory } from '@/lib/ai-chat/build-field-capture-from-history';
+import { resolveChatUserId, getEffectiveChatUserId } from '@/lib/ai-chat/chat-identity';
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
 import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
+import { promoteChatAuthFromResponse } from '@/lib/ai-chat/promote-chat-auth-from-response';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
-import { useOtpAuthFlow } from '@/hooks/use-otp-auth-flow';
-import { maskPhoneNumber } from '@/lib/utils/mask-phone';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import { getErrorMessage, isAbortError } from '@/lib/utils/error-helpers';
@@ -41,7 +41,7 @@ interface UseAiChatResult {
   progressTotal: number;
   isCompleted: boolean;
   isEscalated: boolean;
-  guestAuthStep: 'phone' | 'otp';
+  showGuestWelcome: boolean;
   setInputValue: (value: string) => void;
   submitInput: () => Promise<void>;
   submitChip: (value: string) => Promise<void>;
@@ -55,10 +55,11 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
   const hasInitialHistoryLoadedRef = useRef<boolean>(false);
+  const hasGuestStartedChatRef = useRef<boolean>(false);
   const prefillQuestionRef = useRef<string | null>(null);
   const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
   const optimisticMessageRef = useRef<AiChatMessage | null>(null);
-  const { user, isAuthenticated, setUser } = useAuthStore();
+  const { user, isAuthenticated } = useAuthStore();
   const { prefillQuestion, sessionId } = useAiChatStore();
 
   const [messages, setMessages] = useState<AiChatMessage[]>([]);
@@ -72,19 +73,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [dismissedSelectField, setDismissedSelectField] = useState<string | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
-  const [guestAuthStep, setGuestAuthStep] = useState<'phone' | 'otp'>('phone');
-  const [guestAuthPhone, setGuestAuthPhone] = useState<string>('');
-
-  const {
-    error: authError,
-    sendOtp,
-    verifyOtp,
-  } = useOtpAuthFlow({
-    initialPhoneNumber: '',
-    onAuthenticated: (authenticatedUser, token) => {
-      setUser(authenticatedUser, token);
-    },
-  });
 
   const clearHistoryRequest = useCallback((): void => {
     if (!historyAbortRef.current) return;
@@ -99,7 +87,11 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   }, []);
 
   const buildRequestContext = useCallback((): ChatHistoryParams => {
-    const userId = user?.phoneNumber || '';
+    const userId = resolveChatUserId({
+      isAuthenticated,
+      phoneNumber: user?.phoneNumber,
+    });
+
     return {
       userId,
       organizationCode: ORG_CODE,
@@ -107,16 +99,21 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       sessionId: sessionId ?? undefined,
       mobile: user?.phoneNumber,
     };
-  }, [sessionId, user?.id, user?.phoneNumber]);
+  }, [isAuthenticated, sessionId, user?.phoneNumber]);
 
   const applyHistoryResponse = useCallback(
-    (history: Awaited<ReturnType<typeof fetchChatHistory>>['data']): void => {
+    (
+      history: Awaited<ReturnType<typeof fetchChatHistory>>['data'],
+      options?: { suppressMessages?: boolean },
+    ): void => {
       if (!history) return;
 
       const turns = history.turns ?? [];
-      const mappedMessages = mapHistoryTurnsToMessages(turns);
+      const suppressMessages = Boolean(options?.suppressMessages);
+      const mappedMessages = suppressMessages ? [] : mapHistoryTurnsToMessages(turns);
 
       const shouldAppendPendingQuestion =
+        !suppressMessages &&
         history.session.shouldAskNextQuestion &&
         !history.session.isCompleted &&
         Boolean(history.session.pendingQuestion) &&
@@ -144,24 +141,11 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [],
   );
 
-  const seedGuestWelcomeMessage = useCallback((): void => {
-    setMessages([
-      {
-        id: 'guest_welcome',
-        role: 'assistant',
-        text: AI_CHAT_COPY.guestWelcomeMessage,
-      },
-    ]);
-    setSession(null);
-    setFieldCaptureStatus(null);
-    setNextFieldConfig(null);
-    setIsEscalated(false);
-  }, []);
-
   const refreshChatHistory = useCallback(
     async (
       signal: AbortSignal,
       fallbackMessage: string = AI_CHAT_COPY.genericError,
+      options?: { suppressMessages?: boolean },
     ): Promise<boolean> => {
       const context = buildRequestContext();
       const response = await fetchChatHistory(context, signal);
@@ -172,120 +156,98 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         return false;
       }
 
-      applyHistoryResponse(response.data);
+      applyHistoryResponse(response.data, options);
       return true;
     },
     [applyHistoryResponse, buildRequestContext],
   );
 
-  const refreshChatHistoryAfterGuestAuth = useCallback(
-    async (mobileNumber: string): Promise<void> => {
-      const normalizedMobile = mobileNumber.trim();
-      if (!normalizedMobile) {
-        return;
-      }
-
-      // Force immediate history hydration after OTP success so guests see the
-      // initial/pending AI question without reopening the modal.
-      hasInitialHistoryLoadedRef.current = true;
+  const refreshChatHistoryAfterPromotion = useCallback(
+    async (signal?: AbortSignal): Promise<boolean> => {
       setIsLoadingHistory(true);
       setErrorMessage(null);
       setInputError(null);
 
-      const response = await fetchChatHistory({
-        userId: normalizedMobile,
-        organizationCode: ORG_CODE,
-        channel: CHANNEL,
-        sessionId: sessionId ?? undefined,
-        mobile: normalizedMobile,
-      });
-
-      if (!response.success || !response.data) {
-        setErrorMessage(response.error ?? AI_CHAT_COPY.historyRefreshErrorMessage);
-        setIsLoadingHistory(false);
-        return;
-      }
-
-      applyHistoryResponse(response.data);
-      setGuestAuthStep('phone');
-      setGuestAuthPhone('');
+      const didRefresh = await refreshChatHistory(
+        signal ?? new AbortController().signal,
+        AI_CHAT_COPY.historyRefreshErrorMessage,
+        { suppressMessages: false },
+      );
       setIsLoadingHistory(false);
+      return didRefresh;
     },
-    [applyHistoryResponse, sessionId],
+    [refreshChatHistory],
   );
 
   useEffect(() => {
     prefillQuestionRef.current = prefillQuestion;
   }, [prefillQuestion]);
 
-  useEffect(() => {
-    if (!isAuthenticated && authError) {
-      setInputError(authError);
-    }
-  }, [authError, isAuthenticated]);
+  const handleChatQuerySuccess = useCallback(
+    async (data: Awaited<ReturnType<typeof submitChatQuery>>['data'], userId: string): Promise<void> => {
+      if (!data) return;
+
+      const { didPromote } = promoteChatAuthFromResponse(data);
+      const sessionUserId = getEffectiveChatUserId() ?? userId;
+
+      if (data.validation && !data.validation.isValid) {
+        if (data.answer) {
+          setMessages((prev) => [
+            ...prev,
+            {
+              id: `server_validation_${Date.now()}`,
+              role: 'assistant',
+              text: data.answer,
+            },
+          ]);
+        }
+
+        applyChatQueryResponseState({
+          data,
+          currentSession: session,
+          userId: sessionUserId,
+          setSession,
+          setFieldCaptureStatus,
+          setNextFieldConfig,
+          setIsEscalated,
+        });
+
+        if (didPromote) {
+          await refreshChatHistoryAfterPromotion();
+        }
+        return;
+      }
+
+      applyChatQueryResponseState({
+        data,
+        currentSession: session,
+        userId: sessionUserId,
+        setSession,
+        setFieldCaptureStatus,
+        setNextFieldConfig,
+        setIsEscalated,
+      });
+
+      const assistantMessages = getChatQueryAssistantMessages(data);
+      if (assistantMessages.length > 0) {
+        setMessages((prev) => [...prev, ...assistantMessages]);
+      }
+
+      if (didPromote) {
+        await refreshChatHistoryAfterPromotion();
+      }
+    },
+    [refreshChatHistoryAfterPromotion, session],
+  );
 
   const submitValue = useCallback(
     async (value: string, displayValue?: string): Promise<void> => {
       const trimmedValue = value.trim();
       if (!trimmedValue || isSubmitting) return;
 
-      if (!isAuthenticated) {
-        setInputError(null);
-
-        // Keep guest auth fully conversational: first capture phone, then OTP.
-        if (guestAuthStep === 'phone') {
-          const isPhoneValid = trimmedValue.length === 10 && /^[6-9]/.test(trimmedValue) && /^\d{10}$/.test(trimmedValue);
-          if (!isPhoneValid) {
-            setInputError(AI_CHAT_COPY.loginPhoneInvalid);
-            return;
-          }
-
-          setIsSubmitting(true);
-          setErrorMessage(null);
-          setInputValue('');
-          setMessages((prev) => [...prev, { id: `guest_phone_${Date.now()}`, role: 'user', text: trimmedValue }]);
-          setGuestAuthPhone(trimmedValue);
-
-          const isOtpSent = await sendOtp(trimmedValue);
-          if (!isOtpSent) {
-            setInputError(authError ?? 'Failed to send OTP. Please try again.');
-            setIsSubmitting(false);
-            return;
-          }
-
-          setGuestAuthStep('otp');
-          setMessages((prev) => [
-            ...prev,
-            {
-              id: `guest_otp_prompt_${Date.now()}`,
-              role: 'assistant',
-              text: AI_CHAT_COPY.loginOtpPrompt.replace('{phone}', maskPhoneNumber(trimmedValue)),
-            },
-          ]);
-          setIsSubmitting(false);
-          return;
-        }
-
-        const isOtpValid = /^\d{6}$/.test(trimmedValue);
-        if (!isOtpValid) {
-          setInputError(AI_CHAT_COPY.loginOtpInvalid);
-          return;
-        }
-
-        setIsSubmitting(true);
-        setErrorMessage(null);
-        setInputValue('');
-        setMessages((prev) => [...prev, { id: `guest_otp_${Date.now()}`, role: 'user', text: '••••••' }]);
-
-        const isOtpVerified = await verifyOtp(trimmedValue, guestAuthPhone);
-        if (!isOtpVerified) {
-          setInputError(authError ?? 'Invalid OTP. Please try again.');
-          setIsSubmitting(false);
-          return;
-        }
-        await refreshChatHistoryAfterGuestAuth(guestAuthPhone);
-        setIsSubmitting(false);
-        return;
+      // Guest welcome should remain until the guest sends their first message.
+      if (!isAuthenticated && !hasGuestStartedChatRef.current) {
+        hasGuestStartedChatRef.current = true;
       }
 
       setInputError(null);
@@ -326,47 +288,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           return;
         }
 
-        const data = response.data;
-        const userId = context.userId;
-
-        if (data.validation && !data.validation.isValid) {
-          if (data.answer) {
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: `server_validation_${Date.now()}`,
-                role: 'assistant',
-                text: data.answer,
-              },
-            ]);
-          }
-
-          applyChatQueryResponseState({
-            data,
-            currentSession: session,
-            userId,
-            setSession,
-            setFieldCaptureStatus,
-            setNextFieldConfig,
-            setIsEscalated,
-          });
-          return;
-        }
-
-        applyChatQueryResponseState({
-          data,
-          currentSession: session,
-          userId,
-          setSession,
-          setFieldCaptureStatus,
-          setNextFieldConfig,
-          setIsEscalated,
-        });
-
-        const assistantMessages = getChatQueryAssistantMessages(data);
-        if (assistantMessages.length > 0) {
-          setMessages((prev) => [...prev, ...assistantMessages]);
-        }
+        await handleChatQuerySuccess(response.data, context.userId);
       } catch (error) {
         setMessages((prev) =>
           prev.filter((message) => message.id !== optimisticMessageRef.current?.id),
@@ -382,20 +304,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         setIsSubmitting(false);
       }
     },
-    [
-      buildRequestContext,
-      clearSubmitRequest,
-      authError,
-      guestAuthPhone,
-      guestAuthStep,
-      isAuthenticated,
-      isSubmitting,
-      nextFieldConfig,
-      refreshChatHistoryAfterGuestAuth,
-      sendOtp,
-      session,
-      verifyOtp,
-    ],
+    [buildRequestContext, clearSubmitRequest, handleChatQuerySuccess, isSubmitting, nextFieldConfig],
   );
 
   useEffect(() => {
@@ -407,6 +316,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       clearHistoryRequest();
       clearSubmitRequest();
       hasInitialHistoryLoadedRef.current = false;
+      hasGuestStartedChatRef.current = false;
       setMessages([]);
       setSession(null);
       setErrorMessage(null);
@@ -416,21 +326,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setDismissedSelectField(null);
       setFieldCaptureStatus(null);
       setIsEscalated(false);
-      setGuestAuthStep('phone');
-      setGuestAuthPhone('');
-      return;
-    }
-
-    if (!isAuthenticated) {
-      clearHistoryRequest();
-      clearSubmitRequest();
-      hasInitialHistoryLoadedRef.current = false;
-      setErrorMessage(null);
-      setInputError(null);
-      setIsLoadingHistory(false);
-      setGuestAuthStep('phone');
-      setGuestAuthPhone('');
-      seedGuestWelcomeMessage();
       return;
     }
 
@@ -447,7 +342,14 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     setInputError(null);
 
     const loadHistory = async (): Promise<void> => {
-      const didRefresh = await refreshChatHistory(controller.signal);
+      const shouldSuppressGuestMessages =
+        !isAuthenticated && !hasGuestStartedChatRef.current;
+
+      const didRefresh = await refreshChatHistory(
+        controller.signal,
+        AI_CHAT_COPY.historyRefreshErrorMessage,
+        { suppressMessages: shouldSuppressGuestMessages },
+      );
       setIsLoadingHistory(false);
 
       if (!didRefresh) {
@@ -455,6 +357,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       }
 
       if (prefillQuestionRef.current?.trim()) {
+        // Prefill counts as the first guest message, so hide the guest welcome.
+        hasGuestStartedChatRef.current = true;
         void submitValueRef.current(prefillQuestionRef.current.trim());
       }
     };
@@ -466,14 +370,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         historyAbortRef.current = null;
       }
     };
-  }, [
-    clearHistoryRequest,
-    clearSubmitRequest,
-    isAuthenticated,
-    isOpen,
-    refreshChatHistory,
-    seedGuestWelcomeMessage,
-  ]);
+  }, [clearHistoryRequest, clearSubmitRequest, isOpen, refreshChatHistory]);
 
   const progressCurrent = fieldCaptureStatus?.capturedFields?.length ?? 0;
   const progressTotal = fieldCaptureStatus?.requiredFields?.length ?? 0;
@@ -493,6 +390,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     return dismissedSelectField !== activeField;
   }, [dismissedSelectField, isCompleted, nextFieldConfig]);
 
+  const showGuestWelcome = !isAuthenticated && !hasGuestStartedChatRef.current && !isLoadingHistory;
+
   return {
     messages,
     session,
@@ -509,7 +408,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     progressTotal,
     isCompleted,
     isEscalated,
-    guestAuthStep,
+    showGuestWelcome,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
     submitChip: async (value: string) => {

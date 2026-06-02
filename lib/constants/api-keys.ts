@@ -13,8 +13,12 @@ export const HEADER_MOBILE = 'mobile';
 export const CONTENT_TYPE_JSON = 'application/json';
 
 /** LocalStorage keys */
-export const STORAGE_AUTH_TOKEN = 'auth_token';
+export const STORAGE_AUTH_TOKEN = 'trustfin_auth_token';
 export const STORAGE_MOBILE = 'mobile';
+/** Anonymous AI chat guest id (cleared after effectiveUserId promotion) */
+export const STORAGE_CHAT_UNIQUE_ID = 'chatuniqueid';
+/** Persisted effective user id from chat-query promotion */
+export const STORAGE_EFFECTIVE_CHAT_USER_ID = 'effectiveUserId';
 
 /** Auth cookie configuration (7 days) shared across all auth flows */
 export const AUTH_COOKIE_OPTIONS = {
