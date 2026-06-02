@@ -2,7 +2,7 @@
 
 import { JSX } from 'react';
 import { ShieldCheck } from 'lucide-react';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 
 const AiChatSecureBadge = (): JSX.Element => {
   return (

@@ -5,7 +5,7 @@
 
 import { JSX } from 'react';
 import { SectionWrapper, AiChatCta } from '@/components/shared';
-import { LOAN_MARKETPLACE_DISCLAIMER } from '@/lib/constants/legal-copy';
+import { LOAN_MARKETPLACE_DISCLAIMER } from '@/lib/constants/legal';
 import { AI_CTA_COPY } from './constants';
 
 interface FaqFooterSectionProps {

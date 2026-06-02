@@ -8,6 +8,7 @@ import type {
   ChatQueryPayload,
   ChatQueryResponse,
 } from '@/types/ai-chat';
+import { fetchUserIp } from './auth-service';
 import { fetchMockChatHistory, submitMockChatQuery } from './ai-chat-mock';
 
 const AI_CHAT_ENV_BASE = wecreditConfig.aiChatUrl;
@@ -24,7 +25,7 @@ interface ChatServiceResult<T> {
   error?: string;
 }
 
-function buildHeaders(mobile?: string): Record<string, string> {
+function buildHeaders(mobile?: string, consentIp?: string): Record<string, string> {
   const token = getCookie(STORAGE_AUTH_TOKEN);
   const headers: Record<string, string> = {
     ...wecreditConfig.headers,
@@ -33,6 +34,10 @@ function buildHeaders(mobile?: string): Record<string, string> {
 
   if (mobile) {
     headers.mobile = mobile;
+  }
+
+  if (consentIp) {
+    headers.consentIp = consentIp;
   }
 
   if (token) {
@@ -133,6 +138,8 @@ export async function submitChatQuery(
   payload: ChatQueryPayload,
   signal?: AbortSignal,
 ): Promise<ChatServiceResult<ChatQueryResponse>> {
+  const consentIp = await fetchUserIp();
+
   if (SHOULD_USE_STATIC_POSTMAN_FLOW) {
     const staticQueryPayload = {
       endpoint: ENDPOINTS.AI_ASSISTANT.CHAT_QUERY,
@@ -148,7 +155,7 @@ export async function submitChatQuery(
       AI_CHAT_BASE,
       {
         method: 'POST',
-        headers: buildHeaders(payload.mobile),
+        headers: buildHeaders(payload.mobile, consentIp),
         body: JSON.stringify(staticQueryPayload),
         signal,
       },
@@ -160,7 +167,7 @@ export async function submitChatQuery(
     `${AI_CHAT_BASE}/${ENDPOINTS.AI_ASSISTANT.CHAT_QUERY}`,
     {
       method: 'POST',
-      headers: buildHeaders(payload.mobile),
+      headers: buildHeaders(payload.mobile, consentIp),
       body: JSON.stringify(payload),
       signal,
     },

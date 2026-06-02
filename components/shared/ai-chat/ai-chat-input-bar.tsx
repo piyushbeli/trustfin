@@ -2,7 +2,7 @@
 
 import { JSX } from 'react';
 import { ArrowRight } from 'lucide-react';
-import { AI_CHAT_COPY } from '@/lib/constants/ai-chat-copy';
+import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import type { AiChatNextFieldConfig } from '@/types/ai-chat';
 import AiChatDynamicInput from './ai-chat-dynamic-input';
 
