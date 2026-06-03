@@ -146,7 +146,7 @@ export const useAuthHandlers = (): UseAuthHandlersReturn => {
     if (isLoading) return;
     clearError();
     try {
-      showLoading('Please wait...', "We're preparing your WeCredit experience.");
+      showLoading('Please wait...', "We're preparing your TrustFin.ai experience.");
       await verifyOtp(otpOverride ?? otpValue);
     } finally {
       hideLoading();

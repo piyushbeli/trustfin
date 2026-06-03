@@ -117,8 +117,7 @@ const OTPInput = ({
     : 'h-12 w-12 text-xl sm:h-14 sm:w-14 sm:text-2xl md:h-16 md:w-16';
 
   /** Get input class based on variant and state */
-  const getInputClass = (hasValue: boolean): string => {
-    // Consistent styling for all states - matching Figma design
+  const getInputClass = (): string => {
     if (variant === 'blue') {
       return cn(
         sizeClasses,
@@ -130,13 +129,12 @@ const OTPInput = ({
       );
     }
 
-    // Default variant - matching Figma: #045CCF at 15% opacity, corner radius 4
     return cn(
       sizeClasses,
-      'rounded border-b-2 border-brand-primary text-center font-bold transition-all duration-200',
+      'rounded-lg border text-center font-bold transition-all duration-200',
       error
-        ? 'border-b-red-400 bg-red-50 text-gray-900'
-        : 'bg-[#045CCF]/15 text-gray-900 placeholder:text-gray-400',
+        ? 'border-red-400 bg-red-50 text-gray-900'
+        : 'border-brand-primary bg-white text-gray-900 placeholder:text-gray-400 focus:border-brand-primary focus:ring-1 focus:ring-brand-primary',
       disabled && 'opacity-50 cursor-not-allowed',
       'focus:outline-none',
     );
@@ -152,29 +150,44 @@ const OTPInput = ({
     : {
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         gap: '0.5rem',
       };
 
   return (
-    <div
-      className={cn('w-full flex flex-col items-center', className)}
-    >
-      {/* OTP Input */}
-      <div className={cn('w-full', isCompact ? 'mb-4' : 'mb-6 px-4 sm:px-0')}>
+    <div className={cn('w-full flex flex-col', className)}>
+      {/* Phone instruction — above OTP boxes per mockup */}
+      {phoneNumber && (
+        <p
+          className={cn(
+            'mb-6 text-sm text-gray-600',
+            isCompact && 'px-1 leading-relaxed',
+          )}
+        >
+          we have sent OTP on {phoneNumber}{' '}
+          <button
+            type="button"
+            onClick={onChangeNumber}
+            className="text-brand-primary font-semibold hover:text-brand-primary/80 transition-colors"
+          >
+            Change Number
+          </button>
+        </p>
+      )}
+
+      {/* OTP boxes */}
+      <div className={cn('w-full', isCompact ? 'mb-4' : 'mb-6')}>
         <OtpInput
           value={otp}
           onChange={handleOtpChange}
           numInputs={OTP_LENGTH}
-          renderInput={(props, index) => {
-            const hasValue = otp[index] !== undefined && otp[index] !== '';
-            // Exclude the default style from props to allow Tailwind classes to work
+          renderInput={(props) => {
             const { style: _style, ...restProps } = props;
             return (
               <input
                 {...restProps}
                 inputMode="numeric"
-                className={getInputClass(hasValue)}
+                className={getInputClass()}
                 disabled={disabled}
               />
             );
@@ -188,7 +201,7 @@ const OTPInput = ({
       {error && (
         <p
           className={cn(
-            'text-sm text-center mb-4 font-medium',
+            'text-sm mb-4 font-medium',
             variant === 'blue' ? 'text-red-200' : 'text-red-500'
           )}
         >
@@ -196,58 +209,32 @@ const OTPInput = ({
         </p>
       )}
 
-      {/* Resend Section */}
+      {/* Resend */}
       {showResend && (
-        <div
-          className="text-center space-y-2"
-        >
-          <div className={cn(
-            'flex flex-wrap justify-center items-center gap-1 text-sm',
-            variant === 'blue' ? 'text-white/90' : 'text-gray-600'
-          )}>
-            <span>Didn&apos;t receive the OTP?</span>
-            {canResend ? (
-              <button
-                type="button"
-                onClick={handleResend}
-                disabled={disabled}
-                className={cn(
-                  'font-semibold transition-colors',
-                  variant === 'blue'
-                    ? 'text-white  hover:text-white/80'
-                    : 'text-brand-primary hover:text-brand-primary/80',
-                  disabled && 'opacity-50 cursor-not-allowed'
-                )}
-              >
-                Resend OTP
-              </button>
-            ) : (
-              <span className={cn(
-                'font-semibold',
-                variant === 'blue' ? 'text-white' : 'text-gray-900'
-              )}>
-                Resend in {resendTimer}s
-              </span>
-            )}
-          </div>
-
-          {/* Phone number and change link */}
-          {phoneNumber && (
-            <p
+        <div className="text-sm text-gray-600">
+          <span>Didn&apos;t receive the OTP? </span>
+          {canResend ? (
+            <button
+              type="button"
+              onClick={handleResend}
+              disabled={disabled}
               className={cn(
-                'mb-6 text-center text-sm text-gray-600',
-                isCompact && 'px-1 leading-relaxed',
+                'font-semibold transition-colors',
+                variant === 'blue'
+                  ? 'text-white hover:text-white/80'
+                  : 'text-brand-primary hover:text-brand-primary/80',
+                disabled && 'opacity-50 cursor-not-allowed'
               )}
             >
-              we have sent OTP on {phoneNumber}{' '}
-              <button
-                type="button"
-                onClick={onChangeNumber}
-                className="text-wc-blue-500 font-bold hover:text-wc-blue-600 transition-colors"
-              >
-                Change Number
-              </button>
-            </p>
+              Resend OTP
+            </button>
+          ) : (
+            <span className={cn(
+              'font-semibold',
+              variant === 'blue' ? 'text-white' : 'text-gray-900'
+            )}>
+              Resend in {resendTimer}s
+            </span>
           )}
         </div>
       )}

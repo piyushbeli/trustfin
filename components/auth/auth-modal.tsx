@@ -82,7 +82,7 @@ const AuthModal = (): React.ReactNode => {
         onClick={handleBackdropClick}
       />
 
-      <div className="relative flex flex-col h-full overflow-hidden">
+      <div className="relative flex flex-col h-full overflow-hidden bg-white">
         {currentStep === 'phone' ? (
           <PhoneStepScreen
             key="phone-screen"

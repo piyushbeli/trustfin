@@ -1,17 +1,13 @@
 'use client';
 
-import Link from 'next/link';
-import { X } from 'lucide-react';
-import { GradientHeader } from '@/components/shared';
-import { BottomSheet, PhoneInput } from '@/components/auth';
-import { useAppHeight } from '@/hooks/use-app-height';
-import { cn } from '@/lib/utils';
-import type { HeaderHeightPreset, PhoneStepScreenProps } from '../types';
+import { PhoneInput } from '@/components/auth';
+import { AuthModalFooter } from '../auth-modal-footer';
+import { AuthModalHeader } from '../auth-modal-header';
+import { AuthStepTitle } from '../auth-step-title';
+import type { PhoneStepScreenProps } from '../types';
 
 /**
- * Phone step screen component
- * Full screen with gradient header and bottom sheet (50-50 layout)
- * Handles phone number input and OTP request
+ * Phone step screen — flat white layout with phone input and OTP request.
  */
 export const PhoneStepScreen = ({
   phoneNumber,
@@ -21,20 +17,7 @@ export const PhoneStepScreen = ({
   onPhoneChange,
   onContinue,
   onClose,
-  headerHeight = 'sixtyFive',
-  headerHeightPercent = 65,
-  headerClassName,
-  bottomSheetClassName,
 }: PhoneStepScreenProps): React.ReactNode => {
-  const bottomSheetClasses: string =
-    bottomSheetClassName ?? 'flex-1 flex flex-col';
-  const containerStyle: React.CSSProperties = useAppHeight();
-  const headerHeightStyle: React.CSSProperties | undefined = headerHeightPercent
-    ? { height: `calc(var(--app-height, 1vh) * ${headerHeightPercent})` }
-    : undefined;
-  const resolvedHeaderHeight: HeaderHeightPreset | undefined =
-    headerHeightPercent ? undefined : headerHeight;
-
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     if (isPhoneValid && !isLoading) {
@@ -43,103 +26,41 @@ export const PhoneStepScreen = ({
   };
 
   return (
-    <div
-className="relative flex flex-col"
-      style={containerStyle}
-    >
-      {/* Close Button */}
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute top-4 right-4 z-20 p-2 rounded-full transition-colors"
-        aria-label="Close"
+    <div className="flex flex-col h-full bg-white">
+      <AuthModalHeader onClose={onClose} />
+
+      <form
+        onSubmit={handleSubmit}
+        className="flex flex-col flex-1 min-h-0"
       >
-        <X className="w-6 h-6 text-white" />
-      </button>
+        <div className="flex-1 overflow-y-auto px-4 pt-4">
+          <AuthStepTitle
+            titleLine1="Login or"
+            titleLine2="Register to get started"
+            subtitle="Access all offers & get latest personalized updates"
+          />
 
-      {/* Gradient Header with Illustration - 75% height */}
-      <GradientHeader
-         variant="logo-only"
-         height={resolvedHeaderHeight}
-         style={headerHeightStyle}
-         className={headerClassName}
-         isPhoneNumberHeader
-/>
-
-      {/* Bottom Sheet - fills remaining 50% */}
-      <BottomSheet className={bottomSheetClasses}>
-        <form
-          onSubmit={handleSubmit}
-          className="flex-1 flex flex-col"
-        >
-          {/* Title Section */}
-          <div className="mb-6">
-            <h1 className="text-2xl font-medium mb-1">
-              Account
-            </h1>
-            <p className="text-gray-500 text-sm">
-              Login/Create your account
-            </p>
-          </div>
-
-          {/* Phone Input Section */}
           <div>
-            <label className="block text-xs font-semibold tracking-wider mb-2">
+            <label htmlFor="phone-number" className="block text-xs font-semibold tracking-wider text-gray-500 mb-1">
               PHONE NUMBER
             </label>
             <PhoneInput
+              id="phone-number"
+              name="phoneNumber"
               value={phoneNumber}
               onChange={onPhoneChange}
               placeholder=""
               error={error || undefined}
             />
           </div>
+        </div>
 
-          {/* Terms & Conditions */}
-          <p className="text-xs text-gray-500 my-6 text-center">
-            By clicking, I accept the{' '}
-            <Link
-              href="/terms-of-service"
-              className="text-gray-900 font-semibold hover:underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Terms & Conditions
-            </Link>{' '}
-            &{' '}
-            <Link
-              href="/privacy-policy"
-              className="text-gray-900 font-semibold hover:underline"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Privacy Policy
-            </Link>
-          </p>
-
-          {/* Spacer to push button to bottom */}
-          <div className="flex-1" />
-
-          {/* Continue Button */}
-          <button
-            type="submit"
-            disabled={!isPhoneValid || isLoading}
-            className={cn(
-              'w-full py-4 rounded-full font-semibold text-base transition-all duration-300',
-              isPhoneValid && !isLoading
-                ? 'bg-wc-blue-500 text-white shadow-lg shadow-wc-blue-500/30 hover:bg-wc-blue-600 active:scale-[0.98]'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            )}
-          >
-            {isLoading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Sending OTP...
-              </span>
-            ) : (
-              'Continue'
-            )}
-          </button>
-        </form>
-      </BottomSheet>
+        <AuthModalFooter
+          isContinueDisabled={!isPhoneValid || isLoading}
+          isLoading={isLoading}
+          loadingLabel="Sending OTP..."
+        />
+      </form>
     </div>
   );
 };
