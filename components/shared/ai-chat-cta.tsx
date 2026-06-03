@@ -10,9 +10,7 @@
  *  - solid: flat brand purple (sections that need a simpler filled button)
  *  - dark: inverted styling for dark / tinted backgrounds
  *
- * The AI chat modal is not shipped yet; clicks use a shared placeholder handler.
- * `prefillQuestion` is forwarded so suggested-question rows can wire up without
- * another refactor once the modal lands.
+ * `prefillQuestion` opens the chat modal with that question ready to send.
  */
 
 import { JSX, type ButtonHTMLAttributes } from 'react';

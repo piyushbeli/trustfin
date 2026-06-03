@@ -4,6 +4,7 @@ import { useSearchParams, usePathname } from 'next/navigation';
 import { checkStatusAll, hitAllLenders } from '@/lib/api/wecredit';
 import { STORAGE_AUTH_TOKEN, STORAGE_MOBILE } from '@/lib/constants/api-keys';
 import type { CheckStatusAllResponse } from '@/types/wecredit';
+import { useOfferStatusPolling } from '@/hooks/use-offer-status-polling';
 import { useFeatureFlag } from '@/hooks/use-feature-flag';
 import {
   MOCK_REHIT_RESPONSE,
@@ -16,10 +17,6 @@ import { UseOffersReturn } from '@/types/offer';
 import { deploymentFeatures } from '@/lib/env-features';
 
 export const newPLEnabled = deploymentFeatures.enableNewPL;
-/** Polling constants */
-const POLL_INTERVAL = 15000; // 15 seconds
-const MAX_POLL_DURATION = 90000; // 90 seconds
-const API_TIMEOUT = 15000; // 15 seconds
 
 /**
  * Hook for managing loan offers
@@ -62,7 +59,6 @@ export function useOffers(): UseOffersReturn {
   } = useOfferStore();
 
   const [shouldTriggerApply, setShouldTriggerApply] = useState(false);
-  const [pollTick, setPollTick] = useState(0);
   const [isInitializing, setIsInitializing] = useState(true);
 
   const searchParams = useSearchParams();
@@ -73,8 +69,6 @@ export function useOffers(): UseOffersReturn {
   const shouldSkipRehit = Boolean(lenderNameParam.trim());
   const enableMockData = useFeatureFlag('enableOfferMockData');
 
-  const pollTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const pollStartTimeRef = useRef<number | null>(null);
   const didInitRef = useRef(false);
 
   /* -------------------------------------------------- */
@@ -160,56 +154,31 @@ export function useOffers(): UseOffersReturn {
     [enableMockData, getOfferTrackingMeta, setOfferTrackingMeta]
   );
 
-  /* -------------------------------------------------- */
-  /* ---------------- POLLING ------------------------- */
-  /* -------------------------------------------------- */
+  // Polling extracted to useOfferStatusPolling — behavior unchanged from pre-refactor offers flow.
+  const shouldStopOffersPolling = useCallback((): boolean => {
+    const currentStatus = statusCode?.toString();
 
-  const stopPolling = useCallback(() => {
-    if (pollTimerRef.current) {
-      clearTimeout(pollTimerRef.current);
-      pollTimerRef.current = null;
-    }
-    pollStartTimeRef.current = null;
-    setIsPolling(false);
-  }, []);
-
-  const executePoll = useCallback(async () => {
-    if (pollStartTimeRef.current) {
-      const elapsed = Date.now() - pollStartTimeRef.current;
-      if (elapsed >= MAX_POLL_DURATION) {
-        stopPolling();
-        return;
-      }
+    if (shouldSkipRehit && isNewLead) {
+      return currentStatus !== '3004';
     }
 
-    const controller = new AbortController();
-    const timeoutId = setTimeout(
-      () => controller.abort(),
-      API_TIMEOUT
-    );
-
-    try {
-      await fetchOffers(controller.signal);
-    } finally {
-      clearTimeout(timeoutId);
-      setPollTick((p) => p + 1);
+    if (shouldSkipRehit) {
+      return offers.length > 0;
     }
-  }, [fetchOffers, stopPolling]);
 
-  useEffect(() => {
-    if (!isPolling) return;
+    if (newPLEnabled) {
+      return offers.length > 0;
+    }
 
-    pollTimerRef.current = setTimeout(
-      executePoll,
-      POLL_INTERVAL
-    );
+    return offers.length > 0 && !canReHit;
+  }, [canReHit, isNewLead, newPLEnabled, offers.length, shouldSkipRehit, statusCode]);
 
-    return () => {
-      if (pollTimerRef.current) {
-        clearTimeout(pollTimerRef.current);
-      }
-    };
-  }, [isPolling, executePoll, pollTick]);
+  const { startPolling } = useOfferStatusPolling({
+    isPolling,
+    setIsPolling,
+    onPollTick: fetchOffers,
+    shouldStopPolling: shouldStopOffersPolling,
+  });
 
   /* -------------------------------------------------- */
   /* ---------------- INITIALIZATION ------------------ */
@@ -254,17 +223,13 @@ export function useOffers(): UseOffersReturn {
         /* SINGLE LENDER + NEW LEAD                      */
         /* ---------------------------------------------- */
         if (shouldSkipRehit) {
-          setIsPolling(true);
-          pollStartTimeRef.current = Date.now();
-          executePoll();
+          startPolling();
         }
         else if (!shouldSkipRehit && pathname !== '/offers/status/') {
           await executeHitAllLenders();
           // In new PL, skip polling when initial fetch already has lenders (common on refresh).
           if (!(newPLEnabled && currentState.offers.length > 0)) {
-            setIsPolling(true);
-            pollStartTimeRef.current = Date.now();
-            executePoll();
+            startPolling();
           }
         }
       } else {
@@ -274,9 +239,7 @@ export function useOffers(): UseOffersReturn {
           await executeHitAllLenders();
           // In new PL, polling is only for the "no lenders yet" waiting state.
           if (!(newPLEnabled && currentState.offers.length > 0)) {
-            setIsPolling(true);
-            pollStartTimeRef.current = Date.now();
-            executePoll();
+            startPolling();
           }
         }
       }
@@ -286,45 +249,8 @@ export function useOffers(): UseOffersReturn {
     };
 
     init();
-  }, [isNewLead, shouldSkipRehit]);
+  }, [isNewLead, pathname, shouldSkipRehit, startPolling, executeHitAllLenders, fetchOffers, newPLEnabled]);
 
-  /* -------------------------------------------------- */
-  /* ---------------- STOP CONDITIONS ----------------- */
-  /* -------------------------------------------------- */
-
-  useEffect(() => {
-    if (!isPolling) return;
-
-    const currentStatus = statusCode?.toString();
-
-
-    if (shouldSkipRehit && isNewLead) {
-      if (currentStatus !== '3004') {
-        stopPolling();
-      }
-      return; 
-    }
-
-
-    if (shouldSkipRehit) {
-      if (offers.length > 0) stopPolling();
-    } else if (newPLEnabled) {
-      // New PL must stop as soon as lenders are available, even when re-hit remains enabled.
-      if (offers.length > 0) stopPolling();
-    } else {
-      if (offers.length > 0 && !canReHit) stopPolling();
-    }
-
-  }, [
-    offers.length,
-    canReHit,
-    isPolling,
-    shouldSkipRehit,
-    statusCode,
-    isNewLead,
-    newPLEnabled,
-    stopPolling,
-  ]);
   /* -------------------------------------------------- */
   /* ---------------- RETURN -------------------------- */
   /* -------------------------------------------------- */

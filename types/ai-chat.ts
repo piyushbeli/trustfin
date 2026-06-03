@@ -1,4 +1,13 @@
+import type { CheckStatusAllResponse, LenderOfferStatus } from '@/types/wecredit';
+
 export type AiChatInputType = 'number' | 'text' | 'date' | 'select';
+
+/** Backend-driven bot stages after field capture (plus field_capture:* while capturing). */
+export type AiChatBotStage =
+  | 'completed'
+  | 'offer_received'
+  | 'utm_click'
+  | `field_capture:${string}`;
 
 export interface AiChatOption {
   label: string;
@@ -47,7 +56,7 @@ export interface AiChatSession {
   updatedAt: string;
 }
 
-export type AiChatTurnType = 'chat' | 'field' | 'field_help';
+export type AiChatTurnType = 'chat' | 'field' | 'field_help' | 'offer';
 
 /** Unified chat-history turn shape from the AI assistant API. */
 export interface AiChatHistoryTurn {
@@ -57,6 +66,10 @@ export interface AiChatHistoryTurn {
   assistantResponse?: string;
   askedQuestion?: string;
   createdAt: string;
+  /** Persisted check-status payload when turnType is `offer` (chat-history uses `offer`). */
+  offer?: CheckStatusAllResponse;
+  /** @deprecated Prefer `offer` — some responses used offerData */
+  offerData?: LenderOfferStatus[] | CheckStatusAllResponse;
   // Legacy / optional metadata
   field?: string;
   userAnswer?: string;
@@ -102,6 +115,20 @@ export interface ChatQueryPayload {
   mobile?: string;
 }
 
+/** Messages rendered in the chat modal (text bubbles or offer blocks). */
+export type AiChatRenderableMessage =
+  | {
+      kind: 'text';
+      id: string;
+      role: 'assistant' | 'user';
+      text: string;
+    }
+  | {
+      kind: 'offer_list';
+      id: string;
+      offers: LenderOfferStatus[];
+    };
+
 export interface ChatQueryResponse {
   intent?: string | null;
   answer: string;
@@ -120,5 +147,18 @@ export interface ChatQueryResponse {
     isValid: boolean;
     errorMessage?: string | null;
   };
-  stage: string;
+  /** Primary stage from chat-query; prefer over local inference. */
+  stage?: string;
+  /** Some chat-query envelopes nest the same session object as chat-history. */
+  session?: Pick<
+    AiChatSession,
+    'stage' | 'nextField' | 'pendingField' | 'pendingQuestion' | 'isCompleted' | 'isFieldCaptureActive'
+  >;
+}
+
+/** Identifiers passed from in-chat offer UI when recording UTM / chat-offer. */
+export interface AiChatOfferClickContext {
+  userId: string;
+  /** Refreshes embedded offer_list in the modal after check-status-all (e.g. UTM click). */
+  onLiveOffersUpdated?: (offers: LenderOfferStatus[]) => void;
 }

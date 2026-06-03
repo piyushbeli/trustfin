@@ -19,6 +19,7 @@ const AiChatModal = (): JSX.Element | null => {
   const previousPathnameRef = useRef<string | null>(null);
   const {
     messages,
+    chatUserId,
     isLoadingHistory,
     isSubmitting,
     errorMessage,
@@ -26,12 +27,12 @@ const AiChatModal = (): JSX.Element | null => {
     inputError,
     nextFieldConfig,
     showSelectChips,
-    phaseLabel,
-    progressCurrent,
-    progressTotal,
-    isCompleted,
+    isChatInputDisabled,
     isEscalated,
     showGuestWelcome,
+    showOfferPolling,
+    isCheckingOfferStatus,
+    onLiveOffersUpdated,
     setInputValue,
     submitInput,
     submitChip,
@@ -54,15 +55,21 @@ const AiChatModal = (): JSX.Element | null => {
 
   const systemMessage = useMemo(() => {
     if (isEscalated) return AI_CHAT_COPY.escalateMessage;
-    // if (isCompleted) return AI_CHAT_COP
-    // Y.completedMessage;
     return null;
-  }, [isCompleted, isEscalated]);
+  }, [isEscalated]);
 
   const displayMessages = useMemo(
     () =>
       systemMessage
-        ? [...messages, { id: 'system_message', role: 'assistant' as const, text: systemMessage }]
+        ? [
+            ...messages,
+            {
+              kind: 'text' as const,
+              id: 'system_message',
+              role: 'assistant' as const,
+              text: systemMessage,
+            },
+          ]
         : messages,
     [messages, systemMessage],
   );
@@ -115,13 +122,14 @@ const AiChatModal = (): JSX.Element | null => {
       <div className="relative z-10 h-full md:h-[92vh] w-full md:w-4/5 lg:w-1/2 md:rounded-t-3xl border border-brand-200 bg-white shadow-2xl md:rounded-3xl">
         <div className="flex h-full flex-col overflow-hidden">
           <AiChatHeader onClose={closeModal} />
-          {/* {viewMode !== 'login' ? (
-            <AiChatProgress current={progressCurrent} total={progressTotal} phaseLabel={phaseLabel} />
-          ) : null} */}
           <AiChatModalBody
             viewMode={viewMode}
             messages={displayMessages}
+            chatUserId={chatUserId}
             showTypingIndicator={isSubmitting}
+            showOfferPolling={showOfferPolling}
+            isCheckingOfferStatus={isCheckingOfferStatus}
+            onLiveOffersUpdated={onLiveOffersUpdated}
           />
           <AiChatModalFooter
             errorMessage={errorMessage}
@@ -131,7 +139,7 @@ const AiChatModal = (): JSX.Element | null => {
             nextFieldConfig={nextFieldConfig}
             showSelectChips={showSelectChips}
             isSubmitting={isInputDisabled}
-            isCompleted={isEscalated}
+            isChatInputDisabled={isChatInputDisabled}
             onChange={handleInputChange}
             onSubmit={handleSubmit}
             onSelectChip={handleSelectChip}

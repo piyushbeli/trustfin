@@ -1,6 +1,8 @@
 import { inferFieldFromAskedQuestion } from '@/lib/ai-chat/infer-field-from-asked-question';
 import { getLastAskedQuestionFromTurns } from '@/lib/ai-chat/map-history-turns-to-messages';
+import { isFieldCaptureStage } from '@/lib/ai-chat/normalize-bot-stage';
 import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
+import { getPendingFieldFromStage } from '@/lib/ai-chat/session-stage';
 import type { AiChatFieldCaptureStatus, AiChatNextFieldConfig, AiChatSession, AiChatTurn } from '@/types/ai-chat';
 
 interface BuildFieldCaptureFromHistoryResult {
@@ -14,14 +16,12 @@ export const buildFieldCaptureFromHistory = (
   turns: AiChatTurn[],
   previousStatus?: AiChatFieldCaptureStatus | null,
 ): BuildFieldCaptureFromHistoryResult => {
-  const isCaptureActive =
-    session.isFieldCaptureActive || (session.shouldAskNextQuestion && !session.isCompleted);
-
-  if (!isCaptureActive) {
+  if (!isFieldCaptureStage(session.stage)) {
     return { fieldCaptureStatus: null, nextFieldConfig: null };
   }
 
-  const sessionNextField = session.pendingField ?? session.nextField ?? null;
+  const sessionNextField =
+    session.pendingField ?? session.nextField ?? getPendingFieldFromStage(session.stage);
   const lastAskedQuestion = getLastAskedQuestionFromTurns(turns);
   const inferredField =
     sessionNextField ?? inferFieldFromAskedQuestion(lastAskedQuestion) ?? inferFieldFromAskedQuestion(session.pendingQuestion);

@@ -31,8 +31,20 @@ import { isUpswingRedirectAllowed, mapingLenderNameToLenderCode, parseAmountToNu
 import { useInfoSearchParams } from '@/hooks/use-info-search-params';
 import { useUrlParamsStore } from '@/stores/url-params-store';
 import { pushOfferpageEvent } from '@/lib/gtm';
+import {
+  OffersViewEmbedded,
+  type OffersViewChatContext,
+  type OffersViewEmbeddedProps,
+} from '@/components/offers/offers-view-embedded';
 
-export const OffersView = () => {
+export interface OffersViewProps {
+  /** When provided, renders in-chat offer UI (same categories as /offers) without page fetch/routing. */
+  embeddedOffers?: LenderOfferStatus[];
+  chatContext?: OffersViewChatContext;
+  className?: string;
+}
+
+const OffersViewPage = (): ReactNode => {
   const router = useRouter();
   const { triggerApplyFlow } = useLoanApplicationStore();
   const reset = useOfferStore((state) => state.reset);
@@ -438,4 +450,17 @@ export const OffersView = () => {
       )}
     </div>
   );
+};
+
+export const OffersView = (props: OffersViewProps = {}): ReactNode => {
+  if (props.embeddedOffers && props.chatContext) {
+    const embeddedProps: OffersViewEmbeddedProps = {
+      offers: props.embeddedOffers,
+      chatContext: props.chatContext,
+      className: props.className,
+    };
+    return <OffersViewEmbedded {...embeddedProps} />;
+  }
+
+  return <OffersViewPage />;
 };
