@@ -120,4 +120,5 @@ export interface ChatQueryResponse {
     isValid: boolean;
     errorMessage?: string | null;
   };
+  stage: string;
 }

@@ -24,6 +24,10 @@ const countryCodes: CountryCode[] = [
 interface PhoneInputProps {
   /** Current phone number value */
   value: string;
+  /** Associates external <label htmlFor> with the tel input */
+  id?: string;
+  /** Name of the input */
+  name: string;
   /** Callback when phone number changes */
   onChange: (value: string, isValid: boolean) => void;
   /** Placeholder text */
@@ -38,6 +42,8 @@ interface PhoneInputProps {
  * Phone number input with country code selector and validation
  */
 const PhoneInput = ({
+  id,
+  name,
   value,
   onChange,
   placeholder = '',
@@ -84,21 +90,17 @@ const PhoneInput = ({
       {/* Input Container */}
       <div
         className={cn(
-          'flex items-center border-b-2 transition-colors',
-          isFocused ? 'border-wc-blue-500' : 'border-gray-200',
+          'flex items-center border-b-2 transition-colors border-brand-primary',
           hasError && 'border-red-500'
         )}
       >
         {/* Country Code Selector */}
         <button
           type="button"
-          onClick={() => setIsDropdownOpen(!isDropdownOpen)}
           className="flex items-center gap-1 py-3 pr-3 text-gray-700 hover:text-gray-900 transition-colors"
         >
-          <span className="text-xl">🇮🇳
-          </span>
-          <span className="text-sm font-medium">+91</span>
-          
+          <span className="text-xl">{selectedCountry.flag}</span>
+          <span className="text-sm font-medium">{selectedCountry.dialCode}</span>
         </button>
 
         {/* Divider */}
@@ -107,6 +109,8 @@ const PhoneInput = ({
         {/* Phone Input */}
         <input
           type="tel"
+          id={id}
+          name={name}
           value={value}
           onChange={handlePhoneChange}
           onFocus={() => setIsFocused(true)}
@@ -132,7 +136,7 @@ const PhoneInput = ({
               onClick={() => handleCountrySelect(country)}
               className={cn(
                 'w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors',
-                selectedCountry.code === country.code && 'bg-wc-blue-50'
+                selectedCountry.code === country.code && 'bg-brand-50'
               )}
             >
               <span className="text-xl">{country.flag}</span>
