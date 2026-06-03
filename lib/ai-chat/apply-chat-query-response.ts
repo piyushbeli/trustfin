@@ -1,5 +1,11 @@
-import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
 import { normalizeFieldCaptureStatus } from '@/lib/ai-chat/normalize-field-capture-status';
+import { resolveNextFieldConfig } from '@/lib/ai-chat/resolve-next-field-config';
+import {
+  deriveSessionFlagsFromStage,
+  getPendingFieldFromStage,
+  normalizeSessionFromApi,
+  resolveApiStage,
+} from '@/lib/ai-chat/session-stage';
 import type {
   AiChatFieldCaptureStatus,
   AiChatNextFieldConfig,
@@ -17,24 +23,34 @@ export const buildSessionFromChatQueryResponse = (
   { userId, currentSession }: BuildSessionParams,
 ): AiChatSession => {
   const fieldCaptureStatus = normalizeFieldCaptureStatus(data.fieldCaptureStatus);
-  const nextField = fieldCaptureStatus?.nextField ?? null;
+  const stage = resolveApiStage(data.stage, data.session?.stage);
+  const flags = deriveSessionFlagsFromStage(stage);
+  const nextFieldFromStage = getPendingFieldFromStage(stage);
+  const nextField =
+    fieldCaptureStatus?.nextField ?? data.session?.nextField ?? data.session?.pendingField ?? nextFieldFromStage;
   const pendingQuestion =
-    fieldCaptureStatus?.nextQuestion ?? data.answer ?? currentSession?.pendingQuestion ?? null;
+    fieldCaptureStatus?.nextQuestion ??
+    data.session?.pendingQuestion ??
+    data.answer ??
+    currentSession?.pendingQuestion ??
+    null;
 
-  return {
+  const session: AiChatSession = {
     userId,
     organizationCode: data.organizationCode ?? currentSession?.organizationCode ?? '',
     channel: data.channel ?? currentSession?.channel ?? '',
-    stage: nextField ? `field_capture:${nextField}` : 'completed',
+    stage: flags.stage,
     intent: data.intent ?? currentSession?.intent ?? null,
     nextField,
     pendingQuestion,
     pendingField: nextField,
-    isFieldCaptureActive: data.captureFields && Boolean(nextField),
-    isCompleted: !nextField,
+    isFieldCaptureActive: flags.isFieldCaptureActive,
+    isCompleted: flags.isCompleted,
     shouldAskNextQuestion: data.shouldAskNextQuestion,
     updatedAt: new Date().toISOString(),
   };
+
+  return normalizeSessionFromApi(session);
 };
 
 export interface ApplyChatQueryResponseStateParams {
@@ -67,7 +83,7 @@ export const applyChatQueryResponseState = ({
 
   const fieldCaptureStatus = normalizeFieldCaptureStatus(data.fieldCaptureStatus);
 
-  if (fieldCaptureStatus) {
+  if (fieldCaptureStatus && nextSession.isFieldCaptureActive) {
     setFieldCaptureStatus(fieldCaptureStatus);
     setNextFieldConfig(
       resolveNextFieldConfig({
@@ -79,5 +95,7 @@ export const applyChatQueryResponseState = ({
   }
 
   setFieldCaptureStatus(null);
-  setNextFieldConfig(resolveNextFieldConfig({ session: nextSession }));
+  setNextFieldConfig(
+    nextSession.isFieldCaptureActive ? resolveNextFieldConfig({ session: nextSession }) : null,
+  );
 };

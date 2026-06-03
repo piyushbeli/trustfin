@@ -99,6 +99,7 @@ export const ENDPOINTS = {
   AI_ASSISTANT: {
     CHAT_HISTORY: 'chat-history',
     CHAT_QUERY: 'chat-query',
+    CHAT_OFFER: 'chat-offer',
   },
 } as const;
 

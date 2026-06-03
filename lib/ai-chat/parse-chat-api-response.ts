@@ -17,9 +17,15 @@ function isChatQueryResponse(value: unknown): value is ChatQueryResponse {
 /** Unwraps common API envelopes so the chat UI always receives `{ session, turns }`. */
 export function parseChatHistoryResponse(raw: unknown): ChatHistoryResponse | null {
   if (isChatHistoryResponse(raw)) {
+    const offerTurnCount = raw.turns.filter(
+      (turn) => turn.turnType?.toLowerCase() === 'offer',
+    ).length;
+
     logAiChat('parse', 'chat history parsed (root)', {
       turnCount: raw.turns.length,
+      offerTurnCount,
       sessionUserId: raw.session.userId,
+      sessionStage: raw.session.stage,
     });
     return raw;
   }
@@ -42,12 +48,18 @@ export function parseChatHistoryResponse(raw: unknown): ChatHistoryResponse | nu
 /** Unwraps common API envelopes for chat-query responses. */
 export function parseChatQueryResponse(raw: unknown): ChatQueryResponse | null {
   if (isChatQueryResponse(raw)) {
-    logAiChat('parse', 'chat query parsed (root)', { intent: raw.intent ?? null });
+    logAiChat('parse', 'chat query parsed (root)', {
+      intent: raw.intent ?? null,
+      stage: raw.stage ?? raw.session?.stage ?? null,
+    });
     return raw;
   }
 
   if (isRecord(raw) && isChatQueryResponse(raw.data)) {
-    logAiChat('parse', 'chat query parsed (data envelope)', { intent: raw.data.intent ?? null });
+    logAiChat('parse', 'chat query parsed (data envelope)', {
+      intent: raw.data.intent ?? null,
+      stage: raw.data.stage ?? raw.data.session?.stage ?? null,
+    });
     return raw.data;
   }
 

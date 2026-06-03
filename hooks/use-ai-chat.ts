@@ -11,27 +11,31 @@ import {
 } from '@/lib/ai-chat/chat-identity';
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
 import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
+import { applyLiveOffersToChat } from '@/lib/ai-chat/offer-sync/apply-live-offers-to-chat';
+import { mergeHistoryWithLiveOffers } from '@/lib/ai-chat/offer-sync/merge-offer-messages';
+import { prefetchChatConsentIp } from '@/lib/ai-chat/chat-consent-ip';
+import { isFieldCaptureStage } from '@/lib/ai-chat/normalize-bot-stage';
+import { resolveAiChatInputState } from '@/lib/ai-chat/resolve-chat-input-state';
+import { normalizeSessionFromApi } from '@/lib/ai-chat/session-stage';
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { promoteChatAuthFromResponse } from '@/lib/ai-chat/promote-chat-auth-from-response';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
+import { useAiChatOfferSync } from '@/hooks/use-ai-chat-offer-sync';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
 import { getErrorMessage, isAbortError } from '@/lib/utils/error-helpers';
 import type {
   AiChatFieldCaptureStatus,
   AiChatNextFieldConfig,
+  AiChatRenderableMessage,
   AiChatSession,
   ChatHistoryParams,
 } from '@/types/ai-chat';
-
-export interface AiChatMessage {
-  id: string;
-  role: 'assistant' | 'user';
-  text: string;
-}
+import type { LenderOfferStatus } from '@/types/wecredit';
 
 interface UseAiChatResult {
-  messages: AiChatMessage[];
+  messages: AiChatRenderableMessage[];
+  chatUserId: string;
   session: AiChatSession | null;
   isLoadingHistory: boolean;
   isSubmitting: boolean;
@@ -41,12 +45,14 @@ interface UseAiChatResult {
   nextFieldConfig: AiChatNextFieldConfig | null;
   showSelectChips: boolean;
   fieldCaptureStatus: AiChatFieldCaptureStatus | null;
-  phaseLabel: string;
-  progressCurrent: number;
-  progressTotal: number;
-  isCompleted: boolean;
+  isFieldCaptureComplete: boolean;
+  isChatInputDisabled: boolean;
   isEscalated: boolean;
   showGuestWelcome: boolean;
+  isOfferPolling: boolean;
+  isCheckingOfferStatus: boolean;
+  showOfferPolling: boolean;
+  onLiveOffersUpdated: (offers: LenderOfferStatus[]) => void;
   setInputValue: (value: string) => void;
   submitInput: () => Promise<void>;
   submitChip: (value: string) => Promise<void>;
@@ -66,11 +72,11 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [showWelcomeScreen, setShowWelcomeScreen] = useState<boolean>(false);
   const prefillQuestionRef = useRef<string | null>(null);
   const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
-  const optimisticMessageRef = useRef<AiChatMessage | null>(null);
+  const optimisticMessageRef = useRef<AiChatRenderableMessage | null>(null);
   const { user, isAuthenticated } = useAuthStore();
-  const { prefillQuestion, sessionId } = useAiChatStore();
+  const { prefillQuestion } = useAiChatStore();
 
-  const [messages, setMessages] = useState<AiChatMessage[]>([]);
+  const [messages, setMessages] = useState<AiChatRenderableMessage[]>([]);
   const [session, setSession] = useState<AiChatSession | null>(null);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
@@ -81,6 +87,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [dismissedSelectField, setDismissedSelectField] = useState<string | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
+  /** Latest lenders from check-status-all — used to restore UI if chat-history refresh races ahead of offer turn. */
+  const lastLiveOffersRef = useRef<LenderOfferStatus[]>([]);
 
   const clearHistoryRequest = useCallback((): void => {
     if (!historyAbortRef.current) return;
@@ -104,10 +112,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       userId,
       organizationCode: ORG_CODE,
       channel: CHANNEL,
-      sessionId: sessionId ?? undefined,
       mobile: user?.phoneNumber,
     };
-  }, [isAuthenticated, sessionId, user?.phoneNumber]);
+  }, [isAuthenticated, user?.phoneNumber]);
 
   const chatUserId = useMemo(
     () =>
@@ -164,26 +171,49 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       const suppressMessages = Boolean(options?.suppressMessages);
       const mappedMessages = suppressMessages ? [] : mapHistoryTurnsToMessages(turns);
 
+      const normalizedSession = normalizeSessionFromApi(history.session);
+
       const shouldAppendPendingQuestion =
         !suppressMessages &&
-        history.session.shouldAskNextQuestion &&
-        !history.session.isCompleted &&
-        Boolean(history.session.pendingQuestion) &&
-        !mappedMessages.some((message) => message.text === history.session.pendingQuestion);
+        normalizedSession.shouldAskNextQuestion &&
+        isFieldCaptureStage(normalizedSession.stage) &&
+        Boolean(normalizedSession.pendingQuestion) &&
+        !mappedMessages.some(
+          (message) =>
+            message.kind === 'text' && message.text === normalizedSession.pendingQuestion,
+        );
 
-      if (shouldAppendPendingQuestion && history.session.pendingQuestion) {
+      if (shouldAppendPendingQuestion && normalizedSession.pendingQuestion) {
         mappedMessages.push({
-          id: `pending_${history.session.updatedAt}`,
+          kind: 'text',
+          id: `pending_${normalizedSession.updatedAt}`,
           role: 'assistant',
-          text: history.session.pendingQuestion,
+          text: normalizedSession.pendingQuestion,
         });
       }
 
-      setMessages(mappedMessages);
-      setSession(history.session);
+      setMessages((previous) => {
+        const merged = mergeHistoryWithLiveOffers(
+          mappedMessages,
+          previous,
+          lastLiveOffersRef.current,
+        );
+
+        logAiChat('hook', 'applyHistoryResponse messages merged', {
+          historyMessageCount: mappedMessages.length,
+          mergedMessageCount: merged.length,
+          hasHistoryOffer: mappedMessages.some((message) => message.kind === 'offer_list'),
+          hasMergedOffer: merged.some((message) => message.kind === 'offer_list'),
+          lastLiveOfferCount: lastLiveOffersRef.current.length,
+          sessionStage: normalizedSession.stage,
+        });
+
+        return merged;
+      });
+      setSession(normalizedSession);
 
       const { fieldCaptureStatus, nextFieldConfig } = buildFieldCaptureFromHistory(
-        history.session,
+        normalizedSession,
         turns,
       );
       setFieldCaptureStatus(fieldCaptureStatus);
@@ -202,7 +232,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       const context = buildRequestContext();
       logAiChat('hook', 'refreshChatHistory started', {
         userId: context.userId,
-        sessionId: context.sessionId ?? null,
         suppressMessages: options?.suppressMessages ?? false,
       });
 
@@ -283,6 +312,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           setMessages((prev) => [
             ...prev,
             {
+              kind: 'text',
               id: `server_validation_${Date.now()}`,
               role: 'assistant',
               text: data.answer,
@@ -316,7 +346,12 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         setIsEscalated,
       });
 
-      const assistantMessages = getChatQueryAssistantMessages(data);
+      const assistantMessages = getChatQueryAssistantMessages(data).map((message) => ({
+        kind: 'text' as const,
+        id: message.id,
+        role: message.role,
+        text: message.text,
+      }));
       if (assistantMessages.length > 0) {
         setMessages((prev) => [...prev, ...assistantMessages]);
       }
@@ -341,7 +376,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       setInputError(null);
 
-      const optimisticMessage: AiChatMessage = {
+      const optimisticMessage: AiChatRenderableMessage = {
+        kind: 'text',
         id: `local_user_${Date.now()}`,
         role: 'user',
         text: displayValue ?? trimmedValue,
@@ -420,6 +456,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       return;
     }
 
+    void prefetchChatConsentIp();
+
     if (hasInitialHistoryLoadedRef.current) {
       logAiChat('hook', 'initial history load skipped (already loaded)');
       return;
@@ -478,23 +516,49 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     };
   }, [buildRequestContext, clearHistoryRequest, clearSubmitRequest, isOpen, refreshChatHistory]);
 
-  const progressCurrent = fieldCaptureStatus?.capturedFields?.length ?? 0;
-  const progressTotal = fieldCaptureStatus?.requiredFields?.length ?? 0;
-  const phaseLabel = useMemo(() => {
-    if (fieldCaptureStatus?.nextField || session?.isFieldCaptureActive) return 'LOAN MATCHING';
-    return 'CHAT';
-  }, [fieldCaptureStatus?.nextField, session?.isFieldCaptureActive]);
+  const sessionStage = session?.stage;
+  const { isFieldCaptureComplete, isChatInputDisabled } = useMemo(
+    () => resolveAiChatInputState(sessionStage),
+    [sessionStage],
+  );
 
-  const isCompleted = Boolean(session?.isCompleted) || Boolean(fieldCaptureStatus && !fieldCaptureStatus.nextField);
+  const onLiveOffersUpdated = useCallback(
+    (offers: LenderOfferStatus[]) => {
+      applyLiveOffersToChat({
+        offers,
+        setMessages,
+        lastLiveOffersRef,
+        userId: chatUserId,
+        source: 'utm_click',
+      });
+    },
+    [chatUserId],
+  );
+
+  const { isOfferPolling, isCheckingOfferStatus } = useAiChatOfferSync({
+    stage: session?.stage,
+    userId: chatUserId,
+    mobile: user?.phoneNumber,
+    isOpen,
+    setMessages,
+    lastLiveOffersRef,
+  });
+
+  const hasOfferMessages = useMemo(
+    () => messages.some((message) => message.kind === 'offer_list'),
+    [messages],
+  );
+
+  const showOfferPolling = (isOfferPolling || isCheckingOfferStatus) && !hasOfferMessages;
 
   const showSelectChips = useMemo(() => {
-    if (isCompleted || nextFieldConfig?.inputType !== 'select') {
+    if (!isFieldCaptureStage(sessionStage) || nextFieldConfig?.inputType !== 'select') {
       return false;
     }
 
     const activeField = nextFieldConfig.field;
     return dismissedSelectField !== activeField;
-  }, [dismissedSelectField, isCompleted, nextFieldConfig]);
+  }, [dismissedSelectField, nextFieldConfig, sessionStage]);
 
   const showGuestWelcome =
     showWelcomeScreen && !hasGuestStartedChat && !isLoadingHistory;
@@ -525,6 +589,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
   return {
     messages,
+    chatUserId,
     session,
     isLoadingHistory,
     isSubmitting,
@@ -534,12 +599,14 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     nextFieldConfig,
     showSelectChips,
     fieldCaptureStatus,
-    phaseLabel,
-    progressCurrent,
-    progressTotal,
-    isCompleted,
+    isFieldCaptureComplete,
+    isChatInputDisabled,
     isEscalated,
     showGuestWelcome,
+    isOfferPolling,
+    isCheckingOfferStatus,
+    showOfferPolling,
+    onLiveOffersUpdated,
     setInputValue,
     submitInput: async () => submitValue(inputValue),
     submitChip: async (value: string) => {

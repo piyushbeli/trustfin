@@ -17,6 +17,7 @@ import {
 import { getAmountUptoLabel } from '@/lib/lender-display';
 import { StatusBadge } from './status-badge';
 import { OfferCardGradientBorder } from './offer-card-gradient-border';
+import { cn } from '@/lib/utils';
 
 /** Single-line amount copy for carousel cards (e.g. "Amount upto 5 lakhs"). */
 const getCarouselAmountLine = (
@@ -56,6 +57,8 @@ const formatCarouselTenureInline = (
 interface RecentlyClickedOffersCarouselProps {
   offers: LenderOfferStatus[];
   onOfferClick: (offer: LenderOfferStatus) => void;
+  className?: string;
+  headingClassName?: string;
 }
 
 function RecentlyClickedOfferCard({
@@ -131,14 +134,16 @@ function RecentlyClickedOfferCard({
 export function RecentlyClickedOffersCarousel({
   offers,
   onOfferClick,
+  className,
+  headingClassName,
 }: RecentlyClickedOffersCarouselProps) {
   if (offers.length === 0) {
     return null;
   }
 
   return (
-    <section className="mb-4 mx-auto max-w-xl">
-      <h2 className="text-sm font-medium text-gray-900 mb-4 ml-4 mt-2 lg:ml-0">
+    <section className={cn('mb-4 mx-auto max-w-xl', className)}>
+      <h2 className={cn("text-sm font-medium text-gray-900 mb-4 ml-4 mt-2 lg:ml-0", headingClassName)}>
         Recently Clicked Offers
       </h2>
 

@@ -15,6 +15,7 @@ import {
   CarouselDots,
 } from '@/components/ui/carousel';
 import type { LenderOfferStatus } from '@/types/wecredit';
+import { cn } from '@/lib/utils';
 
 const UNMATCHED_REASONS = [
   "You don't meet the lenders eligibility criteria.",
@@ -103,12 +104,13 @@ const UnmatchedLenderCard = ({
 export type UnmatchedOffersSectionProps = {
   /** Lenders with lenderStatus false and wcStatus REJECTED or NOT_PROCESSED */
   offers: LenderOfferStatus[];
+  className?: string;
 };
 
 /**
  * Displays explanatory content about unmatched offers with carousel of lenders
  */
-export const UnmatchedOffersSection = ({ offers }: UnmatchedOffersSectionProps) => {
+export const UnmatchedOffersSection = ({ offers, className }: UnmatchedOffersSectionProps) => {
   const carouselLenders: CarouselLenderRow[] = useMemo(() => {
     const fromApi: CarouselLenderRow[] = offers.map((offer, index) => ({
       key: `api-${offer.lenderName ?? 'unknown'}-${index}`,
@@ -130,7 +132,7 @@ export const UnmatchedOffersSection = ({ offers }: UnmatchedOffersSectionProps) 
   }, [offers]);
 
   return (
-    <section className="rounded-[8px] bg-brand-lightest-from pb-4 mb-25 ">
+    <section className={cn("rounded-[8px] bg-brand-lightest-from pb-25 my-4", className)}>
       <h3 className="text-[18px] font-light text-gray-800 mb-3 px-4 pt-4">
         Unmatched Offers
       </h3>

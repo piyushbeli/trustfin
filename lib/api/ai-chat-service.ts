@@ -13,8 +13,9 @@ import type {
   ChatQueryPayload,
   ChatQueryResponse,
 } from '@/types/ai-chat';
+import type { CheckStatusAllResponse } from '@/types/wecredit';
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
-import { fetchUserIp } from './auth-service';
+import { getChatConsentIp } from '@/lib/ai-chat/chat-consent-ip';
 
 const AI_CHAT_BASE = wecreditConfig.aiChatUrl;
 const CHAT_HISTORY_NOT_FOUND_ERROR = 'chat_history_not_found';
@@ -79,9 +80,22 @@ async function requestChatApi<T>(
   const requestUrl = String(request);
   const requestMethod = requestInit.method ?? 'GET';
 
+  const endpointHint =
+    typeof requestInit.body === 'string'
+      ? (() => {
+          try {
+            const body = JSON.parse(requestInit.body) as { endpoint?: string };
+            return body.endpoint ?? null;
+          } catch {
+            return null;
+          }
+        })()
+      : new URL(requestUrl).searchParams.get('endpoint');
+
   logAiChat('service', 'request started', {
     method: requestMethod,
     url: requestUrl,
+    endpoint: endpointHint,
   });
 
   try {
@@ -164,11 +178,54 @@ export async function fetchChatHistory(
   );
 }
 
+export interface SubmitChatOfferParams {
+  userId: string;
+  organizationCode: string;
+  channel: string;
+  mobile?: string;
+  sessionId?: string;
+  /** Full check-status-all payload — persisted as the offer turn in chat-history. */
+  offerData: CheckStatusAllResponse;
+}
+
+function parseChatOfferResponse(_raw: unknown): { saved: boolean } | null {
+  // chat-offer may return an empty or varying envelope; treat HTTP 200 as success.
+  return { saved: true };
+}
+
+/** Persists check-status offers via chat-offer; backend advances stage to offerreceived in history. */
+export async function submitChatOffer(
+  params: SubmitChatOfferParams,
+  signal?: AbortSignal,
+): Promise<ChatServiceResult<{ saved: boolean }>> {
+  const consentIp = await getChatConsentIp();
+
+  const offerPayload = {
+    endpoint: ENDPOINTS.AI_ASSISTANT.CHAT_OFFER,
+    userId: params.userId,
+    organizationCode: params.organizationCode,
+    channel: params.channel,
+    offerData: params.offerData,
+    ...(params.sessionId ? { sessionId: params.sessionId } : {}),
+  };
+
+  return requestChatApi<{ saved: boolean }>(
+    AI_CHAT_BASE,
+    {
+      method: 'POST',
+      headers: buildHeaders(params.mobile, consentIp),
+      body: JSON.stringify(offerPayload),
+      signal,
+    },
+    parseChatOfferResponse,
+  );
+}
+
 export async function submitChatQuery(
   payload: ChatQueryPayload,
   signal?: AbortSignal,
 ): Promise<ChatServiceResult<ChatQueryResponse>> {
-  const consentIp = await fetchUserIp();
+  const consentIp = await getChatConsentIp();
 
   const queryPayload = {
     endpoint: ENDPOINTS.AI_ASSISTANT.CHAT_QUERY,

@@ -1,7 +1,8 @@
 'use client';
 
 import { JSX } from 'react';
-import type { AiChatMessage } from '@/hooks/use-ai-chat';
+import type { AiChatRenderableMessage } from '@/types/ai-chat';
+import type { LenderOfferStatus } from '@/types/wecredit';
 import AiChatLoadingRow from './ai-chat-loading-row';
 import AiChatMessageList from './ai-chat-message-list';
 import AiChatGuestWelcome from './ai-chat-guest-welcome';
@@ -9,14 +10,22 @@ import type { AiChatViewMode } from './ai-chat-view';
 
 interface AiChatModalBodyProps {
   viewMode: AiChatViewMode;
-  messages: AiChatMessage[];
+  messages: AiChatRenderableMessage[];
+  chatUserId: string;
   showTypingIndicator: boolean;
+  showOfferPolling?: boolean;
+  isCheckingOfferStatus?: boolean;
+  onLiveOffersUpdated?: (offers: LenderOfferStatus[]) => void;
 }
 
 const AiChatModalBody = ({
   viewMode,
   messages,
+  chatUserId,
   showTypingIndicator,
+  showOfferPolling,
+  isCheckingOfferStatus,
+  onLiveOffersUpdated,
 }: AiChatModalBodyProps): JSX.Element => {
   if (viewMode === 'initialLoading') {
     return <AiChatLoadingRow />;
@@ -26,7 +35,16 @@ const AiChatModalBody = ({
     return <AiChatGuestWelcome />;
   }
 
-  return <AiChatMessageList messages={messages} showTypingIndicator={showTypingIndicator} />;
+  return (
+    <AiChatMessageList
+      messages={messages}
+      chatUserId={chatUserId}
+      showTypingIndicator={showTypingIndicator}
+      showOfferPolling={showOfferPolling}
+      isCheckingOfferStatus={isCheckingOfferStatus}
+      onLiveOffersUpdated={onLiveOffersUpdated}
+    />
+  );
 };
 
 export default AiChatModalBody;

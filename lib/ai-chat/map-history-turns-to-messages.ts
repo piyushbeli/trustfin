@@ -1,10 +1,6 @@
-import type { AiChatTurn } from '@/types/ai-chat';
-
-export interface MappedChatMessage {
-  id: string;
-  role: 'assistant' | 'user';
-  text: string;
-}
+import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
+import { parseOffersFromHistoryTurn } from '@/lib/ai-chat/parse-offer-data-from-turn';
+import type { AiChatRenderableMessage, AiChatTurn } from '@/types/ai-chat';
 
 const shouldShowAskedQuestion = (turn: AiChatTurn): boolean => {
   const askedQuestion = turn.askedQuestion?.trim();
@@ -25,18 +21,19 @@ const shouldShowAskedQuestion = (turn: AiChatTurn): boolean => {
 };
 
 /** Maps chat-history turns to UI message bubbles in conversational order. */
-export const mapHistoryTurnsToMessages = (turns: AiChatTurn[]): MappedChatMessage[] => {
-  const mapped: MappedChatMessage[] = [];
+export const mapHistoryTurnsToMessages = (turns: AiChatTurn[]): AiChatRenderableMessage[] => {
+  const mapped: AiChatRenderableMessage[] = [];
 
   turns.forEach((turn) => {
     const userText = turn.userQuery?.trim() || turn.userAnswer?.trim();
     if (userText) {
-      mapped.push({ id: `${turn.turnId}_user`, role: 'user', text: userText });
+      mapped.push({ kind: 'text', id: `${turn.turnId}_user`, role: 'user', text: userText });
     }
 
     const assistantResponse = turn.assistantResponse?.trim();
     if (assistantResponse) {
       mapped.push({
+        kind: 'text',
         id: `${turn.turnId}_assistant`,
         role: 'assistant',
         text: assistantResponse,
@@ -45,10 +42,31 @@ export const mapHistoryTurnsToMessages = (turns: AiChatTurn[]): MappedChatMessag
 
     if (shouldShowAskedQuestion(turn) && turn.askedQuestion) {
       mapped.push({
+        kind: 'text',
         id: `${turn.turnId}_asked`,
         role: 'assistant',
         text: turn.askedQuestion,
       });
+    }
+
+    const normalizedTurnType = turn.turnType?.toLowerCase();
+
+    if (normalizedTurnType === 'offer') {
+      // Offer UI comes from persisted history, not from live check-status in the message list.
+      const offers = parseOffersFromHistoryTurn(turn);
+      if (offers.length > 0) {
+        mapped.push({
+          kind: 'offer_list',
+          id: `${turn.turnId}_offers`,
+          offers,
+        });
+      } else {
+        logAiChat('parse', 'offer turn had no parseable lenders', {
+          turnId: turn.turnId,
+          hasOffer: Boolean(turn.offer),
+          hasOfferData: Boolean(turn.offerData),
+        });
+      }
     }
   });
 

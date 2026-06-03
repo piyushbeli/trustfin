@@ -13,7 +13,7 @@ interface AiChatInputBarProps {
   nextFieldConfig: AiChatNextFieldConfig | null;
   showSelectChips: boolean;
   isSubmitting: boolean;
-  isCompleted: boolean;
+  isChatInputDisabled: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
   onSelectChip: (value: string) => void;
@@ -26,7 +26,7 @@ const AiChatInputBar = ({
   nextFieldConfig,
   showSelectChips,
   isSubmitting,
-  isCompleted,
+  isChatInputDisabled,
   onChange,
   onSubmit,
   onSelectChip,
@@ -43,7 +43,7 @@ const AiChatInputBar = ({
           value={inputValue}
           nextFieldConfig={nextFieldConfig}
           showSelectChips
-          disabled={isCompleted}
+          disabled={isChatInputDisabled}
           onChange={onChange}
           onSubmit={onSubmit}
           onSelectChip={onSelectChip}
@@ -67,8 +67,8 @@ const AiChatInputBar = ({
             nextFieldConfig={nextFieldConfig}
             showSelectChips={false}
             placeholder={defaultPlaceholder}
-            disabled={isCompleted}
-            shouldAutoFocus={!isCompleted}
+            disabled={isChatInputDisabled}
+            shouldAutoFocus={!isChatInputDisabled}
             onChange={onChange}
             onSubmit={onSubmit}
             onSelectChip={onSelectChip}
@@ -77,7 +77,7 @@ const AiChatInputBar = ({
         <button
           type="button"
           onClick={onSubmit}
-          disabled={isSubmitting || isCompleted || !inputValue.trim()}
+          disabled={isSubmitting || isChatInputDisabled || !inputValue.trim()}
           className="wc-hero-cta-gradient rounded-xl p-3 text-white disabled:opacity-60"
           aria-label="Send message"
         >

@@ -6,6 +6,7 @@ export * from './error-state';
 export * from './polling-state';
 export * from './empty-state';
 export * from './offers-view';
+export * from './offers-view-embedded';
 export * from './offers-status-view';
 export * from './approval-badge';
 export * from './status-badge';
