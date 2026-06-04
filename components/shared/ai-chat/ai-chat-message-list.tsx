@@ -45,7 +45,7 @@ const AiChatMessageList = ({
   }, [showOfferPolling, isCheckingOfferStatus]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4">
+    <div className="flex-1 overflow-y-auto px-4 py-4 pb-2">
       <div className="flex flex-col gap-3">
         {messages.map((message) => (
           <div key={message.id}>

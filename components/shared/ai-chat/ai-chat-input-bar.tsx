@@ -78,7 +78,7 @@ const AiChatInputBar = ({
           type="button"
           onClick={onSubmit}
           disabled={isSubmitting || isChatInputDisabled || !inputValue.trim()}
-          className="wc-hero-cta-gradient rounded-xl p-3 text-white disabled:opacity-60"
+          className="wc-hero-cta-gradient flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl p-3 text-white disabled:opacity-60"
           aria-label="Send message"
         >
           <ArrowRight className="h-5 w-5" />

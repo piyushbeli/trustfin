@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ActionButton } from '@/components/shared';
 import { BRAND_NAME } from '@/lib/constants/common';
 import { cn } from '@/lib/utils';
+import { MOBILE_MODAL_FOOTER_SAFE } from '@/lib/utils/mobile-modal-layout';
 
 interface AuthModalFooterProps {
   isContinueDisabled: boolean;
@@ -24,7 +25,7 @@ export const AuthModalFooter = ({
   onContinue,
 }: AuthModalFooterProps): React.ReactNode => {
   return (
-    <div className="shrink-0 px-6 pb-8 pt-4 bg-white">
+    <div className={`shrink-0 bg-white px-6 pt-4 ${MOBILE_MODAL_FOOTER_SAFE}`}>
       <div className="flex items-start gap-3 mb-5">
         <input
           type="checkbox"

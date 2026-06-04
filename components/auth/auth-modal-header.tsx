@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import { X } from 'lucide-react';
 import { IMAGES } from '@/lib/constants/images';
+import { MOBILE_MODAL_HEADER_SAFE } from '@/lib/utils/mobile-modal-layout';
 
 interface AuthModalHeaderProps {
   onClose: () => void;
@@ -13,7 +14,9 @@ interface AuthModalHeaderProps {
  */
 export const AuthModalHeader = ({ onClose }: AuthModalHeaderProps): React.ReactNode => {
   return (
-    <header className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0">
+    <header
+      className={`${MOBILE_MODAL_HEADER_SAFE} flex shrink-0 items-center justify-between px-4 pb-2`}
+    >
       <Image
         src={IMAGES.LOGOS.TRUSTFIN_LOGO}
         alt="TrustFin.ai"
