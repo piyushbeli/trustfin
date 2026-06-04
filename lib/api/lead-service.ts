@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next';
 import { wecreditConfig } from '@/lib/config';
 import { ENDPOINTS, STORAGE_AUTH_TOKEN, STORAGE_MOBILE } from '@/lib/constants/api-keys';
 import { getEffectivePartnerCode } from '@/lib/utils/effective-partner-code';
+import { fetchUserIp } from '@/lib/utils/user-ip';
 import { toast } from 'sonner';
 import { useUrlParamsStore } from '@/stores/url-params-store';
 import { getAttributionHeaders, getAttributionHeadersCommon, getAttributionUtmUrl } from './attribution-headers';
@@ -47,23 +48,6 @@ interface LeadServiceResult<T> {
 // Note: we intentionally do not use `window.location.href` directly for `utm_url` header,
 // because we sometimes clean URL query params via `history.replaceState` immediately after capture.
 // Instead, we capture the original URL in the session store and reuse it.
-
-/**
- * Gets user IP address from ipify.org
- * Returns placeholder if fetch fails
- */
-async function fetchUserIp(): Promise<string> {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    if (response.ok) {
-      const data = await response.json();
-      return data.ip || '127.0.0.1';
-    }
-  } catch {
-    // Silently fail and return placeholder
-  }
-  return '127.0.0.1';
-}
 
 /**
  * Gets current datetime in required format: yyyy-MM-dd HH:mm:ss

@@ -1,9 +1,8 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState, type Dispatch, type SetStateAction } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getCookie } from 'cookies-next';
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
-import { applyLiveOffersToChat } from '@/lib/ai-chat/offer-sync/apply-live-offers-to-chat';
 import {
   persistChatOfferForChat,
   runCheckStatusForChat,
@@ -12,30 +11,26 @@ import { normalizeBotStage, shouldPollOffersInChat } from '@/lib/ai-chat/normali
 import { STORAGE_AUTH_TOKEN, STORAGE_MOBILE } from '@/lib/constants/api-keys';
 import { useOfferStatusPolling } from '@/hooks/use-offer-status-polling';
 import { newPLEnabled } from '@/hooks/use-offers';
-import type { AiChatRenderableMessage } from '@/types/ai-chat';
-import type { LenderOfferStatus } from '@/types/wecredit';
-
 interface UseAiChatOfferSyncParams {
   stage: string | null | undefined;
   userId: string;
   mobile?: string;
   isOpen: boolean;
-  setMessages: Dispatch<SetStateAction<AiChatRenderableMessage[]>>;
-  lastLiveOffersRef: { current: LenderOfferStatus[] };
+  historyHasOfferMessages: boolean;
+  onChatHistoryRefresh: () => Promise<void>;
 }
 
 /**
- * When session stage is `completed`: poll check-status-all (same timing as /offers),
- * render offers in-modal when lenders arrive, then call chat-offer once.
- * chat-history is NOT refreshed here — it loads when the user reopens the modal.
+ * When session stage is `completed`: poll check-status-all, persist via chat-offer,
+ * then reload chat-history so the thread always reflects the server.
  */
 export function useAiChatOfferSync({
   stage,
   userId,
   mobile,
   isOpen,
-  setMessages,
-  lastLiveOffersRef,
+  historyHasOfferMessages,
+  onChatHistoryRefresh,
 }: UseAiChatOfferSyncParams): {
   isOfferPolling: boolean;
   isCheckingOfferStatus: boolean;
@@ -44,19 +39,6 @@ export function useAiChatOfferSync({
   const [isCheckingOfferStatus, setIsCheckingOfferStatus] = useState(false);
   const pollSnapshotRef = useRef({ lenderCount: 0, canReHit: true });
   const hasPersistedChatOfferRef = useRef(false);
-
-  const renderLiveOffers = useCallback(
-    (offers: LenderOfferStatus[]): void => {
-      applyLiveOffersToChat({
-        offers,
-        setMessages,
-        lastLiveOffersRef,
-        userId,
-        source: 'poll',
-      });
-    },
-    [lastLiveOffersRef, setMessages, userId],
-  );
 
   const onPollTick = useCallback(
     async (signal: AbortSignal): Promise<void> => {
@@ -83,9 +65,6 @@ export function useAiChatOfferSync({
           token,
           userId,
           signal,
-          onCheckStatusSuccess: (_data, lenders) => {
-            renderLiveOffers(lenders);
-          },
         });
 
         pollSnapshotRef.current = {
@@ -109,13 +88,14 @@ export function useAiChatOfferSync({
           return;
         }
 
-        renderLiveOffers(checkResult.data.lenders ?? []);
-
         if (hasPersistedChatOfferRef.current) {
-          logAiChat('offer-sync', 'poll tick — lenders present, chat-offer already sent', {
-            userId,
-            lenderCount: checkResult.lenderCount,
-          });
+          if (!historyHasOfferMessages) {
+            logAiChat('offer-sync', 'poll tick — reloading chat-history for offer turn', {
+              userId,
+              lenderCount: checkResult.lenderCount,
+            });
+            await onChatHistoryRefresh();
+          }
           return;
         }
 
@@ -128,12 +108,17 @@ export function useAiChatOfferSync({
 
         if (persistResult.success) {
           hasPersistedChatOfferRef.current = true;
+          logAiChat('offer-sync', 'poll tick — chat-offer saved, reloading chat-history', {
+            userId,
+            lenderCount: checkResult.lenderCount,
+          });
+          await onChatHistoryRefresh();
         }
       } finally {
         setIsCheckingOfferStatus(false);
       }
     },
-    [mobile, renderLiveOffers, userId],
+    [historyHasOfferMessages, mobile, onChatHistoryRefresh, userId],
   );
 
   const shouldStopChatOfferPolling = useCallback((): boolean => {
@@ -178,7 +163,7 @@ export function useAiChatOfferSync({
     }
 
     hasPersistedChatOfferRef.current = false;
-    logAiChat('offer-sync', 'starting check-status polling (no chat-history refresh)', {
+    logAiChat('offer-sync', 'starting check-status polling (chat-history reload after chat-offer)', {
       userId,
       stage,
     });

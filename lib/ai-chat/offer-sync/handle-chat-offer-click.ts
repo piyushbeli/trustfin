@@ -6,7 +6,7 @@ export interface HandleChatOfferClickParams extends AiChatOfferClickContext {
   offer: LenderOfferStatus;
 }
 
-/** Delegates in-chat offer clicks to the UTM + chat-offer helper (no history refresh in-session). */
+/** Delegates in-chat offer clicks to UTM + chat-offer, then reloads chat-history. */
 export const handleChatOfferClick = (params: HandleChatOfferClickParams): void => {
   void recordChatOfferAfterUtmClick(params);
 };

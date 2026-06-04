@@ -159,6 +159,6 @@ export interface ChatQueryResponse {
 /** Identifiers passed from in-chat offer UI when recording UTM / chat-offer. */
 export interface AiChatOfferClickContext {
   userId: string;
-  /** Refreshes embedded offer_list in the modal after check-status-all (e.g. UTM click). */
+  /** Reloads chat-history after check-status / chat-offer (e.g. UTM click). */
   onLiveOffersUpdated?: (offers: LenderOfferStatus[]) => void;
 }

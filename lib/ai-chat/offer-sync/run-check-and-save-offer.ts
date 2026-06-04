@@ -108,7 +108,7 @@ export const persistChatOfferForChat = async ({
     return { success: false, error: saveResult.error };
   }
 
-  logAiChat('offer-sync', 'submitChatOffer succeeded — history will load on modal reopen', {
+  logAiChat('offer-sync', 'submitChatOffer succeeded — caller should reload chat-history', {
     userId,
     lenderCount: checkStatusResponse.lenders?.length ?? 0,
   });

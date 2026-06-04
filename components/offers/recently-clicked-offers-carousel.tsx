@@ -131,6 +131,10 @@ function RecentlyClickedOfferCard({
   );
 }
 
+/** Stable key so Embla remeasures when lenders/status change without relying on array index alone. */
+const buildCarouselInstanceKey = (offers: LenderOfferStatus[]): string =>
+  offers.map((offer) => `${offer.lenderName}:${offer.wcStatus ?? ''}`).join('|');
+
 export function RecentlyClickedOffersCarousel({
   offers,
   onOfferClick,
@@ -141,6 +145,8 @@ export function RecentlyClickedOffersCarousel({
     return null;
   }
 
+  const carouselKey = buildCarouselInstanceKey(offers);
+
   return (
     <section className={cn('mb-4 mx-auto max-w-xl', className)}>
       <h2 className={cn("text-sm font-medium text-gray-900 mb-4 ml-4 mt-2 lg:ml-0", headingClassName)}>
@@ -149,6 +155,7 @@ export function RecentlyClickedOffersCarousel({
 
       <div>
         <Carousel
+          key={carouselKey}
           options={{
             align: 'start',
             loop: false,
@@ -173,20 +180,18 @@ export function RecentlyClickedOffersCarousel({
             })}
           </CarouselContent>
 
-          {offers.length > 1 && (
-            <CarouselDots
-              className="flex items-center justify-center gap-[2px] h-[8px] mt-4"
-              renderDot={(_index, isActive) => (
-                <div
-                  className={`rounded-full transition-all duration-200 ${
-                    isActive
-                      ? 'w-[8px] h-[8px] bg-brand-primary'
-                      : 'w-[6px] h-[6px] bg-gray-400'
-                  }`}
-                />
-              )}
-            />
-          )}
+          <CarouselDots
+            className="flex items-center justify-center gap-[2px] h-[8px] mt-4"
+            renderDot={(_index, isActive) => (
+              <div
+                className={`rounded-full transition-all duration-200 ${
+                  isActive
+                    ? 'w-[8px] h-[8px] bg-brand-primary'
+                    : 'w-[6px] h-[6px] bg-gray-400'
+                }`}
+              />
+            )}
+          />
         </Carousel>
       </div>
     </section>

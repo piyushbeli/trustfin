@@ -99,15 +99,6 @@ export const OffersViewEmbedded = ({
 
   return (
     <div className={cn('w-full space-y-4', className)}>
-      {recentStatusOffers.length > 0 ? (
-        <RecentlyClickedOffersCarousel
-          offers={recentStatusOffers}
-          onOfferClick={handleOfferClick}
-          className="max-w-auto m-0"
-          headingClassName="mx-0"
-        />
-      ) : null}
-
       {hasInitiatedOffers && formattedMaxAmount ? (
         <p
           className="text-blue-600 my-4"
@@ -124,8 +115,17 @@ export const OffersViewEmbedded = ({
 
       <div className="space-y-6">
         {exploreOffers.length > 0 ? renderOfferSection('', exploreOffers) : null}
+        {recentStatusOffers.length > 0 ? (
+          <RecentlyClickedOffersCarousel
+            offers={recentStatusOffers}
+            onOfferClick={handleOfferClick}
+            className="max-w-auto m-0"
+            headingClassName="mx-0"
+          />
+        ) : null}
         {unmatchedOffers.length > 0 ? <UnmatchedOffersSection offers={unmatchedOffers} className="my-4" /> : null}
       </div>
+
     </div>
   );
 };
