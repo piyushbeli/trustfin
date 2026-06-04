@@ -4,8 +4,16 @@ import { JSX, useEffect, useMemo, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
+import { useAppHeight } from '@/hooks/use-app-height';
 import { useAiChat } from '@/hooks/use-ai-chat';
 import { useAiChatStore } from '@/stores/ai-chat-store';
+import {
+  MOBILE_MODAL_BODY,
+  MOBILE_MODAL_FOOTER_CLUSTER,
+  MOBILE_MODAL_FOOTER_SAFE,
+  MOBILE_MODAL_OVERLAY,
+  MOBILE_MODAL_PANEL,
+} from '@/lib/utils/mobile-modal-layout';
 import AiChatHeader from './ai-chat-header';
 import AiChatModalBody from './ai-chat-modal-body';
 import AiChatModalFooter from './ai-chat-modal-footer';
@@ -17,6 +25,8 @@ const AiChatModal = (): JSX.Element | null => {
   const { isOpen, closeModal } = useAiChatStore();
   const pathname = usePathname();
   const previousPathnameRef = useRef<string | null>(null);
+  // Sets --app-height / --keyboard-inset-bottom; height is applied via Tailwind (not inline) so md:h-[92vh] can center on desktop.
+  useAppHeight();
   const {
     messages,
     chatUserId,
@@ -111,7 +121,9 @@ const AiChatModal = (): JSX.Element | null => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex justify-center bg-black/35 items-center">
+    <div
+      className={`${MOBILE_MODAL_OVERLAY} items-stretch justify-center bg-black/35 md:items-center md:p-6`}
+    >
       <div
         className="absolute inset-0"
         onClick={closeModal}
@@ -119,32 +131,38 @@ const AiChatModal = (): JSX.Element | null => {
         aria-label="Close chat overlay"
         tabIndex={-1}
       />
-      <div className="relative z-10 h-full md:h-[92vh] w-full md:w-4/5 lg:w-1/2 md:rounded-t-3xl border border-brand-200 bg-white shadow-2xl md:rounded-3xl">
+      <div
+        className={`${MOBILE_MODAL_PANEL} h-[calc(var(--app-height,1vh)*100)] max-h-[100dvh] border border-brand-200 shadow-2xl md:h-[92vh] md:max-h-[92vh] md:w-4/5 md:rounded-3xl lg:w-1/2`}
+      >
         <div className="flex h-full flex-col overflow-hidden">
           <AiChatHeader onClose={closeModal} />
-          <AiChatModalBody
-            viewMode={viewMode}
-            messages={displayMessages}
-            chatUserId={chatUserId}
-            showTypingIndicator={isSubmitting}
-            showOfferPolling={showOfferPolling}
-            isCheckingOfferStatus={isCheckingOfferStatus}
-            onLiveOffersUpdated={onLiveOffersUpdated}
-          />
-          <AiChatModalFooter
-            errorMessage={errorMessage}
-            inputValue={inputValue}
-            inputError={inputError}
-            inputPlaceholder={undefined}
-            nextFieldConfig={nextFieldConfig}
-            showSelectChips={showSelectChips}
-            isSubmitting={isInputDisabled}
-            isChatInputDisabled={isChatInputDisabled}
-            onChange={handleInputChange}
-            onSubmit={handleSubmit}
-            onSelectChip={handleSelectChip}
-          />
-          <AiChatSecureBadge />
+          <div className={MOBILE_MODAL_BODY}>
+            <AiChatModalBody
+              viewMode={viewMode}
+              messages={displayMessages}
+              chatUserId={chatUserId}
+              showTypingIndicator={isSubmitting}
+              showOfferPolling={showOfferPolling}
+              isCheckingOfferStatus={isCheckingOfferStatus}
+              onLiveOffersUpdated={onLiveOffersUpdated}
+            />
+          </div>
+          <div className={`${MOBILE_MODAL_FOOTER_CLUSTER} ${MOBILE_MODAL_FOOTER_SAFE}`}>
+            <AiChatModalFooter
+              errorMessage={errorMessage}
+              inputValue={inputValue}
+              inputError={inputError}
+              inputPlaceholder={undefined}
+              nextFieldConfig={nextFieldConfig}
+              showSelectChips={showSelectChips}
+              isSubmitting={isInputDisabled}
+              isChatInputDisabled={isChatInputDisabled}
+              onChange={handleInputChange}
+              onSubmit={handleSubmit}
+              onSelectChip={handleSelectChip}
+            />
+            <AiChatSecureBadge />
+          </div>
         </div>
       </div>
     </div>

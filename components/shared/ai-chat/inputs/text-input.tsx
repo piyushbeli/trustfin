@@ -39,7 +39,7 @@ const TextInput = ({
           onSubmit();
         }
       }}
-      className="w-full border-0 bg-transparent px-3 py-3 text-sm text-gray-700 placeholder:text-gray-400 focus:outline-none"
+      className="w-full border-0 bg-transparent px-3 py-3 text-base text-gray-700 placeholder:text-gray-400 focus:outline-none"
       placeholder={placeholder}
     />
   );

@@ -1,6 +1,8 @@
 'use client';
 
+import { useRef } from 'react';
 import { OTPInput } from '@/components/auth';
+import { scrollFocusedFieldIntoView } from '@/lib/utils/mobile-modal-layout';
 import { AuthModalFooter } from '../auth-modal-footer';
 import { AuthModalHeader } from '../auth-modal-header';
 import { AuthStepTitle } from '../auth-step-title';
@@ -20,6 +22,7 @@ export const OTPStepScreen = ({
   onBack,
   onClose,
 }: OTPStepScreenProps): React.ReactNode => {
+  const otpFieldRef = useRef<HTMLDivElement>(null);
   const isOtpComplete = otpValue.length === 6;
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
@@ -29,33 +32,33 @@ export const OTPStepScreen = ({
     }
   };
 
+  const handleOtpFieldFocus = (): void => {
+    scrollFocusedFieldIntoView(otpFieldRef.current);
+  };
+
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex h-full flex-col bg-white">
       <AuthModalHeader onClose={onClose} />
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col flex-1 min-h-0"
-      >
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto px-4 pt-4">
-          <AuthStepTitle
-            titleLine1="Let's Verify"
-            titleLine2="your mobile number"
-          />
+          <AuthStepTitle titleLine1="Let's Verify" titleLine2="your mobile number" />
 
-          <OTPInput
-            onChange={onOtpChange}
-            onComplete={(otp) => {
-              void onVerify(otp);
-            }}
-            onResend={onResend}
-            onChangeNumber={onBack}
-            error={error || undefined}
-            disabled={isLoading}
-            variant="default"
-            showResend={true}
-            phoneNumber={phoneNumber}
-          />
+          <div ref={otpFieldRef} onFocusCapture={handleOtpFieldFocus}>
+            <OTPInput
+              onChange={onOtpChange}
+              onComplete={(otp) => {
+                void onVerify(otp);
+              }}
+              onResend={onResend}
+              onChangeNumber={onBack}
+              error={error || undefined}
+              disabled={isLoading}
+              variant="default"
+              showResend={true}
+              phoneNumber={phoneNumber}
+            />
+          </div>
         </div>
 
         <AuthModalFooter

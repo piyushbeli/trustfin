@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
 import { useAuthStore } from '@/stores/auth-store';
 import { useBodyScrollLock } from '@/hooks/use-body-scroll-lock';
+import { useAppHeight } from '@/hooks/use-app-height';
+import { MOBILE_MODAL_OVERLAY, MOBILE_MODAL_PANEL } from '@/lib/utils/mobile-modal-layout';
 import { useAuthHandlers } from './hooks/use-auth-handlers';
 import { usePostLogin } from './hooks/use-post-login';
 import { PhoneStepScreen } from './screens/phone-step-screen';
@@ -22,6 +24,7 @@ const AuthModal = (): React.ReactNode => {
   const previousPathnameRef = useRef<string | null>(null);
 
   useBodyScrollLock(isModalOpen);
+  const panelHeightStyle = useAppHeight();
 
   // Use custom hooks for business logic
   const {
@@ -76,13 +79,16 @@ const AuthModal = (): React.ReactNode => {
   if (!isModalOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-100 flex flex-col">
+    <div className={`${MOBILE_MODAL_OVERLAY} flex-col`}>
       <div
         className="absolute inset-0 bg-black/50"
         onClick={handleBackdropClick}
       />
 
-      <div className="relative flex flex-col h-full overflow-hidden bg-white">
+      <div
+        className={`${MOBILE_MODAL_PANEL} relative h-[100dvh] overflow-hidden`}
+        style={panelHeightStyle}
+      >
         {currentStep === 'phone' ? (
           <PhoneStepScreen
             key="phone-screen"

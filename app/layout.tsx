@@ -35,6 +35,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  // Resize layout viewport when the virtual keyboard opens (Chrome/Android).
+  interactiveWidget: 'resizes-content',
 };
 
 /**

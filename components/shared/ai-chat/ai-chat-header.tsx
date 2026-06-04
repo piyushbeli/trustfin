@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import { IMAGES } from '@/lib/constants/images';
+import { MOBILE_MODAL_HEADER_SAFE } from '@/lib/utils/mobile-modal-layout';
 
 interface AiChatHeaderProps {
   onClose: () => void;
@@ -12,7 +13,9 @@ interface AiChatHeaderProps {
 
 const AiChatHeader = ({ onClose }: AiChatHeaderProps): JSX.Element => {
   return (
-    <div className="flex items-center justify-between border-b border-brand-100 px-4 py-3">
+    <div
+      className={`${MOBILE_MODAL_HEADER_SAFE} flex shrink-0 items-center justify-between border-b border-brand-100 px-4 pb-3 md:pt-3`}
+    >
       <div className="flex items-center gap-3">
         <div className="relative">
           <Image

@@ -1,6 +1,8 @@
 'use client';
 
+import { useRef } from 'react';
 import { PhoneInput } from '@/components/auth';
+import { scrollFocusedFieldIntoView } from '@/lib/utils/mobile-modal-layout';
 import { AuthModalFooter } from '../auth-modal-footer';
 import { AuthModalHeader } from '../auth-modal-header';
 import { AuthStepTitle } from '../auth-step-title';
@@ -18,6 +20,8 @@ export const PhoneStepScreen = ({
   onContinue,
   onClose,
 }: PhoneStepScreenProps): React.ReactNode => {
+  const phoneFieldRef = useRef<HTMLDivElement>(null);
+
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>): void => {
     event.preventDefault();
     if (isPhoneValid && !isLoading) {
@@ -25,14 +29,15 @@ export const PhoneStepScreen = ({
     }
   };
 
+  const handlePhoneInputFocus = (): void => {
+    scrollFocusedFieldIntoView(phoneFieldRef.current);
+  };
+
   return (
-    <div className="flex flex-col h-full bg-white">
+    <div className="flex h-full flex-col bg-white">
       <AuthModalHeader onClose={onClose} />
 
-      <form
-        onSubmit={handleSubmit}
-        className="flex flex-col flex-1 min-h-0"
-      >
+      <form onSubmit={handleSubmit} className="flex min-h-0 flex-1 flex-col">
         <div className="flex-1 overflow-y-auto px-4 pt-4">
           <AuthStepTitle
             titleLine1="Login or"
@@ -40,8 +45,11 @@ export const PhoneStepScreen = ({
             subtitle="Access all offers & get latest personalized updates"
           />
 
-          <div>
-            <label htmlFor="phone-number" className="block text-xs font-semibold tracking-wider text-gray-500 mb-1">
+          <div ref={phoneFieldRef}>
+            <label
+              htmlFor="phone-number"
+              className="mb-1 block text-xs font-semibold tracking-wider text-gray-500"
+            >
               PHONE NUMBER
             </label>
             <PhoneInput
@@ -51,6 +59,7 @@ export const PhoneStepScreen = ({
               onChange={onPhoneChange}
               placeholder=""
               error={error || undefined}
+              onInputFocus={handlePhoneInputFocus}
             />
           </div>
         </div>

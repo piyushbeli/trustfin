@@ -36,6 +36,8 @@ interface PhoneInputProps {
   error?: string;
   /** Additional CSS classes */
   className?: string;
+  /** Called when the tel input receives focus (mobile keyboard scroll-into-view). */
+  onInputFocus?: () => void;
 }
 
 /**
@@ -49,6 +51,7 @@ const PhoneInput = ({
   placeholder = '',
   error,
   className,
+  onInputFocus,
 }: PhoneInputProps): React.ReactNode => {
   const [selectedCountry, setSelectedCountry] = useState<CountryCode>(countryCodes[0]);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -113,7 +116,10 @@ const PhoneInput = ({
           name={name}
           value={value}
           onChange={handlePhoneChange}
-          onFocus={() => setIsFocused(true)}
+          onFocus={() => {
+            setIsFocused(true);
+            onInputFocus?.();
+          }}
           onBlur={() => setIsFocused(false)}
           placeholder={'Enter your phone number'}
           className="flex-1 py-3 text-gray-900 text-base outline-none placeholder:text-gray-400"

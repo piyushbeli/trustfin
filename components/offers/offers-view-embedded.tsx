@@ -123,7 +123,7 @@ export const OffersViewEmbedded = ({
             headingClassName="mx-0"
           />
         ) : null}
-        {unmatchedOffers.length > 0 ? <UnmatchedOffersSection offers={unmatchedOffers} className="my-4" /> : null}
+        {/* {unmatchedOffers.length > 0 ? <UnmatchedOffersSection offers={unmatchedOffers} className="my-4" /> : null} */}
       </div>
 
     </div>
