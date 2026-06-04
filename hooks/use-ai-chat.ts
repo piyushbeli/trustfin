@@ -10,9 +10,7 @@ import {
   resolveChatUserId,
 } from '@/lib/ai-chat/chat-identity';
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
-import { mapHistoryTurnsToMessages } from '@/lib/ai-chat/map-history-turns-to-messages';
-import { applyLiveOffersToChat } from '@/lib/ai-chat/offer-sync/apply-live-offers-to-chat';
-import { mergeHistoryWithLiveOffers } from '@/lib/ai-chat/offer-sync/merge-offer-messages';
+import { mapHistoryResponseToMessages } from '@/lib/ai-chat/offer-sync/map-history-response-messages';
 import { prefetchChatConsentIp } from '@/lib/ai-chat/chat-consent-ip';
 import { isFieldCaptureStage } from '@/lib/ai-chat/normalize-bot-stage';
 import { resolveAiChatInputState } from '@/lib/ai-chat/resolve-chat-input-state';
@@ -66,7 +64,6 @@ const CHAT_HISTORY_NOT_FOUND_ERROR = 'chat_history_not_found';
 export function useAiChat(isOpen: boolean): UseAiChatResult {
   const historyAbortRef = useRef<AbortController | null>(null);
   const submitAbortRef = useRef<AbortController | null>(null);
-  const hasInitialHistoryLoadedRef = useRef<boolean>(false);
   const [hasGuestStartedChat, setHasGuestStartedChat] = useState<boolean>(false);
   /** True when history is empty / not found — drives Trustfin welcome for guests and new signed-in users. */
   const [showWelcomeScreen, setShowWelcomeScreen] = useState<boolean>(false);
@@ -87,8 +84,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const [dismissedSelectField, setDismissedSelectField] = useState<string | null>(null);
   const [fieldCaptureStatus, setFieldCaptureStatus] = useState<AiChatFieldCaptureStatus | null>(null);
   const [isEscalated, setIsEscalated] = useState<boolean>(false);
-  /** Latest lenders from check-status-all — used to restore UI if chat-history refresh races ahead of offer turn. */
-  const lastLiveOffersRef = useRef<LenderOfferStatus[]>([]);
 
   const clearHistoryRequest = useCallback((): void => {
     if (!historyAbortRef.current) return;
@@ -167,54 +162,20 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     ): void => {
       if (!history) return;
 
-      const turns = history.turns ?? [];
-      const suppressMessages = Boolean(options?.suppressMessages);
-      const mappedMessages = suppressMessages ? [] : mapHistoryTurnsToMessages(turns);
-
+      const mappedMessages = mapHistoryResponseToMessages(history, options);
       const normalizedSession = normalizeSessionFromApi(history.session);
 
-      const shouldAppendPendingQuestion =
-        !suppressMessages &&
-        normalizedSession.shouldAskNextQuestion &&
-        isFieldCaptureStage(normalizedSession.stage) &&
-        Boolean(normalizedSession.pendingQuestion) &&
-        !mappedMessages.some(
-          (message) =>
-            message.kind === 'text' && message.text === normalizedSession.pendingQuestion,
-        );
-
-      if (shouldAppendPendingQuestion && normalizedSession.pendingQuestion) {
-        mappedMessages.push({
-          kind: 'text',
-          id: `pending_${normalizedSession.updatedAt}`,
-          role: 'assistant',
-          text: normalizedSession.pendingQuestion,
-        });
-      }
-
-      setMessages((previous) => {
-        const merged = mergeHistoryWithLiveOffers(
-          mappedMessages,
-          previous,
-          lastLiveOffersRef.current,
-        );
-
-        logAiChat('hook', 'applyHistoryResponse messages merged', {
-          historyMessageCount: mappedMessages.length,
-          mergedMessageCount: merged.length,
-          hasHistoryOffer: mappedMessages.some((message) => message.kind === 'offer_list'),
-          hasMergedOffer: merged.some((message) => message.kind === 'offer_list'),
-          lastLiveOfferCount: lastLiveOffersRef.current.length,
-          sessionStage: normalizedSession.stage,
-        });
-
-        return merged;
+      setMessages(mappedMessages);
+      logAiChat('hook', 'applyHistoryResponse — messages from chat-history', {
+        historyMessageCount: mappedMessages.length,
+        hasHistoryOffer: mappedMessages.some((message) => message.kind === 'offer_list'),
+        sessionStage: normalizedSession.stage,
       });
       setSession(normalizedSession);
 
       const { fieldCaptureStatus, nextFieldConfig } = buildFieldCaptureFromHistory(
         normalizedSession,
-        turns,
+        history.turns ?? [],
       );
       setFieldCaptureStatus(fieldCaptureStatus);
       setNextFieldConfig(nextFieldConfig);
@@ -278,6 +239,13 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     },
     [applyHistoryResponse, buildRequestContext],
   );
+
+  const refreshChatHistorySilently = useCallback(async (): Promise<void> => {
+    await refreshChatHistory(
+      new AbortController().signal,
+      AI_CHAT_COPY.historyRefreshErrorMessage,
+    );
+  }, [refreshChatHistory]);
 
   const refreshChatHistoryAfterPromotion = useCallback(
     async (signal?: AbortSignal): Promise<boolean> => {
@@ -441,7 +409,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       logAiChat('hook', 'modal closed → reset chat state');
       clearHistoryRequest();
       clearSubmitRequest();
-      hasInitialHistoryLoadedRef.current = false;
       setHasGuestStartedChat(false);
       setShowWelcomeScreen(false);
       setMessages([]);
@@ -458,13 +425,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
     void prefetchChatConsentIp();
 
-    if (hasInitialHistoryLoadedRef.current) {
-      logAiChat('hook', 'initial history load skipped (already loaded)');
-      return;
-    }
-
-    hasInitialHistoryLoadedRef.current = true;
-    logAiChat('hook', 'initial history load started');
+    logAiChat('hook', 'modal opened — loading fresh chat-history');
     clearHistoryRequest();
     const controller = new AbortController();
     historyAbortRef.current = controller;
@@ -523,16 +484,15 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   );
 
   const onLiveOffersUpdated = useCallback(
-    (offers: LenderOfferStatus[]) => {
-      applyLiveOffersToChat({
-        offers,
-        setMessages,
-        lastLiveOffersRef,
-        userId: chatUserId,
-        source: 'utm_click',
-      });
+    (_offers: LenderOfferStatus[]) => {
+      void refreshChatHistorySilently();
     },
-    [chatUserId],
+    [refreshChatHistorySilently],
+  );
+
+  const hasOfferMessages = useMemo(
+    () => messages.some((message) => message.kind === 'offer_list'),
+    [messages],
   );
 
   const { isOfferPolling, isCheckingOfferStatus } = useAiChatOfferSync({
@@ -540,14 +500,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     userId: chatUserId,
     mobile: user?.phoneNumber,
     isOpen,
-    setMessages,
-    lastLiveOffersRef,
+    historyHasOfferMessages: hasOfferMessages,
+    onChatHistoryRefresh: refreshChatHistorySilently,
   });
-
-  const hasOfferMessages = useMemo(
-    () => messages.some((message) => message.kind === 'offer_list'),
-    [messages],
-  );
 
   const showOfferPolling = (isOfferPolling || isCheckingOfferStatus) && !hasOfferMessages;
 

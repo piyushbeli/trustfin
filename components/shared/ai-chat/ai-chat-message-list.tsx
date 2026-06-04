@@ -6,6 +6,7 @@ import type { AiChatRenderableMessage } from '@/types/ai-chat';
 import type { LenderOfferStatus } from '@/types/wecredit';
 import AiChatOfferPolling from './ai-chat-offer-polling';
 import { renderChatMessage } from './render-chat-message';
+import { FinTypingBlock } from './message-blocks/fin-typing-block';
 
 interface AiChatMessageListProps {
   messages: AiChatRenderableMessage[];
@@ -34,13 +35,14 @@ const AiChatMessageList = ({
     if (!showTypingIndicator) return null;
 
     return (
-      <div className="flex justify-center">
-        <span className=" py-1 text-xs text-muted-foreground">
-          {AI_CHAT_COPY.typingMessage}
-        </span>
-      </div>
+      <FinTypingBlock />
     );
   }, [showTypingIndicator]);
+
+  const renderOfferPolling = useMemo(() => {
+    if (!showOfferPolling) return null;
+    return <FinTypingBlock />
+  }, [showOfferPolling, isCheckingOfferStatus]);
 
   return (
     <div className="flex-1 overflow-y-auto px-4 py-4">
@@ -53,9 +55,7 @@ const AiChatMessageList = ({
             })}
           </div>
         ))}
-        {showOfferPolling ? (
-          <AiChatOfferPolling isCheckingStatus={isCheckingOfferStatus} />
-        ) : null}
+        {renderOfferPolling}
         {renderFinTypingIndicator}
         <div ref={endRef} />
       </div>

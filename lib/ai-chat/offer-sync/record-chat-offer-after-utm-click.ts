@@ -23,7 +23,7 @@ export interface RecordChatOfferAfterUtmClickResult {
 
 /**
  * In-chat UTM click: update wecredit UTM status, refresh check-status-all,
- * persist via chat-offer (utm_click in history on next modal open), then open the link.
+ * persist via chat-offer, reload chat-history, then open the link.
  */
 export const recordChatOfferAfterUtmClick = async ({
   offer,
@@ -77,11 +77,6 @@ export const recordChatOfferAfterUtmClick = async ({
     userId,
   });
 
-  const refreshedLenders = checkResult.data?.lenders ?? [];
-  if (refreshedLenders.length > 0) {
-    onLiveOffersUpdated?.(refreshedLenders);
-  }
-
   if (!checkResult.success || !checkResult.data) {
     logAiChat('offer-sync', 'utm click — check-status failed, opening UTM without chat-offer', {
       userId,
@@ -104,6 +99,10 @@ export const recordChatOfferAfterUtmClick = async ({
     success: persistResult.success,
     lenderCount: checkResult.lenderCount,
   });
+
+  if (persistResult.success) {
+    await onLiveOffersUpdated?.(checkResult.data.lenders ?? []);
+  }
 
   window.open(utmLink, '_blank', 'noopener,noreferrer');
 

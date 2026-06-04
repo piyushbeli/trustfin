@@ -5,7 +5,7 @@
  * Full-screen mobile-first multi-step form for lead capture
  */
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter, useSearchParams, type ReadonlyURLSearchParams } from 'next/navigation';
 import { ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
 import { useFetchFormFields } from '@/hooks/use-fetch-form-fields';
@@ -257,8 +257,6 @@ const LeadFormModal = ({
   const [showPartnerConsentError, setShowPartnerConsentError] = useState(false);
   const {isAffiliate} = useInfoSearchParams();
 
-  const isIpFetchInFlight = useRef(false);
-  
   // Use partner from URL if available and not yet consumed, otherwise use prop or default
   const effectivePartnerCode =  partner ? partner : partnerCode;
   const isUnitySingleLender = lenderName?.toLowerCase() === 'unity' && !isAllLenders;
@@ -312,23 +310,13 @@ const LeadFormModal = ({
     setShowSuccess(false);
     setShowPartnerConsentError(false);
     setUserIp('');
-    isIpFetchInFlight.current = false;
     resetFields();
   }, [isOpen, resetFields]);
 
-  // Fetch user IP on every open (no FE caching).
+  // Reuse app-wide ipify cache (shared with chat modal and other flows).
   useEffect(() => {
     if (!isOpen) return;
-    // Guard: avoid duplicate calls due to rapid toggles/renders.
-    if (isIpFetchInFlight.current) return;
-    isIpFetchInFlight.current = true;
-    fetchUserIp()
-      .then((ip) => {
-        setUserIp(ip);
-      })
-      .finally(() => {
-        isIpFetchInFlight.current = false;
-      });
+    void fetchUserIp().then(setUserIp);
   }, [isOpen]);
 
   // Fetch form fields when modal opens (no FE caching).

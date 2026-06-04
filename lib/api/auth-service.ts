@@ -8,6 +8,7 @@ import { getCookie } from 'cookies-next';
 import { wecreditConfig } from '@/lib/config';
 import { STORAGE_AUTH_TOKEN, STORAGE_MOBILE } from '@/lib/constants/api-keys';
 import { getEffectivePartnerCode } from '@/lib/utils/effective-partner-code';
+import { fetchUserIp } from '@/lib/utils/user-ip';
 import { clearAuthData } from '@/lib/utils/api';
 import type { User } from '@/stores/auth-store';
 import { getAttributionHeaders, getAttributionHeadersCommon, getAttributionUtmUrl } from './attribution-headers';
@@ -179,23 +180,6 @@ function getDeviceFingerprint(): string {
     localStorage.setItem(FINGERPRINT_STORAGE_KEY, fingerprint);
   }
   return fingerprint;
-}
-
-/**
- * Gets user IP address from ipify.org
- * Returns placeholder if fetch fails
- */
-async function fetchUserIp(): Promise<string> {
-  try {
-    const response = await fetch('https://api.ipify.org?format=json');
-    if (response.ok) {
-      const data = await response.json();
-      return data.ip || '127.0.0.1';
-    }
-  } catch {
-    // Silently fail and return placeholder
-  }
-  return '127.0.0.1';
 }
 
 /**
@@ -577,7 +561,8 @@ export const authService = {
 export { AUTH_RESPONSE_CODES as AuthResponseCodes, AUTH_ERROR_CODES as AuthErrorCodes };
 
 /** Export utility functions */
-export { getDeviceFingerprint, fetchUserIp, buildDefaultHeaders, buildAuthHeaders };
+export { getDeviceFingerprint, buildDefaultHeaders, buildAuthHeaders };
+export { fetchUserIp } from '@/lib/utils/user-ip';
 
 export type {
   SendOtpRequest,

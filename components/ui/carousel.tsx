@@ -62,17 +62,23 @@ const Carousel = React.forwardRef<HTMLDivElement, CarouselProps>(
       setCanScrollNext(emblaApi.canScrollNext());
     }, [emblaApi]);
 
-    React.useEffect(() => {
+    const onReInit = React.useCallback(() => {
       if (!emblaApi) return;
+      // Snap list must refresh when slides are added/removed (e.g. offer poll updates).
       setScrollSnaps(emblaApi.scrollSnapList());
       onSelect();
+    }, [emblaApi, onSelect]);
+
+    React.useEffect(() => {
+      if (!emblaApi) return;
+      onReInit();
       emblaApi.on('select', onSelect);
-      emblaApi.on('reInit', onSelect);
+      emblaApi.on('reInit', onReInit);
       return () => {
         emblaApi.off('select', onSelect);
-        emblaApi.off('reInit', onSelect);
+        emblaApi.off('reInit', onReInit);
       };
-    }, [emblaApi, onSelect]);
+    }, [emblaApi, onReInit, onSelect]);
 
     const contextValue: CarouselContextValue = React.useMemo(
       () => ({
@@ -126,7 +132,16 @@ Carousel.displayName = 'Carousel';
  */
 const CarouselContent = React.forwardRef<HTMLDivElement, CarouselContentProps>(
   ({ className, containerClassName, children, ...props }, ref) => {
-    const { emblaRef } = useCarousel();
+    const { emblaRef, emblaApi } = useCarousel();
+    const slideCount = React.Children.count(children);
+    const slideKeys = React.Children.toArray(children)
+      .map((child) => (React.isValidElement(child) ? String(child.key ?? '') : ''))
+      .join('|');
+
+    React.useEffect(() => {
+      if (!emblaApi) return;
+      emblaApi.reInit();
+    }, [emblaApi, slideCount, slideKeys]);
 
     return (
       <div ref={emblaRef} className={cn('overflow-hidden', containerClassName)}>
