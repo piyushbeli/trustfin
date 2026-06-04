@@ -1,5 +1,8 @@
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
-import { parseOffersFromHistoryTurn } from '@/lib/ai-chat/parse-offer-data-from-turn';
+import {
+  parseCanReHitFromHistoryTurn,
+  parseOffersFromHistoryTurn,
+} from '@/lib/ai-chat/parse-offer-data-from-turn';
 import type { AiChatRenderableMessage, AiChatTurn } from '@/types/ai-chat';
 
 const shouldShowAskedQuestion = (turn: AiChatTurn): boolean => {
@@ -59,6 +62,7 @@ export const mapHistoryTurnsToMessages = (turns: AiChatTurn[]): AiChatRenderable
           kind: 'offer_list',
           id: `${turn.turnId}_offers`,
           offers,
+          canReHit: parseCanReHitFromHistoryTurn(turn),
         });
       } else {
         logAiChat('parse', 'offer turn had no parseable lenders', {

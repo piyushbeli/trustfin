@@ -4,9 +4,11 @@ import { useCallback, useMemo, type JSX } from 'react';
 import { OfferCard } from '@/components/offers/offer-card';
 import { RecentlyClickedOffersCarousel } from '@/components/offers/recently-clicked-offers-carousel';
 import { UnmatchedOffersSection } from '@/components/offers/unmatched-offers-section';
+import { ActionButton } from '@/components/shared';
 import { handleChatOfferClick } from '@/lib/ai-chat/offer-sync/handle-chat-offer-click';
 import { categorizeOffers } from '@/lib/utils/offer-categorization';
 import { parseAmountToNumber } from '@/lib/utils/common-helper';
+import { useChatExploreMoreOffers } from '@/hooks/use-chat-explore-more-offers';
 import { newPLEnabled } from '@/hooks/use-offers';
 import type { AiChatOfferClickContext } from '@/types/ai-chat';
 import type { LenderOfferStatus } from '@/types/wecredit';
@@ -17,6 +19,7 @@ export type OffersViewChatContext = AiChatOfferClickContext;
 export interface OffersViewEmbeddedProps {
   offers: LenderOfferStatus[];
   chatContext: OffersViewChatContext;
+  canReHit?: boolean;
   className?: string;
 }
 
@@ -27,10 +30,15 @@ export interface OffersViewEmbeddedProps {
 export const OffersViewEmbedded = ({
   offers,
   chatContext,
+  canReHit = false,
   className,
 }: OffersViewEmbeddedProps): JSX.Element => {
   const { explore: exploreOffers, recentlyClicked: statusOffers, unmatched: unmatchedOffers } =
     useMemo(() => categorizeOffers(offers), [offers]);
+
+  const { isExploringMore, exploreMoreOffers } = useChatExploreMoreOffers(chatContext);
+
+  const showExploreMoreCta = canReHit && newPLEnabled;
 
   const handleOfferClick = useCallback(
     (offer: LenderOfferStatus): void => {
@@ -115,6 +123,18 @@ export const OffersViewEmbedded = ({
 
       <div className="space-y-6">
         {exploreOffers.length > 0 ? renderOfferSection('', exploreOffers) : null}
+        {showExploreMoreCta ? (
+          <ActionButton
+            type="button"
+            onClick={() => void exploreMoreOffers()}
+            rightIcon="🔍"
+            fullWidth
+            isLoading={isExploringMore}
+            disabled={isExploringMore}
+          >
+            Explore More Offers
+          </ActionButton>
+        ) : null}
         {recentStatusOffers.length > 0 ? (
           <RecentlyClickedOffersCarousel
             offers={recentStatusOffers}
@@ -123,7 +143,9 @@ export const OffersViewEmbedded = ({
             headingClassName="mx-0"
           />
         ) : null}
-        {unmatchedOffers.length > 0 ? <UnmatchedOffersSection offers={unmatchedOffers} className="my-4" /> : null}
+        {unmatchedOffers.length > 0 ? (
+          <UnmatchedOffersSection offers={unmatchedOffers} variant="compact" className="my-2" />
+        ) : null}
       </div>
 
     </div>

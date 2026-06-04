@@ -82,3 +82,36 @@ export const getOfferPayloadFromTurn = (turn: AiChatHistoryTurn): unknown =>
 
 export const parseOffersFromHistoryTurn = (turn: AiChatHistoryTurn): LenderOfferStatus[] =>
   parseOfferDataFromTurn(getOfferPayloadFromTurn(turn));
+
+/** Whether more lenders can be checked (isRehitLenders === 0 on check-status envelope). */
+export const parseCanReHitFromOfferPayload = (offerData: unknown): boolean => {
+  if (typeof offerData === 'string') {
+    try {
+      return parseCanReHitFromOfferPayload(JSON.parse(offerData));
+    } catch {
+      return false;
+    }
+  }
+
+  if (typeof offerData !== 'object' || offerData === null) {
+    return false;
+  }
+
+  const record = offerData as Record<string, unknown>;
+  const raw =
+    record.isRehitLenders ?? record.is_rehit_lenders ?? record.isReHitLenders;
+
+  if (typeof raw === 'number') {
+    return raw === 0;
+  }
+
+  if (typeof raw === 'string') {
+    const parsed = Number(raw);
+    return !Number.isNaN(parsed) && parsed === 0;
+  }
+
+  return false;
+};
+
+export const parseCanReHitFromHistoryTurn = (turn: AiChatHistoryTurn): boolean =>
+  parseCanReHitFromOfferPayload(getOfferPayloadFromTurn(turn));

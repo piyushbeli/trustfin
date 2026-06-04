@@ -61,10 +61,12 @@ const UnmatchedLenderCard = ({
   lenderName,
   logo,
   statusLabel,
+  compact = false,
 }: {
   lenderName: string;
   logo?: string;
   statusLabel: string;
+  compact?: boolean;
 }) => {
   const getInitials = (name: string): string => {
     const words = name.trim().split(/\s+/);
@@ -75,42 +77,64 @@ const UnmatchedLenderCard = ({
   };
 
   return (
-    <div className="bg-white rounded-[8px] px-4 py-2 flex flex-col items-center justify-center min-h-[80px]">
+    <div
+      className={cn(
+        'bg-white rounded-[8px] flex flex-col items-center justify-center',
+        compact ? 'min-h-[56px] px-3 py-1.5' : 'min-h-[80px] px-4 py-2',
+      )}
+    >
       {logo ? (
         <Image
           src={logo}
           alt={lenderName}
           width={60}
           height={24}
-          className="object-contain h-6 w-auto mb-2"
+          className={cn('object-contain w-auto mb-1.5', compact ? 'h-5' : 'h-6 mb-2')}
         />
       ) : (
-        <div className="w-10 h-8 mb-2 flex items-center justify-center bg-gray-100 rounded-md">
+        <div
+          className={cn(
+            'mb-1.5 flex items-center justify-center bg-gray-100 rounded-md',
+            compact ? 'w-8 h-6' : 'w-10 h-8 mb-2',
+          )}
+        >
           <span className="text-xs font-semibold text-gray-600">
             {getInitials(lenderName)}
           </span>
         </div>
       )}
 
-      <span className="text-[12px] font-medium text-gray-700">{lenderName}</span>
+      <span className={cn('font-medium text-gray-700', compact ? 'text-[11px]' : 'text-[12px]')}>
+        {lenderName}
+      </span>
 
-      <span className="text-[11px] text-gray-500 mt-0.5">{statusLabel}</span>
+      <span className={cn('text-gray-500 mt-0.5', compact ? 'text-[10px]' : 'text-[11px]')}>
+        {statusLabel}
+      </span>
     </div>
   );
 };
 
 /* ------------------ Section ------------------ */
 
+export type UnmatchedOffersSectionVariant = 'default' | 'compact';
+
 export type UnmatchedOffersSectionProps = {
   /** Lenders with lenderStatus false and wcStatus REJECTED or NOT_PROCESSED */
   offers: LenderOfferStatus[];
+  variant?: UnmatchedOffersSectionVariant;
   className?: string;
 };
 
 /**
  * Displays explanatory content about unmatched offers with carousel of lenders
  */
-export const UnmatchedOffersSection = ({ offers, className }: UnmatchedOffersSectionProps) => {
+export const UnmatchedOffersSection = ({
+  offers,
+  variant = 'default',
+  className,
+}: UnmatchedOffersSectionProps) => {
+  const isCompact = variant === 'compact';
   const carouselLenders: CarouselLenderRow[] = useMemo(() => {
     const fromApi: CarouselLenderRow[] = offers.map((offer, index) => ({
       key: `api-${offer.lenderName ?? 'unknown'}-${index}`,
@@ -131,22 +155,41 @@ export const UnmatchedOffersSection = ({ offers, className }: UnmatchedOffersSec
     return fromApi;
   }, [offers]);
 
+  const slidePadding = isCompact ? 'px-2' : CAROUSEL_SLIDE_PADDING;
+
   return (
-    <section className={cn("rounded-[8px] bg-brand-lightest-from pb-25 my-4", className)}>
-      <h3 className="text-[18px] font-light text-gray-800 mb-3 px-4 pt-4">
+    <section
+      className={cn(
+        'rounded-lg bg-brand-lightest-from',
+        isCompact ? 'py-3 px-3' : 'rounded-[8px] pb-25 my-4',
+        className,
+      )}
+    >
+      <h3
+        className={cn(
+          'text-gray-800',
+          isCompact ? 'text-sm font-medium mb-2' : 'text-[18px] font-light mb-3 px-4 pt-4',
+        )}
+      >
         Unmatched Offers
       </h3>
 
-      <ul className="list-disc pl-5 space-y-1 mb-5 ml-4 mr-4">
-        {UNMATCHED_REASONS.map((reason, index) => (
-          <li
-            key={index}
-            className="font-manrope text-[12px] font-light leading-[120%] tracking-[0] text-gray-500"
-          >
-            {reason}
-          </li>
-        ))}
-      </ul>
+      {isCompact ? (
+        <p className="font-manrope text-[11px] font-light leading-[120%] text-gray-500 mb-3">
+          {UNMATCHED_REASONS[0]}
+        </p>
+      ) : (
+        <ul className="list-disc pl-5 space-y-1 mb-5 ml-4 mr-4">
+          {UNMATCHED_REASONS.map((reason, index) => (
+            <li
+              key={index}
+              className="font-manrope text-[12px] font-light leading-[120%] tracking-[0] text-gray-500"
+            >
+              {reason}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <Carousel options={{ loop: false, align: 'center' }}>
         <CarouselContent>
@@ -154,21 +197,26 @@ export const UnmatchedOffersSection = ({ offers, className }: UnmatchedOffersSec
             <CarouselSlide
               key={lender.key}
               index={index}
-              className={`basis-full ${CAROUSEL_SLIDE_PADDING}`}
+              className={`basis-full ${slidePadding}`}
             >
               <UnmatchedLenderCard
                 lenderName={lender.lenderName}
                 logo={lender.logo}
                 statusLabel={lender.statusLabel}
+                compact={isCompact}
               />
             </CarouselSlide>
           ))}
         </CarouselContent>
 
         <CarouselDots
-          className={`flex items-center justify-center ${DOT_GAP} mt-4`}
-          dotClassName={`${DOT_SIZE} rounded-full bg-white transition-all duration-200`}
-          activeDotClassName={`${ACTIVE_DOT_SIZE} bg-brand-primary`}
+          className={cn('flex items-center justify-center', DOT_GAP, isCompact ? 'mt-2' : 'mt-4')}
+          dotClassName={cn(
+            DOT_SIZE,
+            'rounded-full bg-white transition-all duration-200',
+            isCompact && 'w-[5px] h-[5px]',
+          )}
+          activeDotClassName={cn(ACTIVE_DOT_SIZE, 'bg-brand-primary', isCompact && '!w-[6px] !h-[6px]')}
         />
       </Carousel>
     </section>
