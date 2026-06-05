@@ -161,6 +161,6 @@ export interface ChatQueryResponse {
 /** Identifiers passed from in-chat offer UI when recording UTM / chat-offer. */
 export interface AiChatOfferClickContext {
   userId: string;
-  /** Reloads chat-history after check-status / chat-offer (e.g. UTM click). */
-  onLiveOffersUpdated?: (offers: LenderOfferStatus[]) => void;
+  /** Patches offer_list in place after check-status / chat-offer (e.g. UTM click). */
+  onLiveOffersUpdated?: (offers: LenderOfferStatus[], canReHit: boolean) => void;
 }

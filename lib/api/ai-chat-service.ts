@@ -80,51 +80,17 @@ async function requestChatApi<T>(
   const requestUrl = String(request);
   const requestMethod = requestInit.method ?? 'GET';
 
-  const endpointHint =
-    typeof requestInit.body === 'string'
-      ? (() => {
-          try {
-            const body = JSON.parse(requestInit.body) as { endpoint?: string };
-            return body.endpoint ?? null;
-          } catch {
-            return null;
-          }
-        })()
-      : new URL(requestUrl).searchParams.get('endpoint');
-
-  logAiChat('service', 'request started', {
-    method: requestMethod,
-    url: requestUrl,
-    endpoint: endpointHint,
-  });
-
   try {
     const response = await fetch(request, requestInit);
     const responseData = await parseResponseJson(response);
     const parsedData = responseData ? parseData(responseData) : null;
     const isHistoryNotFound = isChatHistoryNotFoundResponse(responseData, response.status);
 
-    logAiChat('service', 'response received', {
-      method: requestMethod,
-      url: requestUrl,
-      status: response.status,
-      ok: response.ok,
-      hasResponseBody: responseData !== null,
-      parseSucceeded: parsedData !== null,
-      isHistoryNotFound,
-      apiMessage: getChatApiErrorMessage(responseData, ''),
-    });
-
     if (response.ok && parsedData) {
       return { success: true, data: parsedData };
     }
 
     if (options?.notFoundError && isHistoryNotFound) {
-      logAiChat('service', 'mapped to chat_history_not_found', {
-        method: requestMethod,
-        url: requestUrl,
-        status: response.status,
-      });
       return { success: false, error: options.notFoundError };
     }
 
@@ -135,7 +101,6 @@ async function requestChatApi<T>(
     return { success: false, error };
   } catch (error) {
     if (isAbortError(error)) {
-      logAiChat('service', 'request aborted', { method: requestMethod, url: requestUrl });
       return { success: false, error: 'aborted' };
     }
 

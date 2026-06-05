@@ -21,15 +21,11 @@ export const triggerExploreMoreReHitForChat = async ({
     return true;
   }
 
-  logAiChat('offer-sync', 'explore more — hitAllLenders', { userId, mobile });
-
   const result = await hitAllLenders(mobile, token);
 
-  logAiChat('offer-sync', 'explore more — hitAllLenders finished', {
-    userId,
-    success: result.success,
-    error: result.error ?? null,
-  });
+  if (!result.success) {
+    logAiChat('offer-sync', 'explore more — hitAllLenders failed', { userId, error: result.error ?? null });
+  }
 
   return result.success;
 };
@@ -52,16 +48,12 @@ export const finalizeExploreMoreOffersForChat = async ({
     checkStatusResponse,
   });
 
-  logAiChat('offer-sync', 'explore more — chat-offer persist finished', {
-    userId,
-    success: persistResult.success,
-    lenderCount: checkStatusResponse.lenders?.length ?? 0,
-  });
-
   if (!persistResult.success) {
     return false;
   }
 
-  await onLiveOffersUpdated?.(checkStatusResponse.lenders ?? []);
+  const canReHit = checkStatusResponse.isRehitLenders === 0;
+  await onLiveOffersUpdated?.(checkStatusResponse.lenders ?? [], canReHit);
   return true;
 };
+   

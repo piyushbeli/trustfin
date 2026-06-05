@@ -2,7 +2,6 @@
 
 import { getCookie } from 'cookies-next';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { runCheckStatusForChat } from '@/lib/ai-chat/offer-sync/run-check-and-save-offer';
 import {
   finalizeExploreMoreOffersForChat,
@@ -50,7 +49,6 @@ export function useChatExploreMoreOffers({
       const token = getCookie(STORAGE_AUTH_TOKEN) as string | undefined;
 
       if (!mobile || !token) {
-        logAiChat('offer-sync', 'explore more poll skipped — missing auth', { userId });
         return;
       }
 
@@ -85,11 +83,6 @@ export function useChatExploreMoreOffers({
     const token = getCookie(STORAGE_AUTH_TOKEN) as string | undefined;
 
     if (!mobile || !token || !userId) {
-      logAiChat('offer-sync', 'explore more skipped — missing auth or userId', {
-        userId: userId || null,
-        hasMobile: Boolean(mobile),
-        hasToken: Boolean(token),
-      });
       return;
     }
 

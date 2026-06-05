@@ -16,7 +16,7 @@ interface AiChatModalBodyProps {
   showOfferPolling?: boolean;
   isCheckingOfferStatus?: boolean;
   isLoadingHistory?: boolean;
-  onLiveOffersUpdated?: (offers: LenderOfferStatus[]) => void;
+  onLiveOffersUpdated?: (offers: LenderOfferStatus[], canReHit: boolean) => void;
 }
 
 const AiChatModalBody = ({

@@ -1,5 +1,6 @@
 'use client';
 
+import { getCookie } from 'cookies-next';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchChatHistory, submitChatQuery } from '@/lib/api/ai-chat-service';
 import { applyChatQueryResponseState } from '@/lib/ai-chat/apply-chat-query-response';
@@ -13,12 +14,19 @@ import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assi
 import { mapHistoryResponseToMessages } from '@/lib/ai-chat/offer-sync/map-history-response-messages';
 import { patchOfferListMessages } from '@/lib/ai-chat/patch-offer-list-messages';
 import { prefetchChatConsentIp } from '@/lib/ai-chat/chat-consent-ip';
-import { isFieldCaptureStage } from '@/lib/ai-chat/normalize-bot-stage';
+import { isFieldCaptureStage, isOfferSyncStage } from '@/lib/ai-chat/normalize-bot-stage';
+import {
+  resolveOfferSyncCredentialsFromHistory,
+  shouldStartOfferSyncFromHistory,
+} from '@/lib/ai-chat/resolve-offer-sync-credentials-from-history';
+import { resolveSessionAfterHistoryLoad } from '@/lib/ai-chat/resolve-session-after-history-load';
+import { resolveApiStage } from '@/lib/ai-chat/session-stage';
 import { resolveAiChatInputState } from '@/lib/ai-chat/resolve-chat-input-state';
 import { normalizeSessionFromApi } from '@/lib/ai-chat/session-stage';
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { promoteChatAuthFromResponse } from '@/lib/ai-chat/promote-chat-auth-from-response';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
+import { STORAGE_MOBILE } from '@/lib/constants/api-keys';
 import { useAiChatOfferSync } from '@/hooks/use-ai-chat-offer-sync';
 import { useAuthStore } from '@/stores/auth-store';
 import { useAiChatStore } from '@/stores/ai-chat-store';
@@ -51,7 +59,7 @@ interface UseAiChatResult {
   isOfferPolling: boolean;
   isCheckingOfferStatus: boolean;
   showOfferPolling: boolean;
-  onLiveOffersUpdated: (offers: LenderOfferStatus[]) => void;
+  onLiveOffersUpdated: (offers: LenderOfferStatus[], canReHit: boolean) => void;
   setInputValue: (value: string) => void;
   submitInput: () => Promise<void>;
   submitChip: (value: string) => Promise<void>;
@@ -71,11 +79,23 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const prefillQuestionRef = useRef<string | null>(null);
   const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
   const optimisticMessageRef = useRef<AiChatRenderableMessage | null>(null);
+  const sessionRef = useRef<AiChatSession | null>(null);
+  /** Latest chat-query auth hints — used when stage flips to `completed` on the same response. */
+  const [offerSyncCredentials, setOfferSyncCredentials] = useState<{
+    mobile?: string;
+    token?: string;
+  }>({});
+  /** Bumped when chat-query or chat-history signals `completed` — re-triggers offer polling. */
+  const [offerSyncTrigger, setOfferSyncTrigger] = useState(0);
   const { user, isAuthenticated } = useAuthStore();
   const { prefillQuestion } = useAiChatStore();
 
   const [messages, setMessages] = useState<AiChatRenderableMessage[]>([]);
   const [session, setSession] = useState<AiChatSession | null>(null);
+
+  useEffect(() => {
+    sessionRef.current = session;
+  }, [session]);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -121,40 +141,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [isAuthenticated, user?.phoneNumber],
   );
 
-  const isGuestChatUser = isGuestChatUserId(chatUserId);
-
-  const logGuestWelcomeState = useCallback(
-    (scope: string, extra?: Record<string, unknown>): void => {
-      logAiChat('hook', scope, {
-        isOpen,
-        isAuthenticated,
-        chatUserId,
-        effectiveChatUserId: getEffectiveChatUserId(),
-        isGuestChatUser,
-        hasGuestStartedChat,
-        showWelcomeScreen,
-        isLoadingHistory,
-        messageCount: messages.length,
-        hasSession: session !== null,
-        errorMessage,
-        prefillQuestion: prefillQuestion ?? null,
-        ...extra,
-      });
-    },
-    [
-      chatUserId,
-      errorMessage,
-      hasGuestStartedChat,
-      showWelcomeScreen,
-      isAuthenticated,
-      isGuestChatUser,
-      isLoadingHistory,
-      isOpen,
-      messages.length,
-      prefillQuestion,
-      session,
-    ],
-  );
+  const requestOfferSync = useCallback((): void => {
+    setOfferSyncTrigger((count) => count + 1);
+  }, []);
 
   const applyHistoryResponse = useCallback(
     (
@@ -165,24 +154,29 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       const mappedMessages = mapHistoryResponseToMessages(history, options);
       const normalizedSession = normalizeSessionFromApi(history.session);
+      const resolvedSession = resolveSessionAfterHistoryLoad(sessionRef.current, normalizedSession);
+
+      const hasHistoryOffers = mappedMessages.some((message) => message.kind === 'offer_list');
 
       setMessages(mappedMessages);
-      logAiChat('hook', 'applyHistoryResponse — messages from chat-history', {
-        historyMessageCount: mappedMessages.length,
-        hasHistoryOffer: mappedMessages.some((message) => message.kind === 'offer_list'),
-        sessionStage: normalizedSession.stage,
-      });
-      setSession(normalizedSession);
+      setSession(resolvedSession);
+
+      if (shouldStartOfferSyncFromHistory(resolvedSession, hasHistoryOffers)) {
+        setOfferSyncCredentials(
+          resolveOfferSyncCredentialsFromHistory(resolvedSession, history.turns ?? []),
+        );
+        requestOfferSync();
+      }
 
       const { fieldCaptureStatus, nextFieldConfig } = buildFieldCaptureFromHistory(
-        normalizedSession,
+        resolvedSession,
         history.turns ?? [],
       );
       setFieldCaptureStatus(fieldCaptureStatus);
       setNextFieldConfig(nextFieldConfig);
       setIsEscalated(false);
     },
-    [],
+    [requestOfferSync],
   );
 
   const refreshChatHistory = useCallback(
@@ -192,19 +186,15 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       options?: { suppressMessages?: boolean },
     ): Promise<boolean> => {
       const context = buildRequestContext();
-      logAiChat('hook', 'refreshChatHistory started', {
-        userId: context.userId,
-        suppressMessages: options?.suppressMessages ?? false,
-      });
-
       const response = await fetchChatHistory(context, signal);
 
       if (!response.success || !response.data) {
-        logAiChat('hook', 'refreshChatHistory failed', {
-          userId: context.userId,
-          error: response.error ?? null,
-          isNotFound: response.error === CHAT_HISTORY_NOT_FOUND_ERROR,
-        });
+        if (response.error !== 'aborted' && response.error !== CHAT_HISTORY_NOT_FOUND_ERROR) {
+          logAiChat('hook', 'refreshChatHistory failed', {
+            userId: context.userId,
+            error: response.error ?? null,
+          });
+        }
 
         if (response.error === CHAT_HISTORY_NOT_FOUND_ERROR) {
           // Backend uses "chat history not found" for brand new users.
@@ -217,7 +207,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           setErrorMessage(null);
           setHasGuestStartedChat(false);
           setShowWelcomeScreen(true);
-          logAiChat('hook', 'refreshChatHistory not_found → show welcome screen');
           return true;
         }
 
@@ -227,15 +216,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         return false;
       }
 
-      logAiChat('hook', 'refreshChatHistory success', {
-        userId: context.userId,
-        turnCount: response.data.turns.length,
-        suppressMessages: options?.suppressMessages ?? false,
-      });
       applyHistoryResponse(response.data, options);
       const turnCount = response.data.turns?.length ?? 0;
       setShowWelcomeScreen(turnCount === 0);
-      logAiChat('hook', 'refreshChatHistory empty turns', { turnCount, showWelcome: turnCount === 0 });
       return true;
     },
     [applyHistoryResponse, buildRequestContext],
@@ -275,6 +258,20 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
       const { didPromote } = promoteChatAuthFromResponse(data);
       const sessionUserId = getEffectiveChatUserId() ?? userId;
+      const responseStage = resolveApiStage(data.stage, data.session?.stage);
+
+      const resolvedOfferSyncMobile =
+        data.mobile?.trim() ||
+        (/^[6-9]\d{9}$/.test(sessionUserId) ? sessionUserId : undefined) ||
+        // Cookie is set synchronously by completeAppLogin inside promoteChatAuthFromResponse,
+        // so it is readable here even before the auth store React state re-renders.
+        (getCookie(STORAGE_MOBILE) as string | undefined)?.trim() ||
+        undefined;
+
+      setOfferSyncCredentials({
+        mobile: resolvedOfferSyncMobile,
+        token: data.authToken ?? undefined,
+      });
 
       if (data.validation && !data.validation.isValid) {
         if (data.answer) {
@@ -299,7 +296,12 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           setIsEscalated,
         });
 
-        if (didPromote) {
+        // History can lag; skip reload once offer-sync should run on this response.
+        if (isOfferSyncStage(responseStage)) {
+          requestOfferSync();
+        }
+
+        if (didPromote && !isOfferSyncStage(responseStage)) {
           await refreshChatHistoryAfterPromotion();
         }
         return;
@@ -325,11 +327,15 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         setMessages((prev) => [...prev, ...assistantMessages]);
       }
 
-      if (didPromote) {
+      if (isOfferSyncStage(responseStage)) {
+        requestOfferSync();
+      }
+
+      if (didPromote && !isOfferSyncStage(responseStage)) {
         await refreshChatHistoryAfterPromotion();
       }
     },
-    [refreshChatHistoryAfterPromotion, session],
+    [refreshChatHistoryAfterPromotion, requestOfferSync, session],
   );
 
   const submitValue = useCallback(
@@ -407,7 +413,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
   useEffect(() => {
     if (!isOpen) {
-      logAiChat('hook', 'modal closed → reset chat state');
       clearHistoryRequest();
       clearSubmitRequest();
       setHasGuestStartedChat(false);
@@ -421,12 +426,13 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       setDismissedSelectField(null);
       setFieldCaptureStatus(null);
       setIsEscalated(false);
+      setOfferSyncCredentials({});
+      setOfferSyncTrigger(0);
       return;
     }
 
     void prefetchChatConsentIp();
 
-    logAiChat('hook', 'modal opened — loading fresh chat-history');
     clearHistoryRequest();
     const controller = new AbortController();
     historyAbortRef.current = controller;
@@ -440,11 +446,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       const loadContext = buildRequestContext();
       const shouldSuppressGuestMessages = false;
 
-      logAiChat('hook', 'loadHistory', {
-        userId: loadContext.userId,
-        shouldSuppressGuestMessages,
-      });
-
       const didRefresh = await refreshChatHistory(
         controller.signal,
         AI_CHAT_COPY.historyRefreshErrorMessage,
@@ -452,17 +453,11 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       );
       setIsLoadingHistory(false);
 
-      logAiChat('hook', 'loadHistory finished', { didRefresh });
-
       if (!didRefresh) {
         return;
       }
 
       if (prefillQuestionRef.current?.trim()) {
-        // Prefill counts as the first guest message, so hide the guest welcome.
-        logAiChat('hook', 'prefill question → hide guest welcome', {
-          prefillQuestion: prefillQuestionRef.current,
-        });
         setHasGuestStartedChat(true);
         setShowWelcomeScreen(false);
         void submitValueRef.current(prefillQuestionRef.current.trim());
@@ -484,8 +479,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [sessionStage],
   );
 
-  const onLiveOffersUpdated = useCallback((offers: LenderOfferStatus[]) => {
-    setMessages((prev) => patchOfferListMessages(prev, offers));
+  const onLiveOffersUpdated = useCallback((offers: LenderOfferStatus[], canReHit: boolean) => {
+    setMessages((prev) => patchOfferListMessages(prev, offers, { canReHit }));
   }, []);
 
   const hasOfferMessages = useMemo(
@@ -493,13 +488,31 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [messages],
   );
 
+  // Injects the first offer_list message directly into state — avoids a chat-history reload.
+  const injectOfferListMessage = useCallback((offers: LenderOfferStatus[], canReHit: boolean) => {
+    setMessages((prev) => [
+      ...prev,
+      {
+        kind: 'offer_list' as const,
+        id: `offer_injected_${Date.now()}`,
+        offers,
+        canReHit,
+      },
+    ]);
+  }, []);
+
   const { isOfferPolling, isCheckingOfferStatus } = useAiChatOfferSync({
     stage: session?.stage,
     userId: chatUserId,
     mobile: user?.phoneNumber,
+    sessionUserId: session?.userId,
+    responseMobile: offerSyncCredentials.mobile,
+    responseToken: offerSyncCredentials.token,
     isOpen,
+    isLoadingHistory,
+    offerSyncTrigger,
     historyHasOfferMessages: hasOfferMessages,
-    onChatHistoryRefresh: refreshChatHistorySilently,
+    onOffersReady: injectOfferListMessage,
   });
 
   const showOfferPolling = (isOfferPolling || isCheckingOfferStatus) && !hasOfferMessages;
@@ -515,30 +528,6 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
   const showGuestWelcome =
     showWelcomeScreen && !hasGuestStartedChat && !isLoadingHistory;
-
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    logGuestWelcomeState('guest welcome state', {
-      showGuestWelcome,
-      showGuestWelcomeReason: {
-        showWelcomeScreen,
-        hasGuestStartedChat,
-        isLoadingHistory,
-        isGuestChatUser,
-      },
-    });
-  }, [
-    hasGuestStartedChat,
-    isGuestChatUser,
-    isLoadingHistory,
-    isOpen,
-    logGuestWelcomeState,
-    showGuestWelcome,
-    showWelcomeScreen,
-  ]);
 
   return {
     messages,

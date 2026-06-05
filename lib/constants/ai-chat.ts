@@ -15,7 +15,7 @@ export const AI_CHAT_COPY = {
   historyRefreshErrorMessage: "Couldn't refresh chat. Please try again.",
   genericError: 'Something went wrong. Please try again.',
   completedMessage: 'Thanks! We are matching your best offer now.',
-  offerPollingTitle: 'Searching for best offers',
+  offerPollingTitle: 'Searching loan offers...',
   offerPollingMessage:
     'We are checking with our lender partners to find the best loan offers for you.',
   escalateMessage: 'I am connecting you to a specialist for further support.',

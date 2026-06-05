@@ -18,7 +18,6 @@ import AiChatHeader from './ai-chat-header';
 import AiChatModalBody from './ai-chat-modal-body';
 import AiChatModalFooter from './ai-chat-modal-footer';
 import AiChatSecureBadge from './ai-chat-secure-badge';
-import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { getAiChatViewMode } from './ai-chat-view';
 
 const AiChatModal = (): JSX.Element | null => {
@@ -89,20 +88,6 @@ const AiChatModal = (): JSX.Element | null => {
     showGuestWelcome,
   });
 
-  useEffect(() => {
-    if (!isOpen) {
-      return;
-    }
-
-    logAiChat('modal', 'view mode resolved', {
-      viewMode,
-      isLoadingHistory,
-      isSubmitting,
-      showGuestWelcome,
-      messageCount: messages.length,
-    });
-  }, [isOpen, isLoadingHistory, isSubmitting, messages.length, showGuestWelcome, viewMode]);
-
   const isInputDisabled = isSubmitting;
 
   const handleInputChange = (value: string): void => {
@@ -132,7 +117,7 @@ const AiChatModal = (): JSX.Element | null => {
         tabIndex={-1}
       />
       <div
-        className={`${MOBILE_MODAL_PANEL} h-[calc(var(--app-height,1vh)*100)] max-h-[100dvh] border border-brand-200 shadow-2xl md:h-[92vh] md:max-h-[92vh] md:w-4/5 md:rounded-3xl lg:w-1/2`}
+        className={`${MOBILE_MODAL_PANEL} h-[calc(var(--app-height,1vh)*100)] max-h-dvh border border-brand-200 shadow-2xl md:h-[92vh] md:max-h-[92vh] md:w-4/5 md:rounded-3xl lg:w-1/2`}
       >
         <div className="flex h-full flex-col overflow-hidden">
           <AiChatHeader onClose={closeModal} />

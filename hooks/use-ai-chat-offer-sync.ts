@@ -1,36 +1,51 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { getCookie } from 'cookies-next';
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import {
   persistChatOfferForChat,
   runCheckStatusForChat,
 } from '@/lib/ai-chat/offer-sync/run-check-and-save-offer';
 import { normalizeBotStage, shouldPollOffersInChat } from '@/lib/ai-chat/normalize-bot-stage';
-import { STORAGE_AUTH_TOKEN, STORAGE_MOBILE } from '@/lib/constants/api-keys';
+import {
+  canRunChatOfferSync,
+  resolveChatOfferSyncCredentials,
+} from '@/lib/ai-chat/resolve-chat-offer-sync-credentials';
 import { useOfferStatusPolling } from '@/hooks/use-offer-status-polling';
 import { newPLEnabled } from '@/hooks/use-offers';
+import type { LenderOfferStatus } from '@/types/wecredit';
+
 interface UseAiChatOfferSyncParams {
   stage: string | null | undefined;
   userId: string;
   mobile?: string;
+  responseMobile?: string;
+  responseToken?: string;
   isOpen: boolean;
+  isLoadingHistory?: boolean;
+  sessionUserId?: string;
+  offerSyncTrigger?: number;
   historyHasOfferMessages: boolean;
-  onChatHistoryRefresh: () => Promise<void>;
+  /** Called once offers are ready — injects offer_list directly into chat state (no history reload). */
+  onOffersReady: (offers: LenderOfferStatus[], canReHit: boolean) => void;
 }
 
 /**
  * When session stage is `completed`: poll check-status-all, persist via chat-offer,
- * then reload chat-history so the thread always reflects the server.
+ * then inject the offer_list message directly into chat state via onOffersReady.
  */
 export function useAiChatOfferSync({
   stage,
   userId,
   mobile,
+  responseMobile,
+  responseToken,
   isOpen,
+  isLoadingHistory = false,
+  sessionUserId,
+  offerSyncTrigger = 0,
   historyHasOfferMessages,
-  onChatHistoryRefresh,
+  onOffersReady,
 }: UseAiChatOfferSyncParams): {
   isOfferPolling: boolean;
   isCheckingOfferStatus: boolean;
@@ -39,21 +54,21 @@ export function useAiChatOfferSync({
   const [isCheckingOfferStatus, setIsCheckingOfferStatus] = useState(false);
   const pollSnapshotRef = useRef({ lenderCount: 0, canReHit: true });
   const hasPersistedChatOfferRef = useRef(false);
+  const prevTriggerRef = useRef(offerSyncTrigger);
 
   const onPollTick = useCallback(
     async (signal: AbortSignal): Promise<void> => {
-      const token = getCookie(STORAGE_AUTH_TOKEN) as string | undefined;
-      const resolvedMobile = mobile ?? (getCookie(STORAGE_MOBILE) as string | undefined);
-
-      logAiChat('offer-sync', 'poll tick — check-status-all', {
-        userId,
-        stage,
-        hasMobile: Boolean(resolvedMobile),
-        hasToken: Boolean(token),
+      const credentials = resolveChatOfferSyncCredentials({
+        phoneNumber: mobile,
+        chatUserId: userId,
+        sessionUserId,
+        responseMobile,
+        responseToken,
       });
+      const { mobile: resolvedMobile, token } = credentials;
 
-      if (!resolvedMobile || !token) {
-        logAiChat('offer-sync', 'poll tick skipped — missing auth', { userId });
+      if (!canRunChatOfferSync(credentials)) {
+        logAiChat('offer-sync', 'poll skipped — missing mobile', { userId });
         return;
       }
 
@@ -61,8 +76,8 @@ export function useAiChatOfferSync({
 
       try {
         const checkResult = await runCheckStatusForChat({
-          mobile: resolvedMobile,
-          token,
+          mobile: resolvedMobile!,
+          token: token ?? '',
           userId,
           signal,
         });
@@ -81,26 +96,18 @@ export function useAiChatOfferSync({
         }
 
         if (checkResult.lenderCount === 0) {
-          logAiChat('offer-sync', 'poll tick — no lenders yet, keep polling', {
-            userId,
-            statusCode: checkResult.statusCode ?? null,
-          });
           return;
         }
 
         if (hasPersistedChatOfferRef.current) {
           if (!historyHasOfferMessages) {
-            logAiChat('offer-sync', 'poll tick — reloading chat-history for offer turn', {
-              userId,
-              lenderCount: checkResult.lenderCount,
-            });
-            await onChatHistoryRefresh();
+            onOffersReady(checkResult.data.lenders ?? [], checkResult.canReHit);
           }
           return;
         }
 
         const persistResult = await persistChatOfferForChat({
-          mobile: resolvedMobile,
+          mobile: resolvedMobile!,
           userId,
           checkStatusResponse: checkResult.data,
           signal,
@@ -108,17 +115,13 @@ export function useAiChatOfferSync({
 
         if (persistResult.success) {
           hasPersistedChatOfferRef.current = true;
-          logAiChat('offer-sync', 'poll tick — chat-offer saved, reloading chat-history', {
-            userId,
-            lenderCount: checkResult.lenderCount,
-          });
-          await onChatHistoryRefresh();
+          onOffersReady(checkResult.data.lenders ?? [], checkResult.canReHit);
         }
       } finally {
         setIsCheckingOfferStatus(false);
       }
     },
-    [historyHasOfferMessages, mobile, onChatHistoryRefresh, userId],
+    [historyHasOfferMessages, mobile, onOffersReady, responseMobile, responseToken, sessionUserId, userId],
   );
 
   const shouldStopChatOfferPolling = useCallback((): boolean => {
@@ -140,40 +143,62 @@ export function useAiChatOfferSync({
 
   // Start/stop polling when modal opens on `completed` stage (same 15s / 90s loop as offers page).
   useEffect(() => {
-    const token = getCookie(STORAGE_AUTH_TOKEN);
-    const resolvedMobile = mobile ?? (getCookie(STORAGE_MOBILE) as string | undefined);
+    const credentials = resolveChatOfferSyncCredentials({
+      phoneNumber: mobile,
+      chatUserId: userId,
+      sessionUserId,
+      responseMobile,
+      responseToken,
+    });
+    const { mobile: resolvedMobile } = credentials;
+    const stageReady = shouldPollOffersInChat(stage);
+    // Allow polling on `completed` even during a background history refresh (post-login).
+    const historyReady = !isLoadingHistory || stageReady;
+    // Explicit trigger (requestOfferSync) means we know offers aren't in state yet.
+    const isExplicitTrigger = offerSyncTrigger !== prevTriggerRef.current;
+    prevTriggerRef.current = offerSyncTrigger;
+
     const shouldRun =
       isOpen &&
-      shouldPollOffersInChat(stage) &&
-      Boolean(resolvedMobile) &&
-      Boolean(token);
-
-    logAiChat('offer-sync', 'polling gate evaluated', {
-      userId,
-      isOpen,
-      stage,
-      normalizedStage: normalizeBotStage(stage),
-      shouldRun,
-    });
+      stageReady &&
+      historyReady &&
+      canRunChatOfferSync(credentials) &&
+      (isExplicitTrigger || !historyHasOfferMessages);
 
     if (!shouldRun) {
+      logAiChat('offer-sync', 'polling blocked', {
+        userId,
+        stage: normalizeBotStage(stage),
+        isLoadingHistory,
+        hasMobile: Boolean(resolvedMobile),
+        historyHasOfferMessages,
+      });
       stopPolling();
       hasPersistedChatOfferRef.current = false;
       return;
     }
 
     hasPersistedChatOfferRef.current = false;
-    logAiChat('offer-sync', 'starting check-status polling (chat-history reload after chat-offer)', {
-      userId,
-      stage,
-    });
+    logAiChat('offer-sync', 'polling started', { userId, stage: normalizeBotStage(stage) });
     startPolling();
 
     return () => {
-      logAiChat('offer-sync', 'stopping check-status polling (cleanup)', { userId, stage });
       stopPolling();
     };
-  }, [isOpen, mobile, stage, startPolling, stopPolling, userId]);
+  }, [
+    historyHasOfferMessages,
+    isLoadingHistory,
+    isOpen,
+    mobile,
+    offerSyncTrigger,
+    responseMobile,
+    responseToken,
+    sessionUserId,
+    stage,
+    startPolling,
+    stopPolling,
+    userId,
+  ]);
 
   return { isOfferPolling: isPolling, isCheckingOfferStatus };
 }
