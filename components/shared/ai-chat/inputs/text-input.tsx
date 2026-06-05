@@ -8,6 +8,7 @@ interface TextInputProps {
   placeholder?: string;
   disabled?: boolean;
   shouldAutoFocus?: boolean;
+  isSubmitting?: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
 }
@@ -17,12 +18,14 @@ const TextInput = ({
   placeholder,
   disabled,
   shouldAutoFocus = false,
+  isSubmitting = false,
   onChange,
   onSubmit,
 }: TextInputProps): JSX.Element => {
   const { inputRef, restoreFocusOnBlur } = useInputAutoFocus({
     shouldAutoFocus,
     disabled,
+    isSubmitting,
   });
 
   return (
@@ -31,6 +34,7 @@ const TextInput = ({
       type="text"
       value={value}
       disabled={disabled}
+      enterKeyHint="send"
       onChange={(event) => onChange(event.target.value)}
       onBlur={restoreFocusOnBlur}
       onKeyDown={(event) => {
