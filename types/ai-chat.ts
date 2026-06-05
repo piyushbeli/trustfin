@@ -127,6 +127,8 @@ export type AiChatRenderableMessage =
       kind: 'offer_list';
       id: string;
       offers: LenderOfferStatus[];
+      /** From check-status isRehitLenders — show Explore More when true. */
+      canReHit?: boolean;
     };
 
 export interface ChatQueryResponse {

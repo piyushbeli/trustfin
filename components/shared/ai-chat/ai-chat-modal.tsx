@@ -144,6 +144,7 @@ const AiChatModal = (): JSX.Element | null => {
               showTypingIndicator={isSubmitting}
               showOfferPolling={showOfferPolling}
               isCheckingOfferStatus={isCheckingOfferStatus}
+              isLoadingHistory={isLoadingHistory}
               onLiveOffersUpdated={onLiveOffersUpdated}
             />
           </div>

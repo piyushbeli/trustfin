@@ -41,6 +41,8 @@ export interface OffersViewProps {
   /** When provided, renders in-chat offer UI (same categories as /offers) without page fetch/routing. */
   embeddedOffers?: LenderOfferStatus[];
   chatContext?: OffersViewChatContext;
+  /** From check-status isRehitLenders — show Explore More in embedded chat. */
+  canReHit?: boolean;
   className?: string;
 }
 
@@ -397,7 +399,7 @@ const OffersViewPage = (): ReactNode => {
             />
           }
           description="AI has matched you with the best offers based on your profile. Compare and choose the perfect fit."
-          className="pt-2"
+          className="pt-2 px-4"
         />
       </div>
 
@@ -457,6 +459,7 @@ export const OffersView = (props: OffersViewProps = {}): ReactNode => {
     const embeddedProps: OffersViewEmbeddedProps = {
       offers: props.embeddedOffers,
       chatContext: props.chatContext,
+      canReHit: props.canReHit,
       className: props.className,
     };
     return <OffersViewEmbedded {...embeddedProps} />;

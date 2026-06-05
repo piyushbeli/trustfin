@@ -15,6 +15,7 @@ interface AiChatModalBodyProps {
   showTypingIndicator: boolean;
   showOfferPolling?: boolean;
   isCheckingOfferStatus?: boolean;
+  isLoadingHistory?: boolean;
   onLiveOffersUpdated?: (offers: LenderOfferStatus[]) => void;
 }
 
@@ -25,6 +26,7 @@ const AiChatModalBody = ({
   showTypingIndicator,
   showOfferPolling,
   isCheckingOfferStatus,
+  isLoadingHistory,
   onLiveOffersUpdated,
 }: AiChatModalBodyProps): JSX.Element => {
   if (viewMode === 'initialLoading') {
@@ -42,6 +44,7 @@ const AiChatModalBody = ({
       showTypingIndicator={showTypingIndicator}
       showOfferPolling={showOfferPolling}
       isCheckingOfferStatus={isCheckingOfferStatus}
+      isLoadingHistory={isLoadingHistory}
       onLiveOffersUpdated={onLiveOffersUpdated}
     />
   );

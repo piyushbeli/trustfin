@@ -11,6 +11,7 @@ import {
 } from '@/lib/ai-chat/chat-identity';
 import { getChatQueryAssistantMessages } from '@/lib/ai-chat/get-chat-query-assistant-messages';
 import { mapHistoryResponseToMessages } from '@/lib/ai-chat/offer-sync/map-history-response-messages';
+import { patchOfferListMessages } from '@/lib/ai-chat/patch-offer-list-messages';
 import { prefetchChatConsentIp } from '@/lib/ai-chat/chat-consent-ip';
 import { isFieldCaptureStage } from '@/lib/ai-chat/normalize-bot-stage';
 import { resolveAiChatInputState } from '@/lib/ai-chat/resolve-chat-input-state';
@@ -483,12 +484,9 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [sessionStage],
   );
 
-  const onLiveOffersUpdated = useCallback(
-    (_offers: LenderOfferStatus[]) => {
-      void refreshChatHistorySilently();
-    },
-    [refreshChatHistorySilently],
-  );
+  const onLiveOffersUpdated = useCallback((offers: LenderOfferStatus[]) => {
+    setMessages((prev) => patchOfferListMessages(prev, offers));
+  }, []);
 
   const hasOfferMessages = useMemo(
     () => messages.some((message) => message.kind === 'offer_list'),

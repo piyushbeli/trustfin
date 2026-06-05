@@ -22,6 +22,7 @@ export const renderChatMessage = (
         <div className="w-full max-w-full">
           <OffersView
             embeddedOffers={message.offers}
+            canReHit={message.canReHit}
             chatContext={{
               userId: options.userId,
               onLiveOffersUpdated: options.onLiveOffersUpdated,
