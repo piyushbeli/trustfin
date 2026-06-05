@@ -18,6 +18,9 @@ const config = {
     './src/**/*.{ts,tsx}',
   ],
   theme: {
+    screens: {
+      xs: '480px',
+    },
     extend: {
       colors: {
         // Trustfin Design System — synced from lib/constants/colors.ts

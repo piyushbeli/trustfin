@@ -1,5 +1,8 @@
 export const AI_CHAT_COPY = {
   title: 'Finn — AI Loan Assistant',
+  /** Default intro shown in Finn hero / marketing chat bubbles */
+  introMessage:
+    "Hi 👋 I'm Finn your AI loan guide. Tell me what you need, and I'll match you with the right financial option.",
   onlineStatus: 'Online now',
   secureProcessing: 'SECURE AI PROCESSING',
   guestWelcomeTitle: 'Welcome to Trustfin',

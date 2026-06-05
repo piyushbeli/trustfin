@@ -14,6 +14,12 @@ export {
   type AiChatCtaVariant,
   type AiChatCtaSize,
 } from './ai-chat-cta';
+export {
+  default as AiFinnVisual,
+  aiFinnVisualVariants,
+  type AiFinnVisualProps,
+  type AiFinnVisualSize,
+} from './ai-finn-visual';
 export { AiChatModal } from './ai-chat';
 export { SectionWrapper, SectionTitle, SectionDescription } from './section';
 export {
