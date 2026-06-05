@@ -1,4 +1,3 @@
-import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import {
   parseCanReHitFromHistoryTurn,
   parseOffersFromHistoryTurn,
@@ -63,12 +62,6 @@ export const mapHistoryTurnsToMessages = (turns: AiChatTurn[]): AiChatRenderable
           id: `${turn.turnId}_offers`,
           offers,
           canReHit: parseCanReHitFromHistoryTurn(turn),
-        });
-      } else {
-        logAiChat('parse', 'offer turn had no parseable lenders', {
-          turnId: turn.turnId,
-          hasOffer: Boolean(turn.offer),
-          hasOfferData: Boolean(turn.offerData),
         });
       }
     }

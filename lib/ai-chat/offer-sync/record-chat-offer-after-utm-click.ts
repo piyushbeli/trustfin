@@ -49,11 +49,6 @@ export const recordChatOfferAfterUtmClick = async ({
   const isUtmClicked = offer.wcStatus === 'UTM_CLICKED';
 
   if (!mobile || !token || !userId) {
-    logAiChat('offer-sync', 'utm click skipped — missing auth or userId', {
-      userId: userId || null,
-      hasMobile: Boolean(mobile),
-      hasToken: Boolean(token),
-    });
     window.open(utmLink, '_blank', 'noopener,noreferrer');
     return { ...emptyResult, openedUtm: true };
   }
@@ -63,12 +58,6 @@ export const recordChatOfferAfterUtmClick = async ({
   if (lenderName && !isUtmClicked) {
     const utmResult = await updateUtmClicked(mobile, lenderName, token);
     utmUpdated = utmResult.success;
-    logAiChat('offer-sync', 'updateUtmClicked after in-chat offer click', {
-      userId,
-      lenderName,
-      success: utmResult.success,
-      error: utmResult.error ?? null,
-    });
   }
 
   const checkResult = await runCheckStatusForChat({
@@ -93,15 +82,8 @@ export const recordChatOfferAfterUtmClick = async ({
     checkStatusResponse: checkResult.data,
   });
 
-  logAiChat('offer-sync', 'utm click — chat-offer persist finished', {
-    userId,
-    lenderName: lenderName ?? null,
-    success: persistResult.success,
-    lenderCount: checkResult.lenderCount,
-  });
-
   if (persistResult.success) {
-    await onLiveOffersUpdated?.(checkResult.data.lenders ?? []);
+    await onLiveOffersUpdated?.(checkResult.data.lenders ?? [], checkResult.canReHit);
   }
 
   window.open(utmLink, '_blank', 'noopener,noreferrer');

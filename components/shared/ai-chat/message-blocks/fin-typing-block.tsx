@@ -1,10 +1,14 @@
 import { AI_CHAT_COPY } from "@/lib/constants/ai-chat";
 
-export const FinTypingBlock = () => {
+export const FinTypingBlock = ({
+  message,
+}: {
+  message?: string;
+}) => {
   return (
     <div className="flex justify-center">
       <span className=" py-1 text-xs text-muted-foreground">
-        {AI_CHAT_COPY.typingMessage}
+        {message || AI_CHAT_COPY.typingMessage}
       </span>
     </div>
   );

@@ -8,7 +8,8 @@ const CHANNEL = 'wecredit_bot';
 
 export interface RunCheckStatusForChatParams {
   mobile: string;
-  token: string;
+  /** Optional — check-status-all works with mobile header alone (same as /offers). */
+  token?: string;
   userId: string;
   signal?: AbortSignal;
   onCheckStatusSuccess?: (data: CheckStatusAllResponse, lenders: LenderOfferStatus[]) => void;
@@ -32,12 +33,10 @@ export const runCheckStatusForChat = async ({
   onCheckStatusSuccess,
 }: RunCheckStatusForChatParams): Promise<RunCheckStatusForChatResult> => {
   // Network tab: POST to /api/forward with body.endpoint === 'check-status-all' (not ai-assistant URL).
-  logAiChat('offer-sync', 'calling checkStatusAll (api/forward)', { userId, mobile });
-
   const statusResult = await checkStatusAll(mobile, token, signal);
 
   if (!statusResult.success || !statusResult.data) {
-    logAiChat('offer-sync', 'checkStatusAll failed', {
+    logAiChat('offer-sync', 'check-status-all failed', {
       userId,
       error: statusResult.error ?? null,
     });
@@ -51,13 +50,6 @@ export const runCheckStatusForChat = async ({
 
   const data = statusResult.data;
   const lenders = data.lenders ?? [];
-
-  logAiChat('offer-sync', 'checkStatusAll success', {
-    userId,
-    lenderCount: lenders.length,
-    statusCode: data.statusCode,
-    isRehitLenders: data.isRehitLenders,
-  });
 
   onCheckStatusSuccess?.(data, lenders);
 
@@ -84,11 +76,6 @@ export const persistChatOfferForChat = async ({
   checkStatusResponse,
   signal,
 }: PersistChatOfferParams): Promise<{ success: boolean; error?: string }> => {
-  logAiChat('offer-sync', 'submitChatOffer starting (lenders ready)', {
-    userId,
-    lenderCount: checkStatusResponse.lenders?.length ?? 0,
-  });
-
   const saveResult = await submitChatOffer(
     {
       userId,
@@ -107,11 +94,6 @@ export const persistChatOfferForChat = async ({
     });
     return { success: false, error: saveResult.error };
   }
-
-  logAiChat('offer-sync', 'submitChatOffer succeeded — caller should reload chat-history', {
-    userId,
-    lenderCount: checkStatusResponse.lenders?.length ?? 0,
-  });
 
   return { success: true };
 };
