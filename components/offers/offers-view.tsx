@@ -399,7 +399,7 @@ const OffersViewPage = (): ReactNode => {
             />
           }
           description="AI has matched you with the best offers based on your profile. Compare and choose the perfect fit."
-          className="pt-2"
+          className="pt-2 px-4"
         />
       </div>
 

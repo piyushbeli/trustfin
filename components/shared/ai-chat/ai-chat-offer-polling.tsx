@@ -3,31 +3,15 @@
 import { JSX } from 'react';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 
-interface AiChatOfferPollingProps {
-  isCheckingStatus?: boolean;
-}
-
-/** Compact polling UI while check-status-all runs (same flow as /offers PollingState). */
-const AiChatOfferPolling = ({ isCheckingStatus = false }: AiChatOfferPollingProps): JSX.Element => {
-  const statusLabel = isCheckingStatus
-    ? AI_CHAT_COPY.offerPollingHint
-    : AI_CHAT_COPY.offerPollingMessage;
-
+/** Assistant-style status bubble shown while check-status-all runs for offers. */
+const AiChatOfferPolling = (): JSX.Element => {
   return (
-    <div
-      className="flex w-full flex-col items-center gap-3 rounded-xl border border-brand-primary/20 bg-brand-primary/5 px-4 py-6"
-      role="status"
-      aria-live="polite"
-    >
-      <div
-        className="h-10 w-10 animate-spin rounded-full border-2 border-brand-primary border-t-transparent"
-        aria-hidden
-      />
-      <p className="text-center text-sm font-medium text-foreground">{statusLabel}</p>
-      <div className="flex justify-center gap-1" aria-hidden>
-        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand-primary [animation-delay:0ms]" />
-        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand-primary [animation-delay:150ms]" />
-        <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-brand-primary [animation-delay:300ms]" />
+    <div className="flex w-full justify-start" role="status" aria-live="polite">
+      <div className="wc-ai-chat-bubble max-w-[85%] rounded-2xl px-4 py-3 text-gray-800">
+        <p className="text-[15px] font-medium leading-relaxed">{AI_CHAT_COPY.offerPollingTitle}</p>
+        <p className="mt-1 text-[15px] leading-relaxed text-muted-foreground">
+          {AI_CHAT_COPY.offerPollingMessage}
+        </p>
       </div>
     </div>
   );

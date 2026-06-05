@@ -13,6 +13,9 @@ import { newPLEnabled } from '@/hooks/use-offers';
 import type { AiChatOfferClickContext } from '@/types/ai-chat';
 import type { LenderOfferStatus } from '@/types/wecredit';
 import { cn } from '@/lib/utils';
+import { buildOffersPathWithQuery } from '@/lib/utils/offers-navigation';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 
 export type OffersViewChatContext = AiChatOfferClickContext;
 
@@ -33,6 +36,8 @@ export const OffersViewEmbedded = ({
   canReHit = false,
   className,
 }: OffersViewEmbeddedProps): JSX.Element => {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const { explore: exploreOffers, recentlyClicked: statusOffers, unmatched: unmatchedOffers } =
     useMemo(() => categorizeOffers(offers), [offers]);
 
@@ -69,6 +74,13 @@ export const OffersViewEmbedded = ({
   const hasInitiatedOffers = exploreOffers.length > 0;
   const hasOffers =
     exploreOffers.length > 0 || statusOffers.length > 0 || unmatchedOffers.length > 0;
+
+  const handleRecentlyClickedOfferClick = (offer: LenderOfferStatus): void => {
+    // For recently clicked offers, navigate to status page
+    // router.replace(buildOffersPathWithQuery('/offers/status', searchParams));
+
+    console.log('Likely clicked offer');
+  };
 
   const renderOfferSection = (title: string, offerList: LenderOfferStatus[]): JSX.Element | null => {
     if (offerList.length === 0) {
@@ -138,7 +150,7 @@ export const OffersViewEmbedded = ({
         {recentStatusOffers.length > 0 ? (
           <RecentlyClickedOffersCarousel
             offers={recentStatusOffers}
-            onOfferClick={handleOfferClick}
+            onOfferClick={handleRecentlyClickedOfferClick}
             className="max-w-auto m-0"
             headingClassName="mx-0"
           />
