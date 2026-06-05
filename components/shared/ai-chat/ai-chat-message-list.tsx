@@ -27,7 +27,7 @@ const AiChatMessageList = ({
   isLoadingHistory = false,
   onLiveOffersUpdated,
 }: AiChatMessageListProps): JSX.Element => {
-  const { endRef } = useAiChatAutoScroll({
+  const { scrollContainerRef, contentRef } = useAiChatAutoScroll({
     messages,
     showTypingIndicator,
     showOfferPolling,
@@ -48,8 +48,8 @@ const AiChatMessageList = ({
   }, [showOfferPolling]);
 
   return (
-    <div className="flex-1 overflow-y-auto px-4 py-4 pb-2">
-      <div className="flex flex-col gap-3">
+    <div ref={scrollContainerRef} className="flex-1 overflow-y-auto px-4 py-4 pb-6">
+      <div ref={contentRef} className="flex flex-col gap-3">
         {messages.map((message) => (
           <div key={message.id}>
             {renderChatMessage(message, {
@@ -60,7 +60,8 @@ const AiChatMessageList = ({
         ))}
         {renderOfferPolling}
         {renderFinTypingIndicator}
-        <div ref={endRef} />
+        {/* Spacer keeps the last bubble fully above the footer after auto-scroll. */}
+        <div className="min-h-3 shrink-0" aria-hidden="true" />
       </div>
     </div>
   );
