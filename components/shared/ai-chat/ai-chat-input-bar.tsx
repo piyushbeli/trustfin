@@ -1,6 +1,6 @@
 'use client';
 
-import { JSX } from 'react';
+import { JSX, type PointerEvent } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { AI_CHAT_COPY } from '@/lib/constants/ai-chat';
 import type { AiChatNextFieldConfig } from '@/types/ai-chat';
@@ -58,8 +58,13 @@ const AiChatInputBar = ({
     );
   }
 
+  const handleSendPointerDown = (event: PointerEvent<HTMLButtonElement>): void => {
+    // Keep focus on the text field so the mobile keyboard does not dismiss/reopen on send.
+    event.preventDefault();
+  };
+
   return (
-    <div className="border-t border-brand-100 p-4">
+    <div className="border-t border-brand-100 p-4" data-ai-chat-input-bar>
       <div className="flex items-center gap-2 rounded-xl bg-brand-50 p-2">
         <div className="flex-1">
           <AiChatDynamicInput
@@ -69,6 +74,7 @@ const AiChatInputBar = ({
             placeholder={defaultPlaceholder}
             disabled={isChatInputDisabled}
             shouldAutoFocus={!isChatInputDisabled}
+            isSubmitting={isSubmitting}
             onChange={onChange}
             onSubmit={onSubmit}
             onSelectChip={onSelectChip}
@@ -76,6 +82,7 @@ const AiChatInputBar = ({
         </div>
         <button
           type="button"
+          onPointerDown={handleSendPointerDown}
           onClick={onSubmit}
           disabled={isSubmitting || isChatInputDisabled || !inputValue.trim()}
           className="wc-hero-cta-gradient flex min-h-11 min-w-11 shrink-0 items-center justify-center rounded-xl p-3 text-white disabled:opacity-60"

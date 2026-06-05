@@ -13,6 +13,7 @@ interface AiChatDynamicInputProps {
   placeholder?: string;
   disabled?: boolean;
   shouldAutoFocus?: boolean;
+  isSubmitting?: boolean;
   onChange: (value: string) => void;
   onSubmit: () => void;
   onSelectChip: (value: string) => void;
@@ -25,6 +26,7 @@ const AiChatDynamicInput = ({
   placeholder,
   disabled,
   shouldAutoFocus = false,
+  isSubmitting = false,
   onChange,
   onSubmit,
   onSelectChip,
@@ -44,6 +46,7 @@ const AiChatDynamicInput = ({
       value={value}
       disabled={disabled}
       shouldAutoFocus={shouldAutoFocus}
+      isSubmitting={isSubmitting}
       placeholder={placeholder ?? AI_CHAT_COPY.fallbackPlaceholder}
       onChange={onChange}
       onSubmit={onSubmit}
