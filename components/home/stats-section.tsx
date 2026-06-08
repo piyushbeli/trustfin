@@ -82,7 +82,7 @@ const StatColumn = ({ stat }: StatColumnProps): React.ReactNode => {
       className="flex min-w-0 flex-1 flex-col items-center px-1 text-center sm:px-2"
     >
       <StatValue value={stat.value} suffix={stat.suffix} showStar={stat.showStar} />
-      <span className="mt-1 text-xs leading-snug text-gray-600 sm:text-xs md:text-sm">
+      <span className="mt-1 leading-snug text-gray-600 sm:text-xs md:text-sm">
         {stat.label}
       </span>
     </div>
