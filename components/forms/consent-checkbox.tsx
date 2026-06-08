@@ -31,7 +31,7 @@ const ConsentCheckbox = ({
           id={id}
           checked={checked}
           onChange={(event) => onChange(event.target.checked)}
-          className="mt-1 h-5 w-5 rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer shrink-0"
+          className="mt-1 h-5 w-5 shrink-0 checkbox-common"
         />
         <label htmlFor={id} className="text-sm text-gray-700">
           I agree to the{' '}

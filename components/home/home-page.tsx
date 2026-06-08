@@ -57,7 +57,7 @@ const HomePage = (): React.ReactNode => {
       <ToolsCalculatorsSection />
 
       {/* Testimonials Section */}
-      {/* <TestimonialsSection /> */}
+      <TestimonialsSection />
 
       {/* Blog Section */}
       <BlogSection />
