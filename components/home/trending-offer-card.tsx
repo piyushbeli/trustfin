@@ -230,7 +230,7 @@ const TrendingOfferCard = ({
         aria-busy={isCheckingEligibility}
         onClick={() => void handleCheckEligibility()}
         onKeyDown={handleKeyDown}
-        className={`flex h-full  w-full cursor-pointer flex-col items-center rounded-xl border border-brand-primary bg-brand-primary/10 p-3 text-center transition-opacity ${
+        className={`flex w-full cursor-pointer flex-col items-center rounded-xl border border-brand-primary bg-brand-primary/10 p-3 text-center transition-opacity ${
           isCheckingEligibility ? 'pointer-events-none opacity-70' : 'hover:border-brand-primary/20'
         }`}
       >
@@ -250,10 +250,10 @@ const TrendingOfferCard = ({
 
         <p className="text-2xl font-semibold leading-tight text-brand-primary">{interestRate}</p>
 
-        <p className="mt-1 text-sm text-gray-600">
+        <p className="mt-1 text-xs text-gray-600">
           {amountUptoLabel} {amount}
         </p>
-        <p className="text-base text-gray-600">{tenureDisplay}</p>
+        <p className="text-sm text-gray-600">{tenureDisplay}</p>
 
         <div className="mt-1 flex w-full flex-col items-center gap-1">
           {/* {showLowestRateBadge ? ( */}

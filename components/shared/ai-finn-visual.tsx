@@ -32,7 +32,7 @@ const frameVariants = cva('relative z-0 mx-auto w-full', {
       // Explicit width prevents collapse when the image uses fill positioning
       default: 'h-[420px] max-w-[480px]',
       // mobile: 'h-[300px] max-w-full sm:h-[360px]',
-      mobile: 'h-[320px] xs:h-[360px] max-w-full',
+      mobile: 'h-[450px] xs:h-[360px] max-w-full',
     },
   },
   defaultVariants: {
@@ -83,8 +83,15 @@ const AiFinnVisual = ({
 
   return (
     <div className={cn(rootVariants({ bleed }), className)}>
-      {showGlow ? <div className={cn("wc-hero-glow ", size === 'mobile' ? 'h-[320px] xs:h-[360px]' : '')} aria-hidden /> : null}
-
+      {showGlow ? (
+        <div
+          className={cn(
+            'wc-hero-glow',
+            size === 'mobile' && 'h-[85dvh]',
+          )}
+          aria-hidden
+        />
+      ) : null}
       <div className={frameVariants({ size })}>
         <Image
           src={IMAGES.HERO.BOAT}

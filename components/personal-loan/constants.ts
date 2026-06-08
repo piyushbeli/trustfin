@@ -895,4 +895,5 @@ export const AI_CTA_COPY = {
   defaultLabel: 'Chat with TrustFin AI',
   heroSecondaryLabel: 'Talk to AI Assistant',
   askAiLabel: 'Ask AI',
+  getYourPersonalLoanOffer: 'Get Your Personalized Offer',
 } as const;

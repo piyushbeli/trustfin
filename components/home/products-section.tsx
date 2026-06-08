@@ -62,43 +62,40 @@ const products: Product[] = [
  */
 const ProductsSection = (): React.ReactNode => {
   return (
-    <section className="min-w-0 bg-white py-4 md:mt-5 md:py-0 mb-2">
-      {/* Mobile header */}
-      <div
-        className="mb-4 flex items-center justify-between px-4 md:hidden"
-      >
-        <h2 className="text-lg font-semibold text-gray-900">Our Products</h2>
-        <span className="text-sm text-gray-500">Swipe to explore</span>
+    <section className="mb-2 min-w-0 bg-white py-4 md:mt-5 md:py-0">
+      {/* Mobile — section padding on parent, not the scroll container (avoids edge flush at scroll 0) */}
+      <div className="common-section-wrapper md:hidden">
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-gray-900">Our Products</h2>
+          <span className="text-sm text-gray-500">Swipe to explore</span>
+        </div>
+
+        <div className="min-w-0 overflow-hidden">
+          <div
+            className="wc-products-scroll scrollbar-hide flex snap-x snap-mandatory gap-3 pb-1"
+            role="region"
+            aria-label="Our products"
+          >
+            {products.map((product, index) => (
+              <div key={product.id} className="w-auto shrink-0 snap-start">
+                <ProductCard
+                  id={product.id}
+                  label={product.label}
+                  href={product.href}
+                  icon={product.icon}
+                  index={index}
+                  variant="compact"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Desktop header */}
-      <h2
-        className="mb-6 hidden px-4 text-center text-lg font-medium md:block"
-      >
+      <h2 className="mb-6 hidden px-4 text-center text-lg font-medium md:block">
         Our Products
       </h2>
-
-      {/* Mobile: horizontal scroll — wc-products-scroll + min-w-0 prevent page-level overflow */}
-      <div className="min-w-0 max-w-full overflow-hidden md:hidden">
-        <div
-          className="wc-products-scroll scrollbar-hide flex snap-x snap-mandatory gap-3 px-4 pb-1"
-          role="region"
-          aria-label="Our products"
-        >
-          {products.map((product, index) => (
-            <div key={product.id} className="w-auto shrink-0 snap-start">
-              <ProductCard
-                id={product.id}
-                label={product.label}
-                href={product.href}
-                icon={product.icon}
-                index={index}
-                variant="compact"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
 
       {/* Desktop: grid */}
       <div className="mx-auto hidden common-section-wrapper grid-cols-3 gap-2 px-4 md:grid lg:grid-cols-6">
