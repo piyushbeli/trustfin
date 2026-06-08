@@ -4,14 +4,12 @@ import StatsSection from './stats-section';
 import ProductsSection from './products-section';
 import TrendingOffersClient from './trending-offers-client';
 import ToolsCalculatorsSection from './tools-calculators-section';
-import TestimonialsSection from './testimonials-section';
 import PartnersSection from './partners-section';
-import CertificationsSection from './certifications-section';
-import { FaqSection } from '@/components/shared';
+import { AiChatCta, FaqSection } from '@/components/shared';
 import BlogSection from './blog-section';
-import AppDownloadSection from './app-download-section';
-import DreamsSection from './dreams-section';
 import { PersonalLoanContent } from '@/components/personal-loan/personal-loan-content';
+import { AI_CTA_COPY } from '../personal-loan';
+import TestimonialsSection from './testimonials-section';
 
 /**
  * Main home page component that composes all sections
@@ -42,11 +40,18 @@ const HomePage = (): React.ReactNode => {
       {/* Our Partners Section */}
       <PartnersSection />
 
-      
+
       {/* Trending Offers Section
           - Fetches generic lenders as fallback (PDF Step 2) - client-side
           - Fetches user-specific lenders when logged in (PDF Step 3) */}
       <TrendingOffersClient />
+
+      <AiChatCta
+        label={AI_CTA_COPY.getYourPersonalLoanOffer}
+        showIcon={false}
+        variant="solid" className="custom-cta-button mb-4"
+      />
+
 
       {/* Tools & Calculators Section */}
       <ToolsCalculatorsSection />
@@ -54,13 +59,13 @@ const HomePage = (): React.ReactNode => {
       {/* Testimonials Section */}
       {/* <TestimonialsSection /> */}
 
-
+      {/* Blog Section */}
+      <BlogSection />
 
       {/* FAQ Section */}
       <FaqSection />
 
-      {/* Blog Section */}
-      <BlogSection />
+      <AiChatCta label={AI_CTA_COPY.askAiLabel} className="custom-cta-button mb-4" />
 
       {/* Shared apply flow (auth/dedupe + lead form) for home page CTA */}
       <PersonalLoanContent />

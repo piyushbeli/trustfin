@@ -4,6 +4,9 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
+  /* Custom breakpoint — 480px, between base and sm (640px) */
+  --breakpoint-xs: 30rem;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
@@ -775,7 +778,7 @@
 }
 
 .custom-cta-button {
-  @apply w-full sm:w-96 mx-auto;
+  @apply w-72 mx-auto;
 }
 
 .custom-text-black {

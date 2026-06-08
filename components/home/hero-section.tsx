@@ -91,9 +91,9 @@ const HeroSection = (): JSX.Element => {
           <span className="text-brand-primary">in Minutes</span>
         </h1>
 
-        <p className="mb-8 text-center text-sm leading-relaxed text-gray-500">
+        {/* <p className="mb-8 text-center text-sm leading-relaxed text-gray-500">
           {HERO_SUBHEADLINE}
-        </p>
+        </p> */}
 
         <div className="relative w-full">
           <AiFinnVisual

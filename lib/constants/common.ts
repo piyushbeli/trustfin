@@ -116,6 +116,5 @@ export const BRAND_NAME = 'TrustFin.ai';
 
 export const HEADER_LINKS: GlobalLink[] = [
   { id: 1, order: 1, label: 'Home', url: '/', openInNewTab: false, children: [] },
-  { id: 2, order: 2, label: 'About Us', url: '/about-us', openInNewTab: false, children: [] },
   { id: 3, order: 3, label: 'Credit Cards', url: '/credit-cards', openInNewTab: false, children: [] },
 ];
