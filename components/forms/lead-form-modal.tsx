@@ -573,7 +573,7 @@ const LeadFormModal = ({
                 setShowPartnerConsentError(false);
               }
             }}
-            className="mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer shrink-0"
+            className="mt-1 h-5 w-5 shrink-0 checkbox-common"
           />
           <label htmlFor={MULTI_LENDER_PARTNER_CONSENT_KEY} className="text-sm text-gray-700 leading-relaxed">
             I agree to the{' '}

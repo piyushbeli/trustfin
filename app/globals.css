@@ -784,3 +784,7 @@
 .custom-text-black {
   @apply text-black/80;
 }
+
+.checkbox-common {
+  @apply rounded border-brand-primary accent-brand-primary text-brand-primary focus:ring-brand-primary pointer-events-none
+}

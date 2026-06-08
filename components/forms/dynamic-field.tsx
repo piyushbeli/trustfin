@@ -95,7 +95,7 @@ function getPlaceholder(key: FormFieldKey, title: string): string {
 }
 
 const LEAD_FORM_CHECKBOX_CLASS =
-  'mt-1 h-5 w-5 min-w-[20px] min-h-[20px] rounded border-gray-300 text-brand-primary focus:ring-brand-primary cursor-pointer shrink-0';
+  'mt-1 h-5 w-5 shrink-0 checkbox-common';
 
 /**
  * Gets max length for input fields
@@ -216,7 +216,7 @@ const DynamicField = ({
               className={LEAD_FORM_CHECKBOX_CLASS}
             />
            <label htmlFor={key} className="text-sm text-gray-700 leading-relaxed">
-  {title}
+  {/* {title} */}
 </label>
           </div>
           {error && (

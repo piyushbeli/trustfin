@@ -32,7 +32,7 @@ export const AuthModalFooter = ({
           id="auth-consent"
           defaultChecked
           readOnly
-          className="mt-0.5 h-5 w-5 shrink-0 rounded border-brand-primary accent-brand-primary text-brand-primary focus:ring-brand-primary pointer-events-none"
+          className="mt-0.5 h-5 w-5 shrink-0 checkbox-common"
           aria-hidden
         />
         <label htmlFor="auth-consent" className="text-sm text-gray-600 leading-snug">
