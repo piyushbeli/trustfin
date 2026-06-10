@@ -12,7 +12,9 @@ export const resolveApiStage = (
   stage?: string | null,
   sessionStage?: string | null,
 ): string => {
-  const raw = stage ?? sessionStage ?? '';
+  // After
+  const raw = stage?.trim() || sessionStage?.trim() || '';
+  console.log('[resolveApiStage]', {raw, stage, sessionStage});
   const normalized = normalizeBotStage(raw);
   return normalized || raw.trim();
 };

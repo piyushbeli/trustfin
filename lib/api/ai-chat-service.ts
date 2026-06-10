@@ -16,6 +16,7 @@ import type {
 import type { CheckStatusAllResponse } from '@/types/wecredit';
 import { logAiChat } from '@/lib/ai-chat/ai-chat-logger';
 import { getChatConsentIp } from '@/lib/ai-chat/chat-consent-ip';
+import { getDeviceFingerprint } from './auth-service';
 
 const AI_CHAT_BASE = wecreditConfig.aiChatUrl;
 const CHAT_HISTORY_NOT_FOUND_ERROR = 'chat_history_not_found';
@@ -35,6 +36,7 @@ function buildHeaders(mobile?: string, consentIp?: string): Record<string, strin
   const headers: Record<string, string> = {
     ...wecreditConfig.headers,
     Accept: 'application/json',
+    fingerprint: getDeviceFingerprint()
   };
 
   if (mobile) {
