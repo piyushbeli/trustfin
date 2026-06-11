@@ -38,13 +38,13 @@ const HomePage = (): React.ReactNode => {
       <StatsSection />
 
       {/* Our Partners Section */}
-      <PartnersSection />
+      {/* <PartnersSection /> */}
 
 
       {/* Trending Offers Section
           - Fetches generic lenders as fallback (PDF Step 2) - client-side
           - Fetches user-specific lenders when logged in (PDF Step 3) */}
-      <TrendingOffersClient />
+      {/* <TrendingOffersClient /> */}
 
       <AiChatCta
         label={AI_CTA_COPY.getYourPersonalLoanOffer}
