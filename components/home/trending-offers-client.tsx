@@ -19,7 +19,7 @@ import { useAuthCookies } from '@/hooks/use-auth-cookies';
  * 
  * Completely independent component - handles all lender fetching internally
  */
-const TrendingOffersClient = ({ heading = 'Best Offers jkj' }: { heading?: string }): React.ReactNode => {
+const TrendingOffersClient = ({ heading = 'Best Offers' }: { heading?: string }): React.ReactNode => {
   const { isAuthenticated, user } = useAuthStore();
   const [isHydrated, setIsHydrated] = useState(false);
 
