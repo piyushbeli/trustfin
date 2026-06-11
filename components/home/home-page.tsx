@@ -60,7 +60,7 @@ const HomePage = (): React.ReactNode => {
       <TestimonialsSection />
 
       {/* Blog Section */}
-      <BlogSection />
+      {/* <BlogSection /> */}
 
       {/* FAQ Section */}
       <FaqSection />
