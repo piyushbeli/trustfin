@@ -80,12 +80,19 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   const submitValueRef = useRef<(value: string) => Promise<void>>(async () => Promise.resolve());
   const optimisticMessageRef = useRef<AiChatRenderableMessage | null>(null);
   const sessionRef = useRef<AiChatSession | null>(null);
+  const messagesRef = useRef<AiChatRenderableMessage[]>([]);
   /** Latest chat-query auth hints — used when stage flips to `completed` on the same response. */
   const [offerSyncCredentials, setOfferSyncCredentials] = useState<{
     mobile?: string;
     token?: string;
   }>({});
-  /** Bumped when chat-query or chat-history signals `completed` — re-triggers offer polling. */
+  /**
+   * Offer-sync flow (check-status-all polling):
+   * 1. chat-query returns stage `completed` → requestOfferSync() bumps this counter
+   * 2. useAiChatOfferSync sees the bump + session.stage `completed` → starts polling
+   * 3. Each tick: check-status-all → chat-offer persist → inject offer_list into messages
+   * 4. Backend later moves stage to `offer_received` — polling stops (only `completed` polls)
+   */
   const [offerSyncTrigger, setOfferSyncTrigger] = useState(0);
   const { user, isAuthenticated } = useAuthStore();
   const { prefillQuestion } = useAiChatStore();
@@ -96,6 +103,10 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
   useEffect(() => {
     sessionRef.current = session;
   }, [session]);
+
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
   const [isLoadingHistory, setIsLoadingHistory] = useState<boolean>(false);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -141,6 +152,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     [isAuthenticated, user?.phoneNumber],
   );
 
+  /** Wakes useAiChatOfferSync — it compares this counter to detect a fresh chat-query `completed`. */
   const requestOfferSync = useCallback((): void => {
     setOfferSyncTrigger((count) => count + 1);
   }, []);
@@ -153,14 +165,19 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
       if (!history) return;
 
       const mappedMessages = mapHistoryResponseToMessages(history, options);
-      const normalizedSession = normalizeSessionFromApi(history.session);
-      const resolvedSession = resolveSessionAfterHistoryLoad(sessionRef.current, normalizedSession);
-
       const hasHistoryOffers = mappedMessages.some((message) => message.kind === 'offer_list');
+      const normalizedSession = normalizeSessionFromApi(history.session);
+      // Prefer live session.stage from chat-query over lagging history (see resolveSessionAfterHistoryLoad).
+      const resolvedSession = resolveSessionAfterHistoryLoad(
+        sessionRef.current,
+        normalizedSession,
+        { hasOfferListMessages: hasHistoryOffers },
+      );
 
       setMessages(mappedMessages);
       setSession(resolvedSession);
 
+      // Modal reopen path: history says `completed` but offer turn not saved yet — start polling.
       if (shouldStartOfferSyncFromHistory(resolvedSession, hasHistoryOffers)) {
         setOfferSyncCredentials(
           resolveOfferSyncCredentialsFromHistory(resolvedSession, history.turns ?? []),
@@ -273,6 +290,8 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         token: data.authToken ?? undefined,
       });
 
+      // --- Offer-sync entry (primary path: chat-query returns stage `completed`) ---
+
       if (data.validation && !data.validation.isValid) {
         if (data.answer) {
           setMessages((prev) => [
@@ -296,11 +315,12 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
           setIsEscalated,
         });
 
-        // History can lag; skip reload once offer-sync should run on this response.
+        // Field capture done — bump trigger so useAiChatOfferSync starts check-status-all polling.
         if (isOfferSyncStage(responseStage)) {
           requestOfferSync();
         }
 
+        // Only reload history on promotion when we are not entering the offer-sync phase.
         if (didPromote && !isOfferSyncStage(responseStage)) {
           await refreshChatHistoryAfterPromotion();
         }
@@ -327,6 +347,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
         setMessages((prev) => [...prev, ...assistantMessages]);
       }
 
+      // Same offer-sync trigger on the happy path (last field answer → stage `completed`).
       if (isOfferSyncStage(responseStage)) {
         requestOfferSync();
       }
@@ -433,6 +454,17 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
 
     void prefetchChatConsentIp();
 
+    // Guest promotion changes isAuthenticated/phoneNumber → buildRequestContext re-runs this effect.
+    // Reloading history mid-poll can replace session.stage `completed` with `offer_received` and kill polling.
+    const hasOfferListMessages = messagesRef.current.some((message) => message.kind === 'offer_list');
+    const isCompletedAwaitingOffers =
+      isOfferSyncStage(sessionRef.current?.stage) && !hasOfferListMessages;
+
+    if (isCompletedAwaitingOffers) {
+      setIsLoadingHistory(false);
+      return;
+    }
+
     clearHistoryRequest();
     const controller = new AbortController();
     historyAbortRef.current = controller;
@@ -501,6 +533,7 @@ export function useAiChat(isOpen: boolean): UseAiChatResult {
     ]);
   }, []);
 
+  // Poll loop lives in useAiChatOfferSync — this hook only wires session, credentials, and triggers.
   const { isOfferPolling, isCheckingOfferStatus } = useAiChatOfferSync({
     stage: session?.stage,
     userId: chatUserId,

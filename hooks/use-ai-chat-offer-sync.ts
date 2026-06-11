@@ -31,8 +31,11 @@ interface UseAiChatOfferSyncParams {
 }
 
 /**
- * When session stage is `completed`: poll check-status-all, persist via chat-offer,
- * then inject the offer_list message directly into chat state via onOffersReady.
+ * Offer-sync polling hook — runs only when session.stage is `completed`.
+ *
+ * Triggered from useAiChat via offerSyncTrigger (chat-query `completed`) or chat-history on reopen.
+ * Loop: check-status-all (15s, max 90s) → chat-offer persist → onOffersReady injects offer_list.
+ * Polling stops once offers are in chat state; `offer_received` is downstream and does not poll.
  */
 export function useAiChatOfferSync({
   stage,
@@ -55,6 +58,8 @@ export function useAiChatOfferSync({
   const pollSnapshotRef = useRef({ lenderCount: 0, canReHit: true });
   const hasPersistedChatOfferRef = useRef(false);
   const prevTriggerRef = useRef(offerSyncTrigger);
+  const startPollingRef = useRef<() => void>(() => undefined);
+  const stopPollingRef = useRef<() => void>(() => undefined);
 
   const onPollTick = useCallback(
     async (signal: AbortSignal): Promise<void> => {
@@ -96,10 +101,12 @@ export function useAiChatOfferSync({
         }
 
         if (checkResult.lenderCount === 0) {
+          // Lenders still pending — keep polling until check-status returns data or 90s cap.
           return;
         }
 
         if (hasPersistedChatOfferRef.current) {
+          // chat-offer already saved; inject if UI lost the offer_list (e.g. remount) without re-persisting.
           if (!historyHasOfferMessages) {
             onOffersReady(checkResult.data.lenders ?? [], checkResult.canReHit);
           }
@@ -113,6 +120,7 @@ export function useAiChatOfferSync({
           signal,
         });
 
+        // Only mark done when persist succeeds — stop rule below keys off this ref + UI state.
         if (persistResult.success) {
           hasPersistedChatOfferRef.current = true;
           onOffersReady(checkResult.data.lenders ?? [], checkResult.canReHit);
@@ -125,6 +133,11 @@ export function useAiChatOfferSync({
   );
 
   const shouldStopChatOfferPolling = useCallback((): boolean => {
+    // Keep polling until offers are injected into chat state (not just when lenders exist in API).
+    if (!historyHasOfferMessages && !hasPersistedChatOfferRef.current) {
+      return false;
+    }
+
     const { lenderCount, canReHit } = pollSnapshotRef.current;
 
     if (newPLEnabled) {
@@ -132,7 +145,7 @@ export function useAiChatOfferSync({
     }
 
     return lenderCount > 0 && !canReHit;
-  }, []);
+  }, [historyHasOfferMessages]);
 
   const { startPolling, stopPolling } = useOfferStatusPolling({
     isPolling,
@@ -141,7 +154,10 @@ export function useAiChatOfferSync({
     shouldStopPolling: shouldStopChatOfferPolling,
   });
 
-  // Start/stop polling when modal opens on `completed` stage (same 15s / 90s loop as offers page).
+  startPollingRef.current = startPolling;
+  stopPollingRef.current = stopPolling;
+
+  // Gate polling: stage must be `completed`, mobile resolved, and offers not already in messages.
   useEffect(() => {
     const credentials = resolveChatOfferSyncCredentials({
       phoneNumber: mobile,
@@ -154,7 +170,7 @@ export function useAiChatOfferSync({
     const stageReady = shouldPollOffersInChat(stage);
     // Allow polling on `completed` even during a background history refresh (post-login).
     const historyReady = !isLoadingHistory || stageReady;
-    // Explicit trigger (requestOfferSync) means we know offers aren't in state yet.
+    // offerSyncTrigger bump from requestOfferSync() — chat-query `completed` or history reopen.
     const isExplicitTrigger = offerSyncTrigger !== prevTriggerRef.current;
     prevTriggerRef.current = offerSyncTrigger;
 
@@ -173,17 +189,22 @@ export function useAiChatOfferSync({
         hasMobile: Boolean(resolvedMobile),
         historyHasOfferMessages,
       });
-      stopPolling();
+      stopPollingRef.current();
       hasPersistedChatOfferRef.current = false;
       return;
     }
 
-    hasPersistedChatOfferRef.current = false;
+    if (isExplicitTrigger) {
+      // Fresh chat-query `completed` — allow a new chat-offer persist cycle.
+      hasPersistedChatOfferRef.current = false;
+    }
+
     logAiChat('offer-sync', 'polling started', { userId, stage: normalizeBotStage(stage) });
-    startPolling();
+    // Refs avoid restarting the loop when onPollTick identity changes (would cancel the 15s timer).
+    startPollingRef.current();
 
     return () => {
-      stopPolling();
+      stopPollingRef.current();
     };
   }, [
     historyHasOfferMessages,
@@ -195,8 +216,6 @@ export function useAiChatOfferSync({
     responseToken,
     sessionUserId,
     stage,
-    startPolling,
-    stopPolling,
     userId,
   ]);
 

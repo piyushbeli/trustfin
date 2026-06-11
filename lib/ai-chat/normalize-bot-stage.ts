@@ -32,6 +32,6 @@ export const isOfferReceivedStage = (stage: string | null | undefined): boolean 
 export const isUtmClickStage = (stage: string | null | undefined): boolean =>
   normalizeBotStage(stage) === 'utm_click';
 
-/** Poll check-status-all only when backend session.stage is `completed` (chat-query or chat-history). */
+/** Poll check-status-all only when session.stage is `completed` (from chat-query or chat-history). */
 export const shouldPollOffersInChat = (stage: string | null | undefined): boolean =>
   isOfferSyncStage(stage);
