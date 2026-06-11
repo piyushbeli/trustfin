@@ -34,10 +34,14 @@ const getChatStageRank = (stage: string | null | undefined): number => {
 /**
  * chat-history can lag behind the latest chat-query response.
  * Never downgrade session.stage when reloading history after promotion.
+ *
+ * Special case: history may jump to `offer_received` before the offer turn renders.
+ * While there is no offer_list in messages, keep `completed` so check-status polling continues.
  */
 export const resolveSessionAfterHistoryLoad = (
   current: AiChatSession | null,
   fromHistory: AiChatSession,
+  options?: { hasOfferListMessages?: boolean },
 ): AiChatSession => {
   if (!current?.stage?.trim()) {
     return fromHistory;
@@ -47,6 +51,23 @@ export const resolveSessionAfterHistoryLoad = (
   const historyRank = getChatStageRank(fromHistory.stage);
 
   if (currentRank <= historyRank) {
+    // History can report offer_received before the offer turn is renderable — keep completed for polling.
+    if (
+      options?.hasOfferListMessages === false &&
+      isOfferSyncStage(current.stage) &&
+      isOfferReceivedStage(fromHistory.stage)
+    ) {
+      const preservedStage = normalizeBotStage(current.stage);
+      const { isFieldCaptureActive, isCompleted } = deriveSessionFlagsFromStage(preservedStage);
+
+      return {
+        ...fromHistory,
+        stage: preservedStage,
+        isFieldCaptureActive,
+        isCompleted,
+      };
+    }
+
     return fromHistory;
   }
 
