@@ -45,7 +45,7 @@ const GoldLoanPage = (): React.ReactNode => {
         secondaryCtaLabel={GOLD_HERO_COPY.secondaryCta}
       />
 
-      <TrendingOffersClient heading="Gold Loan Offers and Interest Rates" />
+      {/* <TrendingOffersClient heading="Gold Loan Offers and Interest Rates" /> */}
 
       <GoldProseSection config={GOLD_BORROW_SMARTER_SECTION} />
 

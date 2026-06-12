@@ -19,7 +19,7 @@ export const FOOTER_PRODUCT_LINKS: FooterLinkItem[] = [
   { label: 'Gold Loan', href: '/gold-loan' },
   { label: 'Car Loan', href: '/car-loan' },
   { label: 'Business Loan', href: '/business-loan' },
-  { label: 'Credit Card', href: '/credit-cards' },
+  // { label: 'Credit Card', href: '/credit-cards' },
 ];
 
 export const FOOTER_COPYRIGHT =

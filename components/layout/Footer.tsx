@@ -101,7 +101,7 @@ const Footer = () => {
           {FOOTER_TAGLINE}
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
+        {/* <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
           {socialLinks.map((social) => (
             <a
               key={social.platform}
@@ -114,7 +114,7 @@ const Footer = () => {
               {social.icon}
             </a>
           ))}
-        </div>
+        </div> */}
 
         <div className="grid grid-cols-1 gap-6 text-center sm:gap-8 md:grid-cols-2 md:gap-10 md:text-left">
           <FooterLinkSection title="About" links={FOOTER_ABOUT_LINKS} />

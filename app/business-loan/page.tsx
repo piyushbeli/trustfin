@@ -53,7 +53,7 @@ const BusinessLoanPage = (): React.ReactNode => {
         />
       </div>
 
-      <TrendingOffersClient heading="Business Loan Offers and Interest Rates" />
+      {/* <TrendingOffersClient heading="Business Loan Offers and Interest Rates" /> */}
 
       <MatchedByAiSection
         sectionConfig={BUSINESS_AI_MATCHED_SECTION}
