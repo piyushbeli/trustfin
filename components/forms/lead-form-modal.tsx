@@ -559,35 +559,36 @@ const LeadFormModal = ({
 
   const renderMultiLenderPartnerConsent = (): React.ReactElement | null => {
     if (!isAllLenders) return null;
-    return (
-      <div className="space-y-2">
-        <div className="flex items-start gap-3">
-          <input
-            type="checkbox"
-            id={MULTI_LENDER_PARTNER_CONSENT_KEY}
-            checked={hasPartnerConsent}
-            onChange={(event) => {
-              const value = event.target.checked ? 'true' : 'false';
-              handleFieldChange(MULTI_LENDER_PARTNER_CONSENT_KEY, value);
-              if (event.target.checked) {
-                setShowPartnerConsentError(false);
-              }
-            }}
-            className="mt-1 h-5 w-5 shrink-0 checkbox-common"
-          />
-          <label htmlFor={MULTI_LENDER_PARTNER_CONSENT_KEY} className="text-sm text-gray-700 leading-relaxed">
-            I agree to the{' '}
-            <Link target="_blank" href={MULTILENDER_PARTNER_TERMS_HREF} className="text-brand-primary underline">
-              Terms & Conditions
-            </Link>{' '}
-            of the partners of {BRAND_NAME}.
-          </label>
-        </div>
-        {showPartnerConsentError && (
-          <p className="text-xs text-red-600 ml-8">Please accept partner terms to continue.</p>
-        )}
-      </div>
-    );
+    return null
+    // return (
+    //   <div className="space-y-2">
+    //     <div className="flex items-start gap-3">
+    //       <input
+    //         type="checkbox"
+    //         id={MULTI_LENDER_PARTNER_CONSENT_KEY}
+    //         checked={hasPartnerConsent}
+    //         onChange={(event) => {
+    //           const value = event.target.checked ? 'true' : 'false';
+    //           handleFieldChange(MULTI_LENDER_PARTNER_CONSENT_KEY, value);
+    //           if (event.target.checked) {
+    //             setShowPartnerConsentError(false);
+    //           }
+    //         }}
+    //         className="mt-1 h-5 w-5 shrink-0 checkbox-common"
+    //       />
+    //       <label htmlFor={MULTI_LENDER_PARTNER_CONSENT_KEY} className="text-sm text-gray-700 leading-relaxed">
+    //         I agree to the{' '}
+    //         <Link target="_blank" href={MULTILENDER_PARTNER_TERMS_HREF} className="text-brand-primary underline">
+    //           Terms & Conditions
+    //         </Link>{' '}
+    //         of the partners of {BRAND_NAME}.
+    //       </label>
+    //     </div>
+    //     {showPartnerConsentError && (
+    //       <p className="text-xs text-red-600 ml-8">Please accept partner terms to continue.</p>
+    //     )}
+    //   </div>
+    // );
   };
 
   const renderMultiLenderWeCreditConsent = (): React.ReactElement => (

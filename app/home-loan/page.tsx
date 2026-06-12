@@ -23,6 +23,7 @@ import {
   HOME_HOW_TO_APPLY_STEPS,
 } from '@/components/home-loan/landing/constants';
 import { HOME_LOAN_FAQS } from '@/lib/constants/home-loan-faqs';
+import HomeApplyButton from '@/components/home-loan/landing/home-apply-button';
 
 const HomeLoanPage = (): React.ReactNode => {
   return (
@@ -32,6 +33,7 @@ const HomeLoanPage = (): React.ReactNode => {
         subtitle={HOME_HERO_COPY.subtitle}
         stats={HOME_HERO_STATS}
         secondaryCtaLabel={HOME_HERO_COPY.secondaryCta}
+        PrimaryCta={HomeApplyButton}
       />
 
       <HomeWhyChooseSection />
