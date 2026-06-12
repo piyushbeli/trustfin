@@ -1,3 +1,4 @@
+import { TRUSTFIN_INFORMATION } from '@/lib/constants/common';
 import React from 'react';
 
 /**
@@ -127,7 +128,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
           </p>
 
           <p>
-            f. In case of any misappropriation or unauthorized access of the Account, you agree to communicate the same to TrustFin immediately at care@trustfin.ai. You shall further ensure that you exit or logout from the Account at the end of each session. TrustFin shall not be liable for any loss or damage arising from your failure to comply with this provision.
+            f. In case of any misappropriation or unauthorized access of the Account, you agree to communicate the same to TrustFin immediately at {TRUSTFIN_INFORMATION.email}. You shall further ensure that you exit or logout from the Account at the end of each session. TrustFin shall not be liable for any loss or damage arising from your failure to comply with this provision.
           </p>
 
           <p>
@@ -305,7 +306,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
         <div className="space-y-4">
           <p>
-            a. If you identify any content on the Platform that you believe violates TrustFin&apos;s policies or applicable law, please notify TrustFin&apos;s Grievance Officer at care@trustfin.ai. In your notification, you must include the following details:
+            a. If you identify any content on the Platform that you believe violates TrustFin&apos;s policies or applicable law, please notify TrustFin&apos;s Grievance Officer at {TRUSTFIN_INFORMATION.email}. In your notification, you must include the following details:
           </p>
 
           <div className="space-y-2 pl-4">
@@ -356,7 +357,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
               Address: 401 Building No. B-1, Boomerang Equity Busii Park CTS no.4, Chandivali Farm House, Kurla Near Hindustan Transmission Compound, Andheri (E), Mumbai - 400072 (Sample — replace with TrustFin&apos;s registered address)
             </p>
             <p>Cell: +91 9240249293 (Sample — replace with official number)</p>
-            <p>Email: care@trustfin.ai</p>
+            <p>Email: {TRUSTFIN_INFORMATION.email}</p>
           </div> */}
 
           <p>
@@ -382,7 +383,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
         <p>If you have questions or concerns about these Terms, please contact us at:</p>
 
         <div className="space-y-2">
-          <p>Email: care@trustfin.ai</p>
+          <p>Email: {TRUSTFIN_INFORMATION.email}</p>
           <p>Website: https://trustfin.ai/</p>
         </div>
       </div>

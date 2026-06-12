@@ -34,6 +34,7 @@ import {
   GOLD_WHAT_IS_SECTION,
 } from '@/components/gold-loan/landing/constants';
 import { GOLD_LOAN_FAQS } from '@/lib/constants/gold-loan-faqs';
+import GoldApplyButton from '@/components/gold-loan/landing/gold-apply-button';
 
 const GoldLoanPage = (): React.ReactNode => {
   return (
@@ -43,6 +44,7 @@ const GoldLoanPage = (): React.ReactNode => {
         subtitle={GOLD_HERO_COPY.subtitle}
         stats={GOLD_HERO_STATS}
         secondaryCtaLabel={GOLD_HERO_COPY.secondaryCta}
+        PrimaryCta={GoldApplyButton}
       />
 
       {/* <TrendingOffersClient heading="Gold Loan Offers and Interest Rates" /> */}

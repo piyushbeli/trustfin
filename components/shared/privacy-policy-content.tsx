@@ -1,3 +1,4 @@
+import { TRUSTFIN_INFORMATION } from '@/lib/constants/common';
 import React from 'react';
 
 /**
@@ -191,7 +192,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
           </p>
 
           <p>
-            4.2. Such activities are usually carried out by unauthorized individuals and are illegal in nature. They are called phishing or identity theft. In case of any suspicion of such activity, we advise you not to respond to such communications and to inform us by writing to us at care@trustfin.ai.
+            4.2. Such activities are usually carried out by unauthorized individuals and are illegal in nature. They are called phishing or identity theft. In case of any suspicion of such activity, we advise you not to respond to such communications and to inform us by writing to us at {TRUSTFIN_INFORMATION.email}.
           </p>
         </div>
       </div>
@@ -215,7 +216,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
           </p>
 
           <p>
-            6.2. We encourage you to review the information and inform us about any discrepancies. Information found to be inaccurate shall be corrected or amended. Please reach out to us at care@trustfin.ai in case you would like to review the information collected by us.
+            6.2. We encourage you to review the information and inform us about any discrepancies. Information found to be inaccurate shall be corrected or amended. Please reach out to us at {TRUSTFIN_INFORMATION.email} in case you would like to review the information collected by us.
           </p>
         </div>
       </div>
@@ -273,7 +274,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
         <div className="space-y-4">
           <p>
-            10.1. You may choose to withdraw your consent provided hereunder at any point in time. Such withdrawal of consent must be sent in writing to care@trustfin.ai. In case you later withdraw your consent, we request you not to access the Platform and/or use the Services and also reserve the right to not provide you any Services through the Platform.
+            10.1. You may choose to withdraw your consent provided hereunder at any point in time. Such withdrawal of consent must be sent in writing to {TRUSTFIN_INFORMATION.email}. In case you later withdraw your consent, we request you not to access the Platform and/or use the Services and also reserve the right to not provide you any Services through the Platform.
           </p>
 
           <p>
@@ -310,7 +311,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
               Address: 401 Building No. B-1, Boomerang Equity Busii Park CTS no.4, Chandivali Farm House, Kurla Near Hindustan Transmission Compound, Andheri (E), Mumbai - 400072
             </p>
             <p>Cell: +91 9240249293 (Sample — replace with official number)</p>
-            <p>Email: care@trustfin.ai</p>
+            <p>Email: {TRUSTFIN_INFORMATION.email}</p>
           </div> */}
 
           <p>
@@ -334,7 +335,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
         <p>If you have questions or concerns about this Policy, please contact us at:</p>
 
         <div className="space-y-2">
-          <p>Email: partnerships@trustfin.ai</p>
+          <p>Email: {TRUSTFIN_INFORMATION.email}</p>
           <p>Website: https://trustfin.ai/</p>
         </div>
       </div>

@@ -146,3 +146,7 @@ export const HEADER_LINKS: GlobalLink[] = [
   { id: 1, order: 1, label: 'Home', url: '/', openInNewTab: false, children: [] },
   // { id: 3, order: 3, label: 'Credit Cards', url: '/credit-cards', openInNewTab: false, children: [] },
 ];
+
+export const TRUSTFIN_INFORMATION = {
+  email: 'partnerships@trustfin.ai'
+}
