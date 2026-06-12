@@ -397,7 +397,7 @@ export interface HeroStatItem {
 export const HERO_STATS: HeroStatItem[] = [
   { id: 'loan-range', value: '5K-15L', label: 'Loan Range' },
   { id: 'rate', value: '9.99%', label: 'Rate From p.a.' },
-  { id: 'lenders', value: '50+', label: 'Money Lenders' },
+  { id: 'lenders', value: '5+', label: 'Money Lenders' },
 ];
 
 /** Hero section copy for the personal loan landing page */
