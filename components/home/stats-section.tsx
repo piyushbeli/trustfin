@@ -25,7 +25,7 @@ const stats: StatItem[] = [
   },
   {
     id: 'lenders',
-    value: '50',
+    value: '5',
     suffix: '+',
     label: 'Money Lenders',
   },

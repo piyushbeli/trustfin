@@ -15,7 +15,7 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
         <div className="space-y-4">
           <p>
-            a. The following general terms of use (&quot;Terms&quot;) govern and manage the access or use by you (&quot;Customer&quot;, &quot;you&quot;, &quot;your&quot;, &quot;user&quot;) of the domain name &apos;trustfin.ai&apos;, and its related sub-domains, sites, services, and tools (collectively, the &quot;Platform&quot;), owned, managed, and operated by Cleartrust Fintech Services Private Limited, a private limited company incorporated under the Companies Act, 2013, with its registered office at Office No S7, 2nd Floor, Pinnacle Business Park, Mahakali Caves Rd, Shanti Nagar, Andheri East, Mumbai — 400093 (&quot;TrustFin&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
+            a. The following general terms of use (&quot;Terms&quot;) govern and manage the access or use by you (&quot;Customer&quot;, &quot;you&quot;, &quot;your&quot;, &quot;user&quot;) of the domain name &apos;trustfin.ai&apos;, and its related sub-domains, sites, services, and tools (collectively, the &quot;Platform&quot;), owned, managed, and operated by Cleartrust Fintech Services Private Limited, a private limited company incorporated under the Companies Act, 2013, with its registered office at 401 Building No. B-1, Boomerang Equity Busii Park CTS no.4, Chandivali Farm House, Kurla Near Hindustan Transmission Compound, Andheri (E), Mumbai - 400072 (&quot;TrustFin&quot;, &quot;we&quot;, &quot;us&quot;, or &quot;our&quot;).
           </p>
 
           <p>
@@ -350,14 +350,14 @@ const TermsOfServiceContent = (): React.ReactNode => {
 
           <p className="font-medium text-zinc-700">a. With respect to the Terms:</p>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <p>Name: Abhay Padoor (Sample — replace with authorized officer)</p>
             <p>
-              Address: Office No S7, 2nd Floor, Pinnacle Business Park, Mahakali Caves Rd, Shanti Nagar, Andheri East, Mumbai — 400093 (Sample — replace with TrustFin&apos;s registered address)
+              Address: 401 Building No. B-1, Boomerang Equity Busii Park CTS no.4, Chandivali Farm House, Kurla Near Hindustan Transmission Compound, Andheri (E), Mumbai - 400072 (Sample — replace with TrustFin&apos;s registered address)
             </p>
             <p>Cell: +91 9240249293 (Sample — replace with official number)</p>
             <p>Email: care@trustfin.ai</p>
-          </div>
+          </div> */}
 
           <p>
             The TrustFin Grievance Officer can be contacted between 10:00 a.m. to 6:00 p.m. from Monday to Friday, except on public holidays.
