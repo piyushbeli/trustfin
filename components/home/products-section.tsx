@@ -49,12 +49,12 @@ const products: Product[] = [
     href: '/business-loan',
     icon: BriefcaseBusiness,
   },
-  {
-    id: 'credit-cards',
-    label: 'Credit\nCards',
-    href: '/credit-cards',
-    icon: CreditCard,
-  },
+  // {
+  //   id: 'credit-cards',
+  //   label: 'Credit\nCards',
+  //   href: '/credit-cards',
+  //   icon: CreditCard,
+  // },
 ];
 
 /**
@@ -98,7 +98,7 @@ const ProductsSection = (): React.ReactNode => {
       </h2>
 
       {/* Desktop: grid */}
-      <div className="mx-auto hidden common-section-wrapper grid-cols-3 gap-2 px-4 md:grid lg:grid-cols-6">
+      <div className="mx-auto hidden common-section-wrapper grid-cols-3 gap-2 px-4 md:grid lg:grid-cols-5">
         {products.map((product, index) => (
           <ProductCard
             key={product.id}
