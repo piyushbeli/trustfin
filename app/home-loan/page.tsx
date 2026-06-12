@@ -46,7 +46,7 @@ const HomeLoanPage = (): React.ReactNode => {
         StepsCtaComponent={HomeStepsCta}
       />
       
-      <PartnersSection />
+      {/* <PartnersSection /> */}
 
       <FaqSection items={HOME_LOAN_FAQS} />
 

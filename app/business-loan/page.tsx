@@ -84,7 +84,7 @@ const BusinessLoanPage = (): React.ReactNode => {
         defaultOpen={BUSINESS_LOAN_INFO_ACCORDION_DEFAULT_OPEN}
       />
 
-      <PartnersSection />
+      {/* <PartnersSection /> */}
 
       <FaqSection items={BUSINESS_LOAN_FAQS} />
 
