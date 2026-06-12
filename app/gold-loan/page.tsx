@@ -81,7 +81,7 @@ const GoldLoanPage = (): React.ReactNode => {
         defaultOpen={GOLD_LOAN_INFO_ACCORDION_DEFAULT_OPEN}
       />
 
-      <PartnersSection />
+      {/* <PartnersSection /> */}
       <FaqSection items={GOLD_LOAN_FAQS} />
 
       <FaqFooterSection disclaimer={GOLD_LOAN_DISCLAIMER} />

@@ -18,12 +18,12 @@ const GrievanceContactContent = (): React.ReactNode => {
       </p>
 
       {/* Introduction Paragraph 2 */}
-      <p className="text-zinc-500 text-sm font-normal leading-4">
+      {/* <p className="text-zinc-500 text-sm font-normal leading-4">
         You may connect with us through any of the below channels. We will be glad to assist you:
-      </p>
+      </p> */}
 
       {/* Grievance Officer Section */}
-      <div className="space-y-4">
+      {/* <div className="space-y-4">
         <h2 className="text-zinc-800 text-sm font-normal leading-4">
           Grievance Officer
         </h2>
@@ -34,7 +34,7 @@ const GrievanceContactContent = (): React.ReactNode => {
           <p>Email: care@wecredit.co.in</p>
           <p>Contact: +91 9240259585</p>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

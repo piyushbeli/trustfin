@@ -14,13 +14,13 @@ interface StatItem {
 const stats: StatItem[] = [
   {
     id: 'customers',
-    value: '2L',
+    value: '3K',
     suffix: '+',
     label: 'Happy customers',
   },
   {
     id: 'disbursal',
-    value: '₹500Cr',
+    value: '₹10Cr',
     label: 'Total Disbursal',
   },
   {

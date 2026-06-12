@@ -53,7 +53,7 @@ const PersonalLoanPage = (): React.ReactNode => {
       <PersonalLoanInfoAccordion />
 
       {/* Our Partners Section */}
-      <PartnersSection />
+      {/* <PartnersSection /> */}
 
 
       {/* FAQ Section */}
