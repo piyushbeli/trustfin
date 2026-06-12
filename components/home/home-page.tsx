@@ -38,7 +38,7 @@ const HomePage = (): React.ReactNode => {
       <StatsSection />
 
       {/* Our Partners Section */}
-      <PartnersSection />
+      {/* <PartnersSection /> */}
 
 
       {/* Trending Offers Section

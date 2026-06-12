@@ -11,7 +11,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
 
       {/* Introduction */}
       <p>
-        This Privacy Policy (the &quot;Policy&quot;) of Cleartrust Fintech Services Private Limited, a company incorporated under the Companies Act, 2013, having its registered office at Office No S7, 2nd Floor, Pinnacle Business Park, Mahakali Caves Rd, Shanti Nagar, Andheri East, Mumbai — 400093 (&quot;TrustFin&quot; or &quot;Company&quot; or &quot;we&quot; or &quot;us&quot; or &quot;our&quot;), is aimed at informing the users, members, unregistered visitors, and any person(s) (hereinafter collectively referred to as &quot;Users&quot; or &quot;You&quot; or &quot;Your&quot; or &quot;Yours&quot;) using or accessing the website https://trustfin.ai/ and its mobile/web applications (hereinafter collectively referred to as the &quot;Platform&quot;).
+        This Privacy Policy (the &quot;Policy&quot;) of Cleartrust Fintech Services Private Limited, a company incorporated under the Companies Act, 2013, having its registered office at 401 Building No. B-1, Boomerang Equity Busii Park CTS no.4, Chandivali Farm House, Kurla Near Hindustan Transmission Compound, Andheri (E), Mumbai - 400072 (&quot;TrustFin&quot; or &quot;Company&quot; or &quot;we&quot; or &quot;us&quot; or &quot;our&quot;), is aimed at informing the users, members, unregistered visitors, and any person(s) (hereinafter collectively referred to as &quot;Users&quot; or &quot;You&quot; or &quot;Your&quot; or &quot;Yours&quot;) using or accessing the website https://trustfin.ai/ and its mobile/web applications (hereinafter collectively referred to as the &quot;Platform&quot;).
       </p>
 
       <p>
@@ -304,14 +304,14 @@ const PrivacyPolicyContent = (): React.ReactNode => {
             In accordance with the provisions of applicable laws, the name and contact details of the Grievance Officer are provided below:
           </p>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <p>Name: Abhay Padoor (Sample — replace with authorized officer)</p>
             <p>
-              Address: Office No S7, 2nd Floor, Pinnacle Business Park, Mahakali Caves Rd, Shanti Nagar, Andheri East, Mumbai — 400093
+              Address: 401 Building No. B-1, Boomerang Equity Busii Park CTS no.4, Chandivali Farm House, Kurla Near Hindustan Transmission Compound, Andheri (E), Mumbai - 400072
             </p>
             <p>Cell: +91 9240249293 (Sample — replace with official number)</p>
             <p>Email: care@trustfin.ai</p>
-          </div>
+          </div> */}
 
           <p>
             If you wish to make a complaint regarding any violation of the provisions of this Policy, you may send a complaint to the Grievance Officer, who shall redress the complaint in accordance with the provisions of applicable laws.
@@ -334,7 +334,7 @@ const PrivacyPolicyContent = (): React.ReactNode => {
         <p>If you have questions or concerns about this Policy, please contact us at:</p>
 
         <div className="space-y-2">
-          <p>Email: care@trustfin.ai</p>
+          <p>Email: partnerships@trustfin.ai</p>
           <p>Website: https://trustfin.ai/</p>
         </div>
       </div>
